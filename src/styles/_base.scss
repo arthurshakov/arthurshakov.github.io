@@ -1,0 +1,270 @@
+@use 'functions' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+// --- скроллбар ---
+* {
+  scrollbar-color: var(--line-strong) var(--bg);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--line-strong-hover);
+}
+
+// --- фокус от палитры ---
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// --- страница: рамка макета, центрирование, леттербокс ≥1920 ---
+.page {
+  width: 100%;
+  max-width: $breakpoint-desktop-wide;
+  margin-inline: auto;
+  overflow-x: clip;
+  font-size: vc(13);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+// --- фоновая сетка: статичный слой во вьюпорте, не двигается при скролле ---
+// (вынесено из .page, чтобы 1px-линии не «дрожали» при инерционном скролле)
+// Только вертикальные линии-колонки: горизонтали при статичном слое «плыли»
+// относительно границ секций/строк таблицы и давали муар на скролле.
+// Узлы (radial-gradient, не SVG-тайл) — чтобы линия и точка остались чёткими
+// на любом зуме: оба градиента считаются напрямую в размер тайла, без растра.
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  max-width: $breakpoint-desktop-wide;
+  margin-inline: auto;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle 1px at 0 50%, var(--grid-node) 100%, transparent 100%),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    vc(var(--grid)) vc(calc(var(--grid) * 3)),
+    vc(var(--grid)) 100%;
+  background-position: 0 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// --- desktop / mobile варианты блоков ---
+.desktop-only {
+  @include mobile {
+    display: none;
+  }
+}
+
+.desktop-inline-only {
+  @include mobile {
+    display: none;
+  }
+}
+
+.mobile-only {
+  @include desktop {
+    display: none;
+  }
+}
+
+.desktop-only {
+  @include desktop {
+    display: block;
+  }
+}
+
+.mobile-inline-only {
+  @include desktop {
+    display: none;
+  }
+}
+
+.desktop-inline-only {
+  @include desktop {
+    display: inline;
+  }
+}
+
+// --- иконки (инлайновый sprite) ---
+.icon {
+  flex: none;
+  fill: currentColor;
+}
+
+.icon--accent {
+  color: var(--accent);
+}
+
+.icon-size-9 {
+  width: vc(9);
+  height: vc(9);
+}
+
+.icon-size-11 {
+  width: vc(11);
+  height: vc(11);
+}
+
+.icon-size-12 {
+  width: vc(12);
+  height: vc(12);
+}
+
+.icon-size-13 {
+  width: vc(13);
+  height: vc(13);
+}
+
+.icon-size-14 {
+  width: vc(14);
+  height: vc(14);
+}
+
+// --- каретка терминала — единственная анимация ---
+@keyframes blink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+
+  49%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  display: inline-block;
+  background: var(--accent);
+  vertical-align: -2px;
+  animation: blink 1.1s step-end infinite;
+
+  @include mobile {
+    width: vc(7);
+    height: vc(13);
+  }
+
+  @include desktop {
+    width: vc(8);
+    height: vc(15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .caret {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.dollar {
+  color: var(--accent);
+}
+
+// --- lenis (плавный скролл): служебные правила из lenis.css ---
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}

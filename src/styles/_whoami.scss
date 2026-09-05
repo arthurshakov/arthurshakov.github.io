@@ -1,0 +1,75 @@
+@use 'functions' as *;
+
+.whoami-label {
+  color: var(--text-3);
+  font-size: vc(11);
+}
+
+.whoami-value {
+  color: var(--text);
+  margin: vc(3) 0 vc(18);
+}
+
+.whoami-value:last-child {
+  margin-bottom: 0;
+}
+
+.whoami-value--name {
+  color: var(--text-bright);
+  font-weight: 700;
+  font-size: vc(21);
+  line-height: 1.2;
+}
+
+.whoami-value--bio {
+  color: var(--text-body);
+}
+
+.whoami-value--location {
+  color: var(--text-2);
+}
+
+.whoami-value--awards {
+  display: flex;
+  align-items: center;
+  gap: vc(8);
+  flex-wrap: wrap;
+}
+
+.whoami-value--status {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: vc(8);
+}
+
+.whoami-note {
+  color: var(--text-3);
+}
+
+// --- desktop: grid 132 / 1fr ---
+.whoami-grid {
+  @include desktop {
+    display: grid;
+    grid-template-columns: vc(132) 1fr;
+    gap: vc(14) vc(28);
+    max-width: vc(940);
+
+    .whoami-label {
+      font-size: vc(13);
+    }
+
+    .whoami-value {
+      margin: 0;
+      min-width: 0;
+    }
+
+    .whoami-value--name {
+      font-size: vc(24);
+    }
+
+    .whoami-value--bio {
+      max-width: 68ch;
+    }
+  }
+}

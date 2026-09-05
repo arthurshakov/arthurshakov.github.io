@@ -1,0 +1,41 @@
+@use 'functions' as *;
+
+.contact-line.desktop-only {
+  @include desktop {
+    font-size: vc(14);
+    line-height: 1.9;
+  }
+}
+
+.contact-line.mobile-only {
+  @include mobile {
+    font-size: vc(13);
+    line-height: 2;
+  }
+}
+
+.flag {
+  color: var(--text-3);
+}
+
+.contact-note {
+  font-size: vc(12);
+  color: var(--text-3);
+  margin-top: vc(12);
+}
+
+.colophon {
+  color: var(--text-dim);
+  border-top: 1px solid var(--line);
+
+  @include mobile {
+    font-size: vc(11);
+    padding-top: vc(14);
+    margin-top: vc(32);
+  }
+
+  @include desktop {
+    padding-top: vc(16);
+    margin-top: vc(40);
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "RU — чистовая" },
+    { "id": "page-2", "name": "EN — чистовая" },
+    { "id": "page-4", "name": "Скриншоты — 3 варианта" },
+    { "id": "page-3", "name": "Архив направлений" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "page": "page-1", "x": 0, "y": 0, "w": 1440, "h": 2360, "title": "RU · Desktop 1440" },
+    { "file": "MainMobile.dc.html", "page": "page-1", "x": 1600, "y": 0, "w": 390, "h": 3260, "title": "RU · Mobile 390" },
+    { "file": "MainEN.dc.html", "page": "page-2", "x": 0, "y": 0, "w": 1440, "h": 2360, "title": "EN · Desktop 1440" },
+    { "file": "MainMobileEN.dc.html", "page": "page-2", "x": 1600, "y": 0, "w": 390, "h": 3260, "title": "EN · Mobile 390" },
+    { "file": "ShotA.dc.html", "page": "page-4", "x": 0, "y": 0, "w": 1440, "h": 1780, "title": "A · Preview-pane + filmstrip ← выбран" },
+    { "file": "ShotB.dc.html", "page": "page-4", "x": 1560, "y": 0, "w": 1440, "h": 1960, "title": "B · Thumbnail в каждой строке" },
+    { "file": "ShotC.dc.html", "page": "page-4", "x": 3120, "y": 0, "w": 1440, "h": 1680, "title": "C · Разворачивающаяся строка" },
+    { "file": "ShotAMobile.dc.html", "page": "page-4", "x": 4680, "y": 0, "w": 390, "h": 1960, "title": "A · Mobile 390" },
+    { "file": "SketchGallery.dc.html", "page": "page-3", "x": 0, "y": 0, "w": 1440, "h": 2650, "title": "A · Gallery Wall (скетч, отклонён)" },
+    { "file": "Editorial.dc.html", "page": "page-3", "x": 1560, "y": 0, "w": 1440, "h": 2050, "title": "B · Editorial Index (скетч, отклонён)" },
+    { "file": "Kinetic.dc.html", "page": "page-3", "x": 3120, "y": 0, "w": 1440, "h": 2650, "title": "D · Kinetic Showcase (скетч, отклонён)" }
+  ],
+  "annotations": [
+    { "id": "note-ru", "page": "page-1", "x": 0, "y": -190, "w": 1400, "text": "Чистовой макет — направление «Terminal», вариант A встроен.\nDesktop 1440 + mobile 390. Строка 1 в таблице показана в hover; в preview — герой-кадр glass-decor со строкой «$ open» и лента из 12 реальных скриншотов.\nЭто финальный дизайн-деливерабл, с которого идёт вёрстка. Незакрытое: точный видеокадр вместо статики для glass-decor — по желанию." },
+    { "id": "note-en", "page": "page-2", "x": 0, "y": -190, "w": 1400, "text": "Английская версия того же чистового макета. Тумблер --lang на en; слаги проектов не переводятся, клиенты и типы — на английском." },
+    { "id": "note-shots", "page": "page-4", "x": 0, "y": -190, "w": 1400, "text": "Выбор способа показа скриншотов. Победил вариант A — он уже встроен в чистовой Main (страницы RU / EN).\nB (thumbnail в строке) и C (разворачивающаяся строка) оставлены для истории. Справа — мобильная версия A." },
+    { "id": "note-archive", "page": "page-3", "x": 0, "y": -170, "w": 1400, "text": "Отклонённые направления — оставлены для сравнения. В работу не идут." }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

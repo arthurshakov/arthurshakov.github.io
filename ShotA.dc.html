@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: #A8E05B; text-decoration: none; }
+    a:hover { color: #C4EC8A; }
+    ::selection { background: #A8E05B; color: #0A0C0A; }
+    @keyframes blink { 0%, 48% { opacity: 1; } 49%, 100% { opacity: 0; } }
+  </style>
+</helmet>
+
+<div style="width: 1440px; min-height: 1780px; background: #0A0C0A; color: #C4CFC0; font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; line-height: 1.55; font-variant-numeric: tabular-nums; background-image: linear-gradient(rgba(24,30,24,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(24,30,24,0.5) 1px, transparent 1px); background-size: 64px 64px;">
+
+  <svg width="0" height="0" style="position: absolute;" aria-hidden="true"><defs>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-9 9M18 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.6l2.6 5.55 6.05.86-4.38 4.2 1.05 5.93L12 17.5l-5.37 2.64 1.05-5.93L3.3 10.01l6.05-.86z" fill="currentColor"/></symbol>
+  </defs></svg>
+
+  <!-- status bar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 48px; border-bottom: 1px solid #1C221C; background: #0B0E0B;">
+    <div style="font-size: 13px;">
+      <span style="color: #E9EFE4; font-weight: 700;">arthur_shakov</span><span style="color: #7E8B7B;">:</span><span style="color: #93A08F;">~/portfolio</span><span style="color: #A8E05B;">$</span> <span style="display: inline-block; width: 8px; height: 15px; background: #A8E05B; vertical-align: -2px; animation: blink 1.1s step-end infinite;"></span>
+    </div>
+    <span style="font-size: 12px; color: #7E8B7B;">вариант A</span>
+  </div>
+
+  <div style="padding: 0 48px;">
+
+    <!-- variant banner -->
+    <div style="padding: 28px 0 22px; border-bottom: 1px solid #1C221C;">
+      <div style="font-size: 15px; color: #E9EFE4; font-weight: 500;">A · Preview-pane + filmstrip</div>
+      <div style="font-size: 12px; color: #93A08F; margin-top: 6px; max-width: 70ch;">Все картинки живут в одном окне <span style="color: #7E8B7B;">// preview</span>. Таблица работ — чисто текстовая. Клик по превью в ленте меняет большой кадр. Самый «терминальный», payload минимальный.</div>
+    </div>
+
+    <!-- works (text only) -->
+    <section style="padding: 30px 0 20px;">
+      <div style="font-size: 12px; font-weight: 500; color: #93A08F; border-bottom: 1px solid #1C221C; padding-bottom: 12px; margin-bottom: 14px;"><span style="color: #7E8B7B;">// </span>works</div>
+      <div style="font-size: 13px;">
+        <div style="display: flex; gap: 20px; padding: 7px 0; border-bottom: 1px solid #2A322A; font-size: 11px; color: #7E8B7B;"><span style="width: 52px;">year</span><span style="flex: 2;">project</span><span style="width: 200px;">client</span><span style="flex: 3;">type</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2019</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">glass-decor <svg style="width: 11px; height: 11px; color: #A8E05B;"><use href="#i-star"/></svg></span><span style="width: 200px; color: #93A08F;">Whitemark</span><span style="flex: 3; color: #7E8B7B;">THREE.js · GSAP · Vue</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2018</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">hill8 <svg style="width: 11px; height: 11px; color: #A8E05B;"><use href="#i-star"/></svg></span><span style="width: 200px; color: #93A08F;">Whitemark</span><span style="flex: 3; color: #7E8B7B;">frontend + Bitrix</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2025</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">gigachat</span><span style="width: 200px; color: #93A08F;">РБК × Сбер</span><span style="flex: 3; color: #7E8B7B;">GenAI-спецпроект</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2024</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">power-x-time</span><span style="width: 200px; color: #93A08F;">ТАСС × Росатом</span><span style="flex: 3; color: #7E8B7B;">интерактивный таймлайн</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2025</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">nornickel-90</span><span style="width: 200px; color: #93A08F;">ТАСС</span><span style="flex: 3; color: #7E8B7B;">спецпроект-лонгрид</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2026</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">vmeste-ai</span><span style="width: 200px; color: #93A08F;">Фонд Потанина</span><span style="flex: 3; color: #7E8B7B;">× ТАСС</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2026</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">best-cashier</span><span style="width: 200px; color: #93A08F;">X5 / food.ru</span><span style="flex: 3; color: #7E8B7B;">игра-тренажёр</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2026</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">klassnie-sbory</span><span style="width: 200px; color: #93A08F;">Чижик</span><span style="flex: 3; color: #7E8B7B;">промо «снова в школу»</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2025</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">sl-soft</span><span style="width: 200px; color: #93A08F;">Praxis</span><span style="flex: 3; color: #7E8B7B;">корпоративный сайт</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2025</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">etalon-group</span><span style="width: 200px; color: #93A08F;">Praxis</span><span style="flex: 3; color: #7E8B7B;">девелопер · инвест-презентации</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0; border-bottom: 1px solid #171C17;"><span style="width: 52px; color: #93A08F;">2026</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">career-nornickel</span><span style="width: 200px; color: #93A08F;">Норникель</span><span style="flex: 3; color: #7E8B7B;">карьерный сайт</span></div>
+        <div style="display: flex; gap: 20px; padding: 10px 0;"><span style="width: 52px; color: #93A08F;">2025</span><span style="flex: 2; color: #E9EFE4; font-weight: 500;">astra-drive</span><span style="width: 200px; color: #93A08F;">Astra</span><span style="flex: 3; color: #7E8B7B;">бренд-сайт</span></div>
+      </div>
+    </section>
+
+    <!-- preview pane -->
+    <section style="padding: 20px 0 48px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; font-size: 12px; font-weight: 500; color: #93A08F; border-bottom: 1px solid #1C221C; padding-bottom: 12px; margin-bottom: 22px;"><span><span style="color: #7E8B7B;">// </span>preview</span><span style="font-size: 11px; color: #7E8B7B;">glass-decor</span></div>
+
+      <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; background: #0E110E; border: 1px solid #2A322A; border-bottom: none; padding: 8px 12px; font-size: 12px;">
+            <span style="color: #7E8B7B;">$ open</span>
+            <span style="color: #A8E05B;">glass-decor.ru</span>
+            <a href="#" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: #7E8B7B; font-size: 11px;">открыть <svg style="width: 11px; height: 11px;"><use href="#i-ext"/></svg></a>
+          </div>
+          <img src="glass-decor.jpg" style="width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 9px;"><span style="font-size: 20px; font-weight: 700; color: #E9EFE4;">glass-decor</span><svg style="width: 13px; height: 13px; color: #A8E05B;"><use href="#i-star"/></svg></div>
+          <div style="font-size: 12px; color: #93A08F; margin-top: 4px;">Whitemark · 2019</div>
+          <p style="font-size: 13px; color: #A6B2A2; margin: 14px 0 0; line-height: 1.6;">Сайт производителя декоративного стекла. Весь frontend: THREE.js-сцены, GSAP, Vue-каталог, интеграция с Bitrix, отдельные мобильная и английская версии.</p>
+          <div style="display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap;"><span style="border: 1px solid #2A322A; color: #93A08F; padding: 3px 8px; font-size: 11px;">THREE.js</span><span style="border: 1px solid #2A322A; color: #93A08F; padding: 3px 8px; font-size: 11px;">GSAP</span><span style="border: 1px solid #2A322A; color: #93A08F; padding: 3px 8px; font-size: 11px;">Vue</span></div>
+          <div style="display: flex; gap: 10px; margin-top: 18px;"><a href="#" style="display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid #A8E05B; color: #A8E05B; font-size: 12px;">открыть <svg style="width: 12px; height: 12px;"><use href="#i-ext"/></svg></a><a href="#" style="display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid #2A322A; color: #C4CFC0; font-size: 12px;">кейс <svg style="width: 12px; height: 12px;"><use href="#i-arrow"/></svg></a></div>
+        </div>
+      </div>
+
+      <!-- filmstrip -->
+      <div style="margin-top: 26px; font-size: 11px; color: #7E8B7B; margin-bottom: 10px;">// клик по превью — меняет большой кадр</div>
+      <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;">
+        <img src="glass-decor.jpg"     style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 2px solid #A8E05B; display: block;">
+        <img src="hill8.jpg"           style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="gigachat.jpg"        style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="power-x-time.jpg"    style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="nornickel-90.jpg"    style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="vmeste-ai.jpg"       style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="best-cashier.jpg"    style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="klassnie-sbory.jpg"  style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="sl-soft.jpg"         style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="etalon-group.jpg"    style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="career-nornickel.jpg" style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+        <img src="astra-drive.jpg"     style="width: 150px; height: 90px; flex: none; object-fit: cover; border: 1px solid #2A322A; display: block;">
+      </div>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,252 @@
+@use 'functions' as *;
+
+.preview-grid {
+  align-items: start;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: vc(36);
+  }
+}
+
+.preview-frame,
+.preview-info {
+  min-width: 0;
+}
+
+// ---------- левый кадр ----------
+.preview-address {
+  display: flex;
+  align-items: center;
+  background: var(--bg-elev);
+  border: 1px solid var(--line-strong);
+  border-bottom: none;
+  font-size: vc(12);
+
+  @include mobile {
+    gap: vc(8);
+    padding: vc(8) vc(10);
+  }
+
+  @include desktop {
+    gap: vc(10);
+    padding: vc(8) vc(12);
+  }
+}
+
+.preview-address__command {
+  color: var(--text-3);
+  flex: none;
+}
+
+.preview-address__url {
+  display: inline-flex;
+  align-items: center;
+  gap: vc(4);
+  min-width: 0;
+  color: var(--accent);
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include desktop {
+      overflow: visible;
+    }
+  }
+}
+
+.preview-screenshot {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1000 / 565; // кадр без адресной строки браузера (~16:9)
+  object-fit: cover;
+  border: 1px solid var(--line-strong);
+  display: block;
+}
+
+// ---------- правая колонка ----------
+.preview-name-row {
+  display: flex;
+  align-items: center;
+  gap: vc(9);
+
+  @include mobile {
+    margin-top: vc(16);
+  }
+
+  @include desktop {
+    margin-top: 0;
+  }
+}
+
+.preview-name {
+  font-weight: 700;
+  color: var(--text-bright);
+
+  @include mobile {
+    font-size: vc(20);
+  }
+
+  @include desktop {
+    font-size: vc(22);
+  }
+}
+
+.preview-subtitle {
+  font-size: vc(12);
+  color: var(--text-2);
+  margin-top: vc(4);
+}
+
+.preview-description {
+  color: var(--text-body);
+  line-height: 1.6;
+
+  @include mobile {
+    font-size: vc(13);
+    margin: vc(14) 0 0;
+  }
+
+  @include desktop {
+    max-width: 52ch;
+    margin-top: vc(16);
+  }
+}
+
+.preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vc(6);
+
+  @include mobile {
+    margin-top: vc(14);
+  }
+
+  @include desktop {
+    margin-top: vc(16);
+  }
+}
+
+.tag {
+  border: 1px solid var(--line-strong);
+  color: var(--text-2);
+  padding: vc(3) vc(8);
+  font-size: vc(11);
+}
+
+.preview-actions {
+  display: flex;
+  gap: vc(10);
+
+  @include mobile {
+    margin-top: vc(18);
+  }
+
+  @include desktop {
+    margin-top: vc(22);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: vc(7);
+  min-height: 44px;
+  font-size: vc(12);
+  font-weight: 500;
+}
+
+.btn--primary {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0 vc(16);
+
+  @include mobile {
+    justify-content: center;
+    flex: 1;
+  }
+
+  @include desktop {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+  }
+}
+
+.btn--primary:hover {
+  text-decoration: none;
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.preview-awards {
+  display: flex;
+  align-items: center;
+  gap: vc(8);
+  color: var(--text-2);
+
+  @include mobile {
+    margin-top: vc(16);
+    font-size: vc(11);
+  }
+
+  @include desktop {
+    margin-top: vc(18);
+    font-size: vc(12);
+  }
+}
+
+// ---------- лента превью ----------
+.preview-strip-caption {
+  margin-bottom: vc(10);
+  font-size: vc(11);
+  color: var(--text-3);
+
+  @include mobile {
+    margin-top: vc(22);
+  }
+
+  @include desktop {
+    margin-top: vc(26);
+  }
+}
+
+.preview-strip {
+  display: flex;
+  gap: vc(8);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: vc(8);
+}
+
+.preview-thumbnail {
+  flex: none;
+  aspect-ratio: 1000 / 565;
+  height: auto;
+  padding: 0;
+  border: vc(2) solid var(--line-strong);
+  background: none;
+  cursor: pointer;
+  display: block;
+
+  @include mobile {
+    width: vc(148);
+  }
+
+  @include desktop {
+    width: vc(150);
+  }
+}
+
+.preview-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-thumbnail.is-active {
+  border-color: var(--accent);
+}

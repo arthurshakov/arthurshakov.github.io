@@ -1,0 +1,47 @@
+@use 'functions' as *;
+
+// Палитра и метрики — строго из .dc.html / DESIGN-SPEC.md. Ничего не округляем под 4/8.
+
+:root {
+  // --- адаптив ---
+  --w-base: 390;          // ширина мобильного макета
+  --w-cur: 100vw;         // текущая ширина вьюпорта
+  --wm: calc(var(--w-cur) / var(--w-base));
+  --grid: 52;             // шаг фоновой сетки (mobile)
+
+  // --- шрифт ---
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  // --- цвета ---
+  --bg: #0A0C0A;
+  --bg-panel: #0B0E0B;
+  --bg-elev: #0E110E;
+  --line-faint: #171C17;
+  --line: #1C221C;
+  --line-strong: #2A322A;
+  --line-strong-hover: #3C463C;
+  --text: #C4CFC0;
+  --text-bright: #E9EFE4;
+  --text-body: #A6B2A2;
+  --text-2: #93A08F;
+  --text-3: #7E8B7B;
+  --text-dim: #6E7A6B;
+  --accent: #A8E05B;
+  --accent-hover: #C4EC8A;
+
+  --row-hover: rgba(168, 224, 91, 0.09);
+  --grid-line: rgba(24, 30, 24, 0.5);
+  --grid-node: rgba(168, 224, 91, 0.25);
+}
+
+:root {
+  @include desktop {
+    --w-base: 1440;       // ширина десктопного макета
+    --grid: 64;
+  }
+
+  // ≥1920 — контент не растягиваем: замораживаем текущую ширину на 1920.
+  @include desktop-wide {
+    --w-cur: 1920px;
+  }
+}

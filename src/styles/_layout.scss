@@ -1,0 +1,145 @@
+@use 'functions' as *;
+
+// --- тело: левый «рельс редактора» на desktop, простые поля на mobile ---
+.body {
+  @include mobile {
+    padding: 0 vc(20);
+  }
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: vc(64) 1fr;
+    padding: 0;
+  }
+}
+
+.body__rail {
+  @include mobile {
+    display: none;
+  }
+
+  @include desktop {
+    display: block;
+    border-right: 1px solid var(--line);
+  }
+}
+
+.body__main {
+  @include desktop {
+    min-width: 0;
+    padding: 0 vc(64) 0 vc(40);
+  }
+}
+
+// --- вертикальный ритм секций ---
+.section {
+  @include mobile {
+    padding: vc(8) 0 vc(36);
+  }
+
+  @include desktop {
+    padding: vc(12) 0 vc(44);
+  }
+}
+
+.section--whoami {
+  @include mobile {
+    padding: vc(32) 0 vc(36);
+  }
+
+  @include desktop {
+    padding: vc(56) 0 vc(44);
+  }
+}
+
+.section--contact {
+  @include mobile {
+    padding-bottom: vc(48);
+  }
+
+  @include desktop {
+    padding-bottom: vc(64);
+  }
+}
+
+// --- заголовок секции: // name ---
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  font-size: vc(12);
+}
+
+.section-header__title {
+  color: var(--text-2);
+
+  @include desktop {
+    font-weight: 500;
+  }
+}
+
+.section-header__slash {
+  color: var(--text-3);
+}
+
+.section-header__meta {
+  color: var(--text-3);
+
+  @include mobile {
+    font-size: vc(10);
+  }
+
+  @include desktop {
+    font-size: vc(11);
+  }
+}
+
+// spacings — mobile
+.section-header--whoami {
+  @include mobile {
+    padding-bottom: vc(10);
+    margin-bottom: vc(22);
+  }
+
+  @include desktop {
+    padding-bottom: vc(12);
+    margin-bottom: vc(32);
+  }
+}
+
+.section-header--works {
+  @include mobile {
+    padding-bottom: vc(10);
+    margin-bottom: vc(16);
+  }
+
+  @include desktop {
+    padding-bottom: vc(12);
+    margin-bottom: vc(20);
+  }
+}
+
+.section-header--preview {
+  @include mobile {
+    padding-bottom: vc(10);
+    margin-bottom: vc(18);
+  }
+
+  @include desktop {
+    padding-bottom: vc(12);
+    margin-bottom: vc(24);
+  }
+}
+
+.section-header--contact {
+  @include mobile {
+    padding-bottom: vc(10);
+    margin-bottom: vc(18);
+  }
+
+  @include desktop {
+    padding-bottom: vc(12);
+    margin-bottom: vc(24);
+  }
+}

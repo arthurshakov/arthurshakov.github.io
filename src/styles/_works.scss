@@ -1,0 +1,275 @@
+@use 'functions' as *;
+
+// ============ фильтры ============
+.filters {
+  font-size: vc(12);
+}
+
+.filters.desktop-only {
+  @include desktop {
+    display: flex;
+    align-items: center;
+    gap: vc(8);
+    flex-wrap: wrap;
+    margin-bottom: vc(20);
+  }
+}
+
+.filters__label {
+  @include desktop {
+    color: var(--text-3);
+    margin-right: vc(4);
+  }
+}
+
+.filters__sort {
+  @include desktop {
+    margin-left: auto;
+    color: var(--text-3);
+  }
+}
+
+.filters.mobile-only {
+  @include mobile {
+    display: flex;
+    gap: vc(8);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-bottom: vc(8);
+    margin-bottom: vc(14);
+  }
+}
+
+.chip {
+  border: 1px solid var(--line-strong);
+  color: var(--text-2);
+  padding: vc(4) vc(10);
+  background: none;
+  cursor: pointer;
+  line-height: 1.55;
+}
+
+.filters.mobile-only .chip {
+  @include mobile {
+    padding: vc(6) vc(12);
+    flex: none;
+  }
+}
+
+.chip--on {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  border-color: var(--accent);
+}
+
+// ============ таблица (desktop) ============
+.works-table.desktop-only {
+  @include desktop {
+    font-size: vc(13);
+  }
+}
+
+.works-table__header {
+  @include desktop {
+    display: flex;
+    align-items: center;
+    gap: vc(20);
+    padding: vc(8) 0;
+    border-bottom: 1px solid var(--line-strong);
+    font-size: vc(11);
+    color: var(--text-3);
+  }
+}
+
+.works-column--year {
+  @include desktop {
+    width: vc(52);
+    flex: none;
+  }
+}
+
+.works-column--project {
+  @include desktop {
+    flex: 2;
+    min-width: 0;
+  }
+}
+
+.works-column--client {
+  @include desktop {
+    width: vc(190);
+    flex: none;
+  }
+}
+
+.works-column--type {
+  @include desktop {
+    flex: 3;
+    min-width: 0;
+  }
+}
+
+.works-column--action {
+  @include desktop {
+    width: vc(88);
+    flex: none;
+  }
+}
+
+.works-row {
+  @include desktop {
+    display: flex;
+    align-items: center;
+    gap: vc(20);
+    padding: vc(13) 0;
+    cursor: pointer;
+  }
+}
+
+.works-row:hover,
+.works-row:focus-within,
+.works-row.is-active {
+  @include desktop {
+    background: var(--row-hover);
+    border-left: 1px solid var(--accent);
+    padding-left: vc(12);
+    margin-left: vc(-13);
+  }
+}
+
+.works-row__year {
+  @include desktop {
+    color: var(--text-2);
+  }
+}
+
+.works-row__project {
+  @include desktop {
+    color: var(--text-bright);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: vc(7);
+  }
+}
+
+.works-row__client {
+  @include desktop {
+    color: var(--text-2);
+  }
+}
+
+.works-row__type {
+  @include desktop {
+    color: var(--text-3);
+  }
+}
+
+.works-row__action {
+  @include desktop {
+    text-align: right;
+  }
+}
+
+.works-row__action a {
+  @include desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: vc(4);
+    font-size: vc(11);
+    opacity: 0;
+    transition: opacity 0.12s ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
+
+.works-row:hover .works-row__action a,
+.works-row:focus-within .works-row__action a,
+.works-row.is-active .works-row__action a {
+  @include desktop {
+    opacity: 1;
+  }
+}
+
+// ============ карточки (mobile) ============
+.works-card {
+  @include mobile {
+    padding: vc(14) 0;
+  }
+}
+
+.works-card.is-active {
+  @include mobile {
+    background: var(--row-hover);
+    border-left: 1px solid var(--accent);
+    padding-left: vc(12);
+    margin-left: vc(-12);
+  }
+}
+
+.works-card__top {
+  @include mobile {
+    display: flex;
+    align-items: center;
+    gap: vc(8);
+  }
+}
+
+.works-card__year {
+  @include mobile {
+    color: var(--text-3);
+    font-size: vc(12);
+  }
+}
+
+.works-card__name {
+  @include mobile {
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+}
+
+.works-card__meta {
+  @include mobile {
+    font-size: vc(12);
+    color: var(--text-3);
+    margin-top: vc(4);
+  }
+}
+
+// ============ строка архива ============
+.archive {
+  color: var(--text-3);
+  font-size: vc(12);
+}
+
+.archive.desktop-only {
+  @include desktop {
+    margin-top: vc(20);
+  }
+}
+
+.archive.mobile-only {
+  @include mobile {
+    margin-top: vc(16);
+  }
+}
+
+.archive__arrow {
+  color: var(--text);
+}
+
+// строка архива в макете — ссылка на «полный список», которого пока нет;
+// оставлена как визуальный акцент без интерактива (заглушка).
+.archive__link {
+  color: var(--accent);
+}
+
+.is-hidden {
+  display: none !important;
+}

@@ -1,0 +1,111 @@
+<!-- markdownlint-disable -->
+# Портфолио Артура Шакова — спецификация для вёрстки
+
+Это дизайн-деливерабл. Задача разработки — собрать по нему **продакшн-статику** сайта, попиксельно близко.
+
+## Источники истины
+
+| Файл | Что это |
+|---|---|
+| `Main.dc.html` | RU, desktop (1440) — эталон экрана |
+| `MainEN.dc.html` | EN, desktop (1440) |
+| `MainMobile.dc.html` | RU, mobile (390) |
+| `MainMobileEN.dc.html` | EN, mobile (390) |
+| `screenshots/processed/*.jpg` | скриншоты работ, ~1000px, хром браузера обрезан, имена = slug проекта |
+| `arthur-shakov-resume.pdf` | резюме (ссылка `--cv`) |
+| `portfolio projects.md` | полный список проектов (в портфолио — только отобранные ниже) |
+
+**Формат `.dc.html`:** это Design Components (обёртки `<x-dc>`, `<helmet>`, строка `<script src="./support.js">`). Как приложение НЕ запускать. Разметка внутри — статический HTML с инлайновыми стилями: значения цветов, отступов, размеров брать из них напрямую, ничего не «округлять» под сетку 4/8.
+
+Прочие артборды на холсте (`ShotB`, `ShotC`, `Sketch*`, `Editorial`, `Kinetic`) — отклонённые варианты, в вёрстку не идут.
+
+## Задача
+
+Собрать статический сайт-портфолио: **одна страница со скроллом**, направление «Terminal» (тёмный техно-брутализм, моноширинный шрифт). Два брейкпоинта: 390 и 1440 (между ними — резина, ≥1440 контент не растягивать сверх ~1320–1400).
+
+Обязательно:
+- **Живой переключатель RU/EN** (в макете `--lang=ru/en` — статичный тумблер; сделать рабочим: `<html lang>`, подмена текстов, запоминание выбора).
+- Ховер-состояния строк таблицы и ссылок (в макете строка 1 показана как hover — это состояние, не дефолт).
+- Лента превью в `// preview`: клик по миниатюре меняет большой кадр и мету; активная миниатюра — рамка `2px` акцентом.
+- Доступность: контраст, фокус-кольца от палитры, `prefers-reduced-motion` (гасит мигание каретки, любые появления и плавный скролл — Lenis не инициализируется, остаётся нативный скролл).
+- Хит-таргеты на мобиле ≥ 44px.
+- Скриншоты — из `screenshots/processed/`; отдать в разных плотностях/webp по вкусу.
+
+Стек на усмотрение исполнителя (хватит vanilla HTML/(S)CSS/JS(TypeScript); допустимы Astro). Без тяжёлых фреймворков без причины.
+
+## Дизайн-система (из `.dc.html`)
+
+**Шрифт:** `'JetBrains Mono'` (Google Fonts), fallback `ui-monospace, 'SF Mono', Menlo, monospace`. Веса 400 / 500 / 700. Базовый размер `13px`, `line-height: 1.55`, `font-variant-numeric: tabular-nums`.
+
+**Цвета:**
+```
+--bg:            #0A0C0A   (фон страницы)
+--bg-panel:      #0B0E0B   (статус-бар)
+--bg-elev:       #0E110E   (строка адреса $ open)
+--line-faint:    #171C17   (границы строк таблицы)
+--line:          #1C221C   (границы секций, левый рельс)
+--line-strong:   #2A322A   (рамки картинок, чипов, шапка таблицы)
+--text:          #C4CFC0   (основной)
+--text-bright:   #E9EFE4   (заголовки, имена проектов)
+--text-body:     #A6B2A2   (абзацы)
+--text-2:        #93A08F   (второстепенный: клиент, подписи)
+--text-3:        #7E8B7B   (третичный: тип работы, // префиксы, флаги)
+--text-dim:      #6E7A6B   (колофон)
+--accent:        #A8E05B   (lime — промпт $, каретка, активное, ссылки, ★)
+--accent-hover:  #C4EC8A
+```
+`::selection` → bg `#A8E05B`, color `#0A0C0A`. Скроллбар тёмный, thumb `#2A322A`. Ссылки — `--accent`, hover — подчёркивание `1px` с `text-underline-offset: 3px`.
+
+**Фоновая сетка:** **только вертикальные** линии-колонки, `linear-gradient(90deg, rgba(24,30,24,0.5) 1px, transparent 1px)`, шаг `64px` (desktop) / `52px` (mobile). Рисуется отдельным **статичным слоем во вьюпорте** (`position: fixed; inset: 0; z-index: -1`), отцентрованным по тем же `max-width: 1440px; margin-inline: auto`, что и контент, — при скролле не двигается (иначе 1px-линии «дрожат» на инерционном скролле). Горизонтальных линий в сетке нет: при статичном слое они «плыли» относительно границ секций/строк таблицы (муар); горизонтальный ритм несут границы контента. Фон страницы держит `body`.
+
+**Раскладка desktop:** левый «рельс редактора» — колонка `64px` с правой границей `1px --line`, контент в `padding: 0 64px 0 40px`. Секции — вертикальный ритм ~`44–56px`.
+**Раскладка mobile:** `padding: 0 20px`, статус-бар в две строки.
+
+**Компоненты:**
+- **Статус-бар:** `arthur_shakov` (700, bright) `:` (`--text-3`) `~/portfolio` (`--text-2`) `$` (accent) + мигающая каретка (`8×15px` блок accent, `blink 1.1s step-end`). Справа: `12 selected · 60+ total` и `--lang=` [ru][en] (активный — фон accent, текст `--bg`).
+- **Заголовок секции:** `// name` — `// ` в `--text-3`, слово в `--text-2`, `12px`, вес 500, снизу граница `1px --line`.
+- **whoami:** grid `132px 1fr`, gap `14px 28px`. Строки: name (24px/700), role, bio (`max-width: 68ch`), stack, awards (★ + текст), clients, languages, status (● dot + текст, accent), location.
+- **works — таблица:** flex-строки, `gap: 20px`, `padding: 13px 0`, граница снизу `1px --line-faint`. Колонки: `year` 52px (`--text-2`) · `project` flex 2 (bright/500, ★ у Awwwards) · `client` 190px (`--text-2`) · `type` flex 3 (`--text-3`) · action 88px (ссылка `open ↗`, видна в ховере). Шапка `11px --text-3`, граница `1px --line-strong`. Ховер строки: фон `rgba(168,224,91,0.09)`, левая граница `1px --accent`. Над таблицей — чипы-фильтры `grep: all / awwwards / genai / игры / промо / корпоративные` (активный — фон accent) и `sort: featured`.
+- **preview:** grid `1.35fr 1fr`. Слева: строка адреса — `$ open` (`--text-3`) + `<url>` (accent) + ссылка `открыть ↗` справа; фон `--bg-elev`, граница `1px --line-strong` без низа; под ней `<img>` 16:10, `object-fit: cover`, граница `1px --line-strong`. Справа: имя+★, `Whitemark · 2019`, описание (`max-width: 52ch`), теги-чипы, кнопки `открыть сайт / кейс` (min-height 44px), плашка `★ Awwwards — Honorable Mention + Mobile Excellence`.
+- **filmstrip:** подпись `// клик по превью — меняет большой кадр`, флекс-лента с `overflow-x: auto`, миниатюры `150×90` (desktop) / `148×90` (mobile), `object-fit: cover`, граница `1px --line-strong`; активная — `2px --accent`.
+- **contact:** `$ contact --email <a> --github <a> --tg <a> --cv <a>` (флаги `--text-3`, значения — ссылки accent). Ниже `// открыт к интересным спецпроектам и продуктовым командам`. Колофон `built with vanilla JS + Lenis · no framework · © 2026` (`--text-dim`).
+
+**Иконки:** только инлайновый SVG (sprite `<symbol>`): arrow-right, external-link, star (заливка), dot, chevron. Обводка `1.7`, сетка 24. Никаких эмодзи/юникод-глифов как иконок.
+
+**Каретка/анимация:** CSS-анимация одна — мигание каретки. Никаких появлений/параллаксов/движущихся декораций. Единственный дополнительный эффект — **плавный (инерционный) скролл** через Lenis (вендор-скрипт `src/vendor/lenis.min.js`, глобал `window.Lenis`; в бандл кладётся как `dist/lenis.min.js` перед `app.js`). Обе анимации выключаются при `prefers-reduced-motion: reduce`.
+
+## Контент
+
+**Персона:** Артур Шаков / Arthur Shakov. Роль: `frontend-разработчик — интерактивные спецпроекты под ключ` / `frontend developer — interactive campaign & editorial projects, end to end`.
+**Контакты:** `arthurshakov@gmail.com` · `github.com/arthurshakov` · Telegram `@arthur_shakov` · `arthur-shakov-resume.pdf`.
+**Локация:** Чегем · удалёнка/гибрид · готов к переезду · UTC+3. **Языки:** RU native · EN C1.
+**Awwwards:** 2× Honorable Mention (+ Mobile Excellence у Glass Decor).
+**Клиенты:** РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group.
+
+**Работы (12, порядок = `featured`, НЕ по годам):**
+
+| slug | год | клиент | тип | URL для `$ open` / кнопки | Awwwards |
+|---|---|---|---|---|---|
+| glass-decor | 2019 | Whitemark | THREE.js · GSAP · Vue | glass-decor.ru | ★ HM + Mobile Excellence |
+| hill8 | 2018 | Whitemark | frontend + Bitrix | awwwards.com/sites/hill8 (прод-домен мёртв) | ★ HM |
+| gigachat | 2025 | РБК × Сбер | GenAI-спецпроект | genai.rbc.ru | |
+| power-x-time | 2024 | ТАСС × Росатом | интерактивный таймлайн | spec.tass.ru/power-x-time | |
+| nornickel-90 | 2025 | ТАСС | спецпроект-лонгрид | tass.ru/specialprojects/nornickel-90 | |
+| vmeste-ai | 2026 | Фонд Потанина × ТАСС | цикл видеолекций | tass.ru/specialprojects/vmeste-ai | |
+| best-cashier | 2026 | X5 / food.ru | игра-тренажёр | best-cashier.food.ru | |
+| klassnie-sbory | 2026 | Чижик | промо «снова в школу» | klassnie-sbory.food.ru | |
+| sl-soft | 2025 | Praxis | корпоративный сайт | slsoft.ru | |
+| etalon-group | 2025 | Praxis | девелопер · инвест-презентации | etalongroup.com | |
+| career-nornickel | 2026 | Норникель | карьерный сайт | career.nornickel.ru | |
+| astra-drive | 2025 | Astra | бренд-сайт | astradrive.net | |
+
+Скриншоты: `screenshots/processed/<slug>.jpg`. Ниже таблицы — строка `$ ls works/_archive/ | wc -l → 60+` со ссылкой на полный список.
+
+EN-версия: slug'и не переводятся; клиенты/типы — на английском (см. `MainEN.dc.html`), `Девять Линий` → `Nine Lines`, «спецпроект» → `campaign / editorial project`.
+
+## Чего НЕ делать
+
+- Не «улучшать» дизайн — это спецификация, задача попасть в неё.
+- Не рисовать фейковый статус-бар iOS / фейковую клавиатуру.
+- Не заменять моноширинный шрифт, палитру или сетку.
+- `href="#"` в макете — заглушки; проставить реальные ссылки из таблицы.

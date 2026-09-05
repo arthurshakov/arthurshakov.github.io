@@ -1,0 +1,409 @@
+// Рендер одной языковой страницы в строку HTML.
+// Обе раскладки (.desktop-only / .mobile-only) присутствуют в DOM, переключение — CSS по 960px.
+// Разметка works / preview / filmstrip пре-рендерится здесь (сайт работает без JS);
+// app.js только усиливает (фильтры, смена кадра, клик по строке).
+
+import { strings, contactHref } from './data/strings.mjs';
+import { projects } from './data/projects.mjs';
+
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escAttr = (s) => esc(s).replace(/"/g, '&quot;');
+
+// В сборку попадает только один современный формат на кадр (avif или webp —
+// который легче); manifest (slug -> { shot, thumb }) приходит из build.mjs.
+const shot = (slug) => `/assets/shots/${slug}.jpg`;
+const thumb = (slug) => `/assets/shots/${slug}-thumb.jpg`;
+const shotMod = (slug, m) => `/assets/shots/${slug}.${(m && m.shot) || 'webp'}`;
+const thumbMod = (slug, m) => `/assets/shots/${slug}-thumb.${(m && m.thumb) || 'webp'}`;
+const shotType = (m) => `image/${(m && m.shot) || 'webp'}`;
+const thumbType = (m) => `image/${(m && m.thumb) || 'webp'}`;
+
+const SPRITE = `
+<svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-9 9M18 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.6l2.6 5.55 6.05.86-4.38 4.2 1.05 5.93L12 17.5l-5.37 2.64 1.05-5.93L3.3 10.01l6.05-.86z" fill="currentColor"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"/></symbol>
+</defs></svg>`;
+
+const icon = (id, sizeClass, accent = false) =>
+  `<svg class="icon ${sizeClass}${accent ? ' icon--accent' : ''}" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
+
+// ---------- status bar ----------
+function statusBar(t, lang) {
+  const pills = (mobile) => {
+    const ru = `<a class="pill ${lang === 'ru' ? 'pill--on' : 'pill--off'}" href="/ru/"${
+      lang === 'ru' ? ' aria-current="page"' : ''
+    }>ru</a>`;
+    const en = `<a class="pill ${lang === 'en' ? 'pill--on' : 'pill--off'}" href="/"${
+      lang === 'en' ? ' aria-current="page"' : ''
+    }>en</a>`;
+    const label = mobile ? '' : `<span class="statusbar-language__label">${esc(t.langLabel)}</span>`;
+    return `<span class="statusbar-language">${label}${ru}${en}</span>`;
+  };
+  const p = t.prompt;
+  const promptD =
+    `<span class="statusbar-prompt__user">${esc(p.user)}</span>` +
+    `<span class="statusbar-prompt__at">${esc(p.at)}</span>` +
+    `<span class="statusbar-prompt__host">${esc(p.host)}</span>` +
+    `<span class="statusbar-prompt__separator">${esc(p.sep)}</span>` +
+    `<span class="statusbar-prompt__path">${esc(p.path)}</span>` +
+    `<span class="statusbar-prompt__dollar">${esc(p.dollar)}</span> ` +
+    `<span class="caret" aria-hidden="true"></span>`;
+  const promptM =
+    `<span class="statusbar-prompt__user">${esc(p.user)}</span>` +
+    `<span class="statusbar-prompt__host">${esc(p.at)}${esc(p.host)}</span>` +
+    `<span class="statusbar-prompt__dollar">${esc(p.dollar)}</span> ` +
+    `<span class="caret" aria-hidden="true"></span>`;
+
+  return `
+  <header class="statusbar desktop-only">
+    <div class="statusbar-prompt">${promptD}</div>
+    <div class="statusbar-meta">
+      <span>${esc(t.selected)}</span>
+      ${pills(false)}
+    </div>
+  </header>
+  <header class="statusbar mobile-only">
+    <div class="statusbar-prompt">${promptM}</div>
+    <div class="statusbar-meta">
+      <span>${esc(t.selectedM)}</span>
+      ${pills(true)}
+    </div>
+  </header>`;
+}
+
+// ---------- whoami ----------
+function whoami(t) {
+  const w = t.whoami;
+  const awards = `${icon('star', 'icon-size-13', true)} ${esc(w.awardsText)} <span class="whoami-note">${esc(
+    w.awardsNote
+  )}</span>`;
+  const status = `${icon('dot', 'icon-size-9', true)} `;
+
+  const grid = `
+    <div class="whoami desktop-only">
+      <div class="whoami-grid">
+        <span class="whoami-label">${esc(t.w.name)}</span><span class="whoami-value whoami-value--name">${esc(w.name)}</span>
+        <span class="whoami-label">${esc(t.w.role)}</span><span class="whoami-value">${esc(w.role)}</span>
+        <span class="whoami-label">${esc(t.w.bio)}</span><span class="whoami-value whoami-value--bio">${esc(w.desktop.bio)}</span>
+        <span class="whoami-label">${esc(t.w.stack)}</span><span class="whoami-value">${esc(w.desktop.stack)}</span>
+        <span class="whoami-label">${esc(t.w.awards)}</span><span class="whoami-value whoami-value--awards">${awards}</span>
+        <span class="whoami-label">${esc(t.w.clients)}</span><span class="whoami-value">${esc(w.desktop.clients)}</span>
+        <span class="whoami-label">${esc(t.w.workflow)}</span><span class="whoami-value">${esc(w.desktop.workflow)}</span>
+        <span class="whoami-label">${esc(t.w.languages)}</span><span class="whoami-value">${esc(w.languages)}</span>
+        <span class="whoami-label">${esc(t.w.status)}</span><span class="whoami-value whoami-value--status">${status}${esc(w.desktop.status)}</span>
+        <span class="whoami-label">${esc(t.w.location)}</span><span class="whoami-value whoami-value--location">${esc(w.desktop.location)}</span>
+      </div>
+    </div>`;
+
+  const stack = `
+    <div class="whoami mobile-only">
+      <div class="whoami-label">${esc(t.w.name)}</div><div class="whoami-value whoami-value--name">${esc(w.name)}</div>
+      <div class="whoami-label">${esc(t.w.role)}</div><div class="whoami-value">${esc(w.role)}</div>
+      <div class="whoami-label">${esc(t.w.bio)}</div><div class="whoami-value whoami-value--bio">${esc(w.mobile.bio)}</div>
+      <div class="whoami-label">${esc(t.w.stack)}</div><div class="whoami-value">${esc(w.mobile.stack)}</div>
+      <div class="whoami-label">${esc(t.w.awards)}</div><div class="whoami-value whoami-value--awards">${awards}</div>
+      <div class="whoami-label">${esc(t.w.clients)}</div><div class="whoami-value">${esc(w.mobile.clients)}</div>
+      <div class="whoami-label">${esc(t.w.workflow)}</div><div class="whoami-value">${esc(w.mobile.workflow)}</div>
+      <div class="whoami-label">${esc(t.w.languages)}</div><div class="whoami-value">${esc(w.languages)}</div>
+      <div class="whoami-label">${esc(t.w.status)}</div><div class="whoami-value whoami-value--status">${status}${esc(w.mobile.statusCombined)}</div>
+    </div>`;
+
+  return `
+  <section class="section section--whoami">
+    <div class="section-header section-header--whoami">
+      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secWhoami)}</span>
+    </div>
+    ${grid}
+    ${stack}
+  </section>`;
+}
+
+// ---------- works ----------
+function works(t, lang) {
+  const chips = (mobile) =>
+    t.filters
+      .map(
+        (f, i) =>
+          `<button class="chip${i === 0 ? ' chip--on' : ''}" type="button" data-filter="${escAttr(
+            f.id
+          )}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(f.label)}</button>`
+      )
+      .join(mobile ? '' : '\n        ');
+
+  const rows = projects
+    .map((p, i) => {
+      const last = i === projects.length - 1 ? ' works-row--last' : '';
+      const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
+      return `<div class="works-row${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
+        p.slug
+      )}" data-cats="${escAttr((p.cats || []).join(' '))}">
+          <span class="works-row__year works-column--year">${p.year}</span>
+          <span class="works-row__project works-column--project">${esc(p.slug)}${star}</span>
+          <span class="works-row__client works-column--client">${esc(p.client[lang])}</span>
+          <span class="works-row__type works-column--type">${esc(p.type[lang])}</span>
+          <span class="works-row__action works-column--action"><a href="${escAttr(
+            p.url
+          )}" target="_blank" rel="noopener">${esc(t.rowOpen)} ${icon('ext', 'icon-size-12')}</a></span>
+        </div>`;
+    })
+    .join('\n        ');
+
+  const cards = projects
+    .map((p, i) => {
+      const last = i === projects.length - 1 ? ' works-card--last' : '';
+      const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
+      return `<div class="works-card${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
+        p.slug
+      )}" data-cats="${escAttr((p.cats || []).join(' '))}">
+          <div class="works-card__top"><span class="works-card__year">${p.year}</span><span class="works-card__name">${esc(
+            p.slug
+          )}</span>${star}</div>
+          <div class="works-card__meta">${esc(p.client[lang])} · ${esc(p.type[lang])}</div>
+        </div>`;
+    })
+    .join('\n        ');
+
+  const archiveDesktop = t.archiveDesktop;
+  const archiveMobile = t.archiveMobile;
+
+  return `
+  <section class="section section--works" id="works">
+    <div class="section-header section-header--works">
+      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secWorks)}</span>
+      <span class="section-header__meta desktop-inline-only">${esc(t.worksCountD)}</span><span class="section-header__meta mobile-inline-only">${esc(
+        t.worksCountM
+      )}</span>
+    </div>
+
+    <div class="filters desktop-only">
+      <span class="filters__label">${esc(t.grep)}</span>
+      ${chips(false)}
+      <span class="filters__sort">${esc(t.sort)}</span>
+    </div>
+    <div class="filters mobile-only">${chips(true)}</div>
+
+    <div class="works-table desktop-only">
+      <div class="works-table__header">
+        <span class="works-column--year">${esc(t.thead.year)}</span>
+        <span class="works-column--project">${esc(t.thead.project)}</span>
+        <span class="works-column--client">${esc(t.thead.client)}</span>
+        <span class="works-column--type">${esc(t.thead.type)}</span>
+        <span class="works-column--action"></span>
+      </div>
+      <div class="works-rows" data-rows>
+        ${rows}
+      </div>
+    </div>
+
+    <div class="works-cards mobile-only" data-cards>
+        ${cards}
+    </div>
+
+    <div class="archive desktop-only">
+      <span class="dollar">$</span> ${esc(archiveDesktop.cmd)} &nbsp;<span class="archive__arrow">${esc(
+        archiveDesktop.arrow
+      )}</span>&nbsp; ${esc(archiveDesktop.tail)} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveDesktop.link)}</span>
+    </div>
+    <div class="archive mobile-only">
+      <span class="dollar">$</span> ${esc(archiveMobile.cmd)} ${esc(
+        archiveMobile.arrow
+      )} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveMobile.link)}</span>
+    </div>
+  </section>`;
+}
+
+// ---------- preview ----------
+function preview(t, lang, shots = {}) {
+  const first = projects[0];
+  const tags = (p) =>
+    (p.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('');
+  const awardsHidden = first.awwwards ? '' : ' hidden';
+
+  return `
+  <section class="section section--preview" id="preview">
+    <div class="section-header section-header--preview">
+      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secPreview)}</span>
+      <span class="section-header__meta" data-pv-slug>${esc(first.slug)}</span>
+    </div>
+
+    <div class="preview-grid">
+      <div class="preview-frame">
+        <div class="preview-address">
+          <span class="preview-address__command">$ open</span>
+          <a class="preview-address__url" data-pv-open href="${escAttr(
+            first.url
+          )}" target="_blank" rel="noopener"><span data-pv-site>${esc(
+            first.site
+          )}</span> ${icon('ext', 'icon-size-11')}</a>
+        </div>
+        <picture>
+          <source data-pv-shot-src type="${shotType(shots[first.slug])}" srcset="${escAttr(
+            shotMod(first.slug, shots[first.slug])
+          )}">
+          <img class="preview-screenshot" data-pv-shot-img src="${escAttr(shot(first.slug))}" alt="${escAttr(
+            first.slug
+          )}" width="1000" height="565" decoding="async" draggable="false">
+        </picture>
+      </div>
+
+      <div class="preview-info">
+        <div class="preview-name-row">
+          <span class="preview-name" data-pv-name>${esc(first.slug)}</span>
+          <span data-pv-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
+        </div>
+        <div class="preview-subtitle" data-pv-sub>${esc(first.client[lang])} · ${first.year}</div>
+        <p class="preview-description" data-pv-desc>${esc(first.desc[lang])}</p>
+        <div class="preview-tags" data-pv-tags>${tags(first)}</div>
+        <div class="preview-actions">
+          <a class="btn btn--primary" data-pv-cta href="${escAttr(
+            first.url
+          )}" target="_blank" rel="noopener"><span data-pv-cta-label>${esc(
+            t.openSite
+          )}</span> ${icon('ext', 'icon-size-13')}</a>
+        </div>
+        <div class="preview-awards" data-pv-awards${awardsHidden}>
+          ${icon('star', 'icon-size-12', true)} <span data-pv-awards-text>${esc(
+            first.awwwards ? first.awwwards[lang] : ''
+          )}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-strip-caption"><span class="desktop-inline-only">${esc(
+      t.stripCaptionD
+    )}</span><span class="mobile-inline-only">${esc(t.stripCaptionM)}</span></div>
+    <div class="preview-strip" data-pv-strip role="group" aria-label="${escAttr(t.secPreview)}">
+      ${projects
+        .map(
+          (p, i) => `<button class="preview-thumbnail${
+            i === 0 ? ' is-active' : ''
+          }" type="button" data-slug="${escAttr(p.slug)}" aria-pressed="${
+            i === 0 ? 'true' : 'false'
+          }"><picture><source type="${thumbType(shots[p.slug])}" srcset="${escAttr(
+            thumbMod(p.slug, shots[p.slug])
+          )}"><img src="${escAttr(thumb(p.slug))}" alt="${escAttr(
+            p.slug
+          )}" loading="lazy" decoding="async" width="1000" height="565" draggable="false"></picture></button>`
+        )
+        .join('\n      ')}
+    </div>
+  </section>`;
+}
+
+// ---------- contact ----------
+function contact(t) {
+  const cv = t.contactValues;
+  const cf = t.contactFlags;
+  const a = (key, ext = true) =>
+    `<a href="${escAttr(contactHref[key])}"${
+      ext ? ' target="_blank" rel="noopener"' : ''
+    }>${esc(cv[key])}</a>`;
+
+  const lineD =
+    `<span class="dollar">$</span> ${esc(t.contactCmd)} ` +
+    `<span class="flag">${esc(cf.email)}</span> ${a('email', false)} ` +
+    `<span class="flag">${esc(cf.github)}</span> ${a('github')} ` +
+    `<span class="flag">${esc(cf.tg)}</span> ${a('tg')} ` +
+    `<span class="flag">${esc(cf.cv)}</span> ${a('cv')}`;
+
+  const lineM =
+    `<span class="dollar">$</span> ${esc(t.contactCmd)}<br>` +
+    `<span class="flag">${esc(cf.email)}</span> ${a('email', false)}<br>` +
+    `<span class="flag">${esc(cf.github)}</span> ${a('github')}<br>` +
+    `<span class="flag">${esc(cf.tg)}</span> ${a('tg')}<br>` +
+    `<span class="flag">${esc(cf.cv)}</span> ${a('cv')}`;
+
+  return `
+  <section class="section section--contact" id="contact">
+    <div class="section-header section-header--contact">
+      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secContact)}</span>
+    </div>
+    <div class="contact-line desktop-only">${lineD}</div>
+    <div class="contact-note desktop-only">${esc(t.contactNote)}</div>
+    <div class="colophon desktop-only">${esc(t.colophonD)}</div>
+
+    <div class="contact-line mobile-only">${lineM}</div>
+    <div class="colophon mobile-only">${esc(t.colophonM)}</div>
+  </section>`;
+}
+
+// ---------- данные для app.js (уже локализованные) ----------
+function bootData(lang, t, shots = {}) {
+  const list = projects.map((p) => ({
+    slug: p.slug,
+    year: p.year,
+    client: p.client[lang],
+    type: p.type[lang],
+    url: p.url,
+    site: p.site,
+    star: !!p.star,
+    cats: p.cats || [],
+    tags: p.tags || [],
+    desc: p.desc[lang],
+    awwwards: p.awwwards ? p.awwwards[lang] : null,
+    shot: shot(p.slug),
+    shotMod: shotMod(p.slug, shots[p.slug]),
+    shotModType: shotType(shots[p.slug]),
+  }));
+  return {
+    lang,
+    t: { openSite: t.openSite },
+    projects: list,
+  };
+}
+
+// ---------- страница ----------
+export function renderPage(lang, shots = {}) {
+  const t = strings[lang];
+  const altEn = '/';
+  const altRu = '/ru/';
+  const canonical = lang === 'ru' ? altRu : altEn;
+  const favicon =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0C0A'/%3E%3Cpath d='M7 9l6 7-6 7' fill='none' stroke='%23A8E05B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='17' y='21' width='8' height='3' fill='%23A8E05B'/%3E%3C/svg%3E";
+
+  return `<!doctype html>
+<html lang="${t.htmlLang}" dir="${t.dir}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(t.title)}</title>
+<meta name="description" content="${escAttr(t.description)}">
+<link rel="canonical" href="${canonical}">
+<link rel="alternate" hreflang="en" href="${altEn}">
+<link rel="alternate" hreflang="ru" href="${altRu}">
+<link rel="alternate" hreflang="x-default" href="${altEn}">
+<link rel="icon" href="${favicon}">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${escAttr(t.title)}">
+<meta property="og:description" content="${escAttr(t.description)}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="page">
+${SPRITE}
+${statusBar(t, lang)}
+  <div class="body">
+    <div class="body__rail" aria-hidden="true"></div>
+    <main class="body__main">
+${whoami(t)}
+${works(t, lang)}
+${preview(t, lang, shots)}
+${contact(t)}
+    </main>
+  </div>
+</div>
+<script>window.__PORTFOLIO__=${JSON.stringify(bootData(lang, t, shots))};</script>
+<script src="/lenis.min.js"></script>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
+`;
+}

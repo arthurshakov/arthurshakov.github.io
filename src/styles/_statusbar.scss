@@ -1,0 +1,99 @@
+@use 'functions' as *;
+
+.statusbar {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+// --- desktop: одна строка ---
+.statusbar.desktop-only {
+  @include desktop {
+    padding: vc(16) vc(48);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.statusbar-prompt {
+  @include desktop {
+    font-size: vc(13);
+  }
+}
+
+.statusbar-prompt__user {
+  color: var(--text-bright);
+  font-weight: 700;
+}
+
+.statusbar-prompt__at,
+.statusbar-prompt__separator {
+  color: var(--text-3);
+}
+
+.statusbar-prompt__host,
+.statusbar-prompt__path {
+  color: var(--text-2);
+}
+
+.statusbar-prompt__dollar {
+  color: var(--accent);
+}
+
+.statusbar-meta {
+  display: flex;
+  align-items: center;
+  color: var(--text-3);
+
+  @include desktop {
+    gap: vc(20);
+    font-size: vc(12);
+  }
+}
+
+.statusbar-language__label {
+  color: var(--text-3);
+}
+
+.pill {
+  display: inline-block;
+  padding: vc(3) vc(7);
+}
+
+.pill--on {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.pill--on:hover {
+  color: var(--bg);
+  text-decoration: none;
+}
+
+.pill--off {
+  border: 1px solid var(--line-strong);
+  color: var(--text-2);
+}
+
+// --- mobile: две строки ---
+.statusbar.mobile-only {
+  @include mobile {
+    padding: vc(14) vc(20);
+  }
+}
+
+.statusbar.mobile-only .statusbar-prompt {
+  @include mobile {
+    font-size: vc(12);
+  }
+}
+
+.statusbar.mobile-only .statusbar-meta {
+  @include mobile {
+    justify-content: space-between;
+    margin-top: vc(10);
+    font-size: vc(11);
+    gap: vc(12);
+  }
+}
