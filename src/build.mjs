@@ -53,15 +53,25 @@ async function buildCss() {
   await writeFile(p('dist/styles.css'), res.css);
 }
 
-async function buildPages(shots) {
-  await writeFile(p('dist/index.html'), renderPage('en', shots));
+// Инлайнится в <head> (см. renderPage) — держит первый пейнт независимо
+// от того, успел ли загрузиться внешний styles.css.
+function compileCriticalCss() {
+  return sass.compile(p('src/styles/_critical.scss'), {
+    style: 'compressed',
+    loadPaths: [p('src/styles')],
+  }).css;
+}
+
+async function buildPages(shots, criticalCss) {
+  await writeFile(p('dist/index.html'), renderPage('en', shots, criticalCss));
   await mkdir(p('dist/ru'), { recursive: true });
-  await writeFile(p('dist/ru/index.html'), renderPage('ru', shots));
+  await writeFile(p('dist/ru/index.html'), renderPage('ru', shots, criticalCss));
 }
 
 async function copyStatic() {
   await copyFile(p('src/scripts/app.js'), p('dist/app.js'));
   await copyFile(p('src/vendor/lenis.min.js'), p('dist/lenis.min.js'));
+  await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
   const resume = p('arthur-shakov-resume.pdf');
   if (existsSync(resume)) {
     await copyFile(resume, p('dist/assets/arthur-shakov-resume.pdf'));
@@ -150,7 +160,8 @@ async function main() {
   await mkdir(p('dist/assets/shots'), { recursive: true });
 
   const shots = await buildImages();
-  await Promise.all([buildCss(), buildPages(shots), copyStatic()]);
+  const criticalCss = compileCriticalCss();
+  await Promise.all([buildCss(), buildPages(shots, criticalCss), copyStatic()]);
 
   console.log(`✓ build → dist/  (${Date.now() - t0}ms)`);
 }

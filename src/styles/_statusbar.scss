@@ -16,6 +16,8 @@
 }
 
 .statusbar-prompt {
+  position: relative;
+
   @include desktop {
     font-size: vc(13);
   }
@@ -41,6 +43,7 @@
 }
 
 .statusbar-meta {
+  position: relative;
   display: flex;
   align-items: center;
   color: var(--text-3);
@@ -49,6 +52,49 @@
     gap: vc(20);
     font-size: vc(12);
   }
+}
+
+.statusbar-meta__content {
+  display: flex;
+  align-items: center;
+
+  @include desktop {
+    gap: vc(20);
+  }
+
+  @include mobile {
+    width: 100%;
+    justify-content: space-between;
+    gap: vc(12);
+  }
+}
+
+.statusbar-preloader__command {
+  color: var(--text);
+}
+
+// Результат команды печатается под хэдером — на поле прелоадера,
+// по левому краю промпта (отступ повторяет padding шапки).
+.statusbar-preloader__result {
+  position: absolute;
+  inset-block-start: 100%;
+  color: var(--accent);
+  white-space: nowrap;
+
+  @include mobile {
+    inset-inline-start: vc(20);
+    margin-block-start: vc(14);
+  }
+
+  @include desktop {
+    inset-inline-start: vc(48);
+    margin-block-start: vc(16);
+  }
+}
+
+html.preloader-pending .statusbar {
+  position: relative;
+  z-index: 11;
 }
 
 .statusbar-language__label {

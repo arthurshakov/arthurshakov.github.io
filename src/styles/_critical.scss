@@ -1,0 +1,80 @@
+@use 'functions' as *;
+@use 'tokens';
+
+// Инлайнится в <head> строкой (см. build.mjs / template.mjs), поэтому
+// самодостаточен: не полагается на внешний styles.css. Держит первый
+// пейнт (фон, сетка, прелоадер) и прячет реальный контент, пока не
+// подтверждена загрузка шрифта — иначе на его месте на миг мелькнёт
+// текст запасным шрифтом.
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+// --- фоновая сетка: статичный слой во вьюпорте, не двигается при скролле ---
+// (вынесено из .page, чтобы 1px-линии не «дрожали» при инерционном скролле)
+// Только вертикальные линии-колонки: горизонтали при статичном слое «плыли»
+// относительно границ секций/строк таблицы и давали муар на скролле.
+// Узлы (radial-gradient, не SVG-тайл) — чтобы линия и точка остались чёткими
+// на любом зуме: оба градиента считаются напрямую в размер тайла, без растра.
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  max-width: $breakpoint-desktop-wide;
+  margin-inline: auto;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle 1px at 0 50%, var(--grid-node) 100%, transparent 100%),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    vc(var(--grid)) vc(calc(var(--grid) * 3)),
+    vc(var(--grid)) 100%;
+  background-position: 0 0;
+}
+
+// Пока идёт прелоадер и пока контент выезжает из маски, страница не
+// скроллится. Класс держится до конца раскрытия (см. unlockScroll в app.js).
+// Одного overflow мало: lenis скроллит программно и его не видит — он
+// останавливается отдельно, в app.js.
+html.preloader-pending {
+  overflow: hidden;
+  // Резервируем полосу под скроллбар: без неё возврат скролла сдвинул бы
+  // контент на её ширину сразу после раскрытия.
+  scrollbar-gutter: stable;
+}
+
+html.preloader-pending body {
+  overflow: hidden;
+}
+
+.preloader {
+  display: none;
+}
+
+html.preloader-pending .preloader {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle 1px at 0 50%, var(--grid-node) 100%, transparent 100%),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    vc(var(--grid)) vc(calc(var(--grid) * 3)),
+    vc(var(--grid)) 100%;
+  background-position: 0 0;
+}
+
+html:not(.fonts-loaded) .page {
+  visibility: hidden;
+}

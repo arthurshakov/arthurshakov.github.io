@@ -91,29 +91,8 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
-// --- фоновая сетка: статичный слой во вьюпорте, не двигается при скролле ---
-// (вынесено из .page, чтобы 1px-линии не «дрожали» при инерционном скролле)
-// Только вертикальные линии-колонки: горизонтали при статичном слое «плыли»
-// относительно границ секций/строк таблицы и давали муар на скролле.
-// Узлы (radial-gradient, не SVG-тайл) — чтобы линия и точка остались чёткими
-// на любом зуме: оба градиента считаются напрямую в размер тайла, без растра.
-.bg-grid {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  width: 100%;
-  max-width: $breakpoint-desktop-wide;
-  margin-inline: auto;
-  pointer-events: none;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(circle 1px at 0 50%, var(--grid-node) 100%, transparent 100%),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size:
-    vc(var(--grid)) vc(calc(var(--grid) * 3)),
-    vc(var(--grid)) 100%;
-  background-position: 0 0;
-}
+// .bg-grid и .preloader — в _critical.scss (инлайнятся в <head>, нужны
+// для первого пейнта до того, как загрузится этот файл).
 
 .sr-only {
   position: absolute;

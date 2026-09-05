@@ -30,8 +30,19 @@ const SPRITE = `
 const icon = (id, sizeClass, accent = false) =>
   `<svg class="icon ${sizeClass}${accent ? ' icon--accent' : ''}" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
 
+function preloader(t, lang) {
+  return '<div class="preloader" data-preloader aria-live="polite" aria-atomic="true"></div>';
+}
+
 // ---------- status bar ----------
 function statusBar(t, lang) {
+  const command = `./render --locale=${lang}`;
+  const commandSlot =
+    `<span class="statusbar-preloader__command" data-preloader-command data-command="${escAttr(
+      command
+    )}"></span>`;
+  const result = '<span class="statusbar-preloader__result" data-preloader-result hidden>✓ ready</span>';
+  const metaText = (text) => `<span>${esc(text)}</span>`;
   const pills = (mobile) => {
     const ru = `<a class="pill ${lang === 'ru' ? 'pill--on' : 'pill--off'}" href="/ru/"${
       lang === 'ru' ? ' aria-current="page"' : ''
@@ -39,7 +50,9 @@ function statusBar(t, lang) {
     const en = `<a class="pill ${lang === 'en' ? 'pill--on' : 'pill--off'}" href="/"${
       lang === 'en' ? ' aria-current="page"' : ''
     }>en</a>`;
-    const label = mobile ? '' : `<span class="statusbar-language__label">${esc(t.langLabel)}</span>`;
+    const label = mobile
+      ? ''
+      : `<span class="statusbar-language__label">${esc(t.langLabel)}</span>`;
     return `<span class="statusbar-language">${label}${ru}${en}</span>`;
   };
   const p = t.prompt;
@@ -50,27 +63,29 @@ function statusBar(t, lang) {
     `<span class="statusbar-prompt__separator">${esc(p.sep)}</span>` +
     `<span class="statusbar-prompt__path">${esc(p.path)}</span>` +
     `<span class="statusbar-prompt__dollar">${esc(p.dollar)}</span> ` +
+    commandSlot +
     `<span class="caret" aria-hidden="true"></span>`;
   const promptM =
     `<span class="statusbar-prompt__user">${esc(p.user)}</span>` +
     `<span class="statusbar-prompt__host">${esc(p.at)}${esc(p.host)}</span>` +
     `<span class="statusbar-prompt__dollar">${esc(p.dollar)}</span> ` +
+    commandSlot +
     `<span class="caret" aria-hidden="true"></span>`;
 
   return `
   <header class="statusbar desktop-only">
-    <div class="statusbar-prompt">${promptD}</div>
+    <div class="statusbar-prompt" data-preloader-prompt>${promptD}</div>
     <div class="statusbar-meta">
-      <span>${esc(t.selected)}</span>
-      ${pills(false)}
+      <span class="statusbar-meta__content">${metaText(t.selected)}${pills(false)}</span>
     </div>
+    ${result}
   </header>
   <header class="statusbar mobile-only">
-    <div class="statusbar-prompt">${promptM}</div>
+    <div class="statusbar-prompt" data-preloader-prompt>${promptM}</div>
     <div class="statusbar-meta">
-      <span>${esc(t.selectedM)}</span>
-      ${pills(true)}
+      <span class="statusbar-meta__content">${metaText(t.selectedM)}${pills(true)}</span>
     </div>
+    ${result}
   </header>`;
 }
 
@@ -356,7 +371,7 @@ function bootData(lang, t, shots = {}) {
 }
 
 // ---------- страница ----------
-export function renderPage(lang, shots = {}) {
+export function renderPage(lang, shots = {}, criticalCss = '') {
   const t = strings[lang];
   const altEn = '/';
   const altRu = '/ru/';
@@ -380,13 +395,52 @@ export function renderPage(lang, shots = {}) {
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escAttr(t.title)}">
 <meta property="og:description" content="${escAttr(t.description)}">
+<style>${criticalCss}</style>
+<script>
+  (() => {
+    const root = document.documentElement;
+    // Прелоадер — один раз на сессию: перезагрузка и переход между /ru/ и /
+    // показывают страницу сразу. Решаем здесь, до первого пейнта, иначе
+    // оверлей успел бы мигнуть. Отметку ставим сразу на старте: если уйти
+    // с середины прелоадера, второй раз он уже не нужен.
+    let seen = false;
+    try {
+      seen = window.sessionStorage.getItem('portfolio:preloader') === '1';
+      window.sessionStorage.setItem('portfolio:preloader', '1');
+    } catch (e) {
+      // sessionStorage может быть недоступен (приватный режим, запрет на
+      // данные сайтов) — тогда просто показываем прелоадер как обычно.
+    }
+    if (!seen) root.classList.add('preloader-pending');
+    // Страховка нужна в обоих случаях: она же снимает .page с visibility:
+    // hidden, если app.js не доехал.
+    const hardFinish = () => {
+      root.classList.remove('preloader-pending');
+      root.classList.add('fonts-loaded');
+    };
+    let timeout = window.setTimeout(hardFinish, 1800);
+    // Прелоадер стартует только после шрифтов и стилей — на медленной сети
+    // позже жёсткой страховки. Как только он реально пошёл, страховку
+    // отодвигаем, иначе она снимет оверлей посреди анимации.
+    window.__holdPreloaderFallback = () => {
+      window.clearTimeout(timeout);
+      timeout = window.setTimeout(hardFinish, 4000);
+    };
+    window.__finishPreloaderFallback = () => {
+      window.clearTimeout(timeout);
+      root.classList.remove('preloader-pending');
+    };
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="/styles.css">
+<link rel="preload" as="style" href="/styles.css" id="main-styles" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/styles.css"><style>.page{visibility:visible}</style></noscript>
 </head>
 <body>
 <div class="bg-grid" aria-hidden="true"></div>
+${preloader(t, lang)}
 <div class="page">
 ${SPRITE}
 ${statusBar(t, lang)}
@@ -402,6 +456,7 @@ ${contact(t)}
 </div>
 <script>window.__PORTFOLIO__=${JSON.stringify(bootData(lang, t, shots))};</script>
 <script src="/lenis.min.js"></script>
+<script src="/gsap.min.js"></script>
 <script type="module" src="/app.js"></script>
 </body>
 </html>
