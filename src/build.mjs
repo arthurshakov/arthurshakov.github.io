@@ -15,6 +15,11 @@ import { projects } from './data/projects.mjs';
 const root = path.join(import.meta.dirname, '..');
 const p = (...s) => path.join(root, ...s);
 
+const AUDIO_FILES = {
+  'Filtered_Aperture.mp3': 'filtered-aperture.mp3',
+  'Through_the_Glass.mp3': 'through-the-glass.mp3',
+};
+
 // Полный кадр отдаём в исходном разрешении (~3000px, без адресной строки браузера),
 // только пережимаем. Миниатюра ленты — 1000px по ширине (крупная, чтобы не мылила).
 const THUMB_W = 1000;
@@ -70,8 +75,16 @@ async function buildPages(shots, criticalCss) {
 
 async function copyStatic() {
   await copyFile(p('src/scripts/app.js'), p('dist/app.js'));
+  await copyFile(p('src/scripts/audio-player.js'), p('dist/audio-player.js'));
   await copyFile(p('src/vendor/lenis.min.js'), p('dist/lenis.min.js'));
   await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
+  const audioDir = p('dist/assets/audio');
+  await mkdir(audioDir, { recursive: true });
+  await Promise.all(
+    Object.entries(AUDIO_FILES).map(([source, output]) =>
+      copyFile(p('audio', source), path.join(audioDir, output))
+    )
+  );
   const resume = p('arthur-shakov-resume.pdf');
   if (existsSync(resume)) {
     await copyFile(resume, p('dist/assets/arthur-shakov-resume.pdf'));
