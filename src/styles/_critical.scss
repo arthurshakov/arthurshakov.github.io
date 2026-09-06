@@ -105,3 +105,20 @@ html:not(.fonts-loaded) .page {
 .audio-control__bar:nth-child(3) { left: #{vc(8)}; }
 .audio-control__bar:nth-child(4) { left: #{vc(12)}; }
 .audio-control__bar:nth-child(5) { left: #{vc(16)}; }
+
+// В таблице работ ссылки open видны только у активной строки. Фиксируем это
+// до styles.css, чтобы браузерные ссылки не успевали мелькнуть при первом
+// рендере.
+@include desktop {
+  .works-row__action a {
+    align-items: center;
+    display: inline-flex;
+    font-size: vc(11);
+    gap: vc(4);
+    opacity: 0;
+  }
+
+  .works-row.is-active .works-row__action a {
+    opacity: 1;
+  }
+}
