@@ -17,6 +17,7 @@ const p = (...s) => path.join(root, ...s);
 
 const AUDIO_FILES = {
   'Filtered_Aperture.mp3': 'filtered-aperture.mp3',
+  'Radiant_Pulse.mp3': 'radiant-pulse.mp3',
   'Through_the_Glass.mp3': 'through-the-glass.mp3',
 };
 

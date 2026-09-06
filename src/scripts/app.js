@@ -176,6 +176,7 @@ import { createPjaxRouter } from './pjax.js';
     const player = createPlaylistPlayer({
       tracks: [
         '/assets/audio/filtered-aperture.mp3',
+        '/assets/audio/radiant-pulse.mp3',
         '/assets/audio/through-the-glass.mp3',
       ],
       fadeInMs: musicFadeInMs,
@@ -382,4 +383,3 @@ import { createPjaxRouter } from './pjax.js';
     },
   });
 })();
-
