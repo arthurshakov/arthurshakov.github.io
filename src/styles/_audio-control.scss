@@ -1,0 +1,74 @@
+@use 'functions' as *;
+
+.audio-control {
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--bg-panel);
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: vc(10);
+  justify-content: center;
+  padding: vc(8) vc(10);
+  text-align: left;
+}
+
+.audio-control:hover {
+  background: var(--bg-elev);
+  color: var(--accent-hover);
+}
+
+.audio-control[data-audio-state='on'] {
+  color: var(--accent);
+}
+
+.audio-control__bars {
+  align-items: flex-end;
+  display: inline-flex;
+  gap: vc(2);
+  height: vc(14);
+  width: vc(18);
+}
+
+.audio-control__bar {
+  background: currentColor;
+  display: block;
+  height: var(--audio-bar-height);
+  transform: scaleY(calc(0.32 + var(--audio-level, 0) * 0.68));
+  transform-origin: center bottom;
+  transition: transform 70ms linear;
+  width: vc(2);
+}
+
+.audio-control__bar:nth-child(1) { --audio-bar-height: #{vc(5)}; }
+.audio-control__bar:nth-child(2) { --audio-bar-height: #{vc(10)}; }
+.audio-control__bar:nth-child(3) { --audio-bar-height: #{vc(7)}; }
+.audio-control__bar:nth-child(4) { --audio-bar-height: #{vc(13)}; }
+.audio-control__bar:nth-child(5) { --audio-bar-height: #{vc(8)}; }
+
+.audio-control__label {
+  white-space: nowrap;
+}
+
+.audio-control--tuner {
+  bottom: vc(20);
+  position: fixed;
+  right: vc(20);
+  z-index: 12;
+
+  @include desktop {
+    bottom: vc(24);
+    right: vc(24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audio-control__bar {
+    transform: scaleY(1);
+    transition: none;
+  }
+}
+

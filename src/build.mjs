@@ -77,6 +77,7 @@ async function copyStatic() {
   await copyFile(p('src/scripts/app.js'), p('dist/app.js'));
   await copyFile(p('src/scripts/audio-player.js'), p('dist/audio-player.js'));
   await copyFile(p('src/scripts/audio-controls.js'), p('dist/audio-controls.js'));
+  await copyFile(p('src/scripts/audio-visualizer.js'), p('dist/audio-visualizer.js'));
   await copyFile(p('src/vendor/lenis.min.js'), p('dist/lenis.min.js'));
   await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
   const audioDir = p('dist/assets/audio');

@@ -1,12 +1,26 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { bindAudioControls } from '../src/scripts/audio-controls.js';
+import { bindAudioControls, bindAudioVisualizer } from '../src/scripts/audio-controls.js';
 import { renderPage } from '../src/template.mjs';
 
 function createButton() {
   const listeners = new Map();
   const attributes = new Map();
+
+  const bars = Array.from({ length: 5 }, () => {
+    const values = new Map();
+    return {
+      style: {
+        setProperty(name, value) {
+          values.set(name, String(value));
+        },
+        getPropertyValue(name) {
+          return values.get(name) ?? '';
+        },
+      },
+    };
+  });
 
   return {
     dataset: {
@@ -28,6 +42,10 @@ function createButton() {
     querySelector(selector) {
       return selector === '[data-audio-label]' ? this.label : null;
     },
+    querySelectorAll(selector) {
+      return selector === '.audio-control__bar' ? bars : [];
+    },
+    bars,
     async click() {
       await listeners.get('click')?.();
     },
@@ -81,6 +99,31 @@ test('binds an equalizer button to the player state and action', async () => {
   assert.equal(button.getAttribute('aria-pressed'), 'true');
   assert.equal(button.getAttribute('aria-label'), 'turn off background music');
   assert.equal(button.label.textContent, 'sound on');
+
+  unbind();
+});
+
+test('writes live analyser levels into equalizer bar properties while playing', () => {
+  const button = createButton();
+  const player = createPlayer();
+  const frames = [];
+  const visualizer = { sample: () => [0, 0.25, 0.5, 0.75, 1], reset: () => {} };
+
+  const unbind = bindAudioVisualizer([button], player, visualizer, {
+    requestFrame: (callback) => {
+      frames.push(callback);
+      return callback;
+    },
+    cancelFrame: () => {},
+    reducedMotion: { matches: false, addEventListener: () => {}, removeEventListener: () => {} },
+  });
+
+  player.emit({ playing: true, trackIndex: 0 });
+  frames.shift()();
+
+  assert.equal(button.bars[0].style.getPropertyValue('--audio-level'), '0');
+  assert.equal(button.bars[3].style.getPropertyValue('--audio-level'), '0.75');
+  assert.equal(button.bars[4].style.getPropertyValue('--audio-level'), '1');
 
   unbind();
 });

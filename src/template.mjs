@@ -34,13 +34,13 @@ function preloader(t, lang) {
   return '<div class="preloader" data-preloader aria-live="polite" aria-atomic="true"></div>';
 }
 
-function audioControl(t) {
+function audioControl(t, variant = '') {
   const bars = Array.from(
     { length: 5 },
     () => '<span class="audio-control__bar"></span>'
   ).join('');
 
-  return `<button class="audio-control" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
+  return `<button class="audio-control ${variant}" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
     t.audio.on
   )}" data-audio-label-off="${escAttr(t.audio.off)}" data-audio-start="${escAttr(
     t.audio.start
@@ -91,14 +91,14 @@ function statusBar(t, lang) {
   <header class="statusbar desktop-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptD}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selected)}${audioControl(t)}${pills(false)}</span>
+      <span class="statusbar-meta__content">${metaText(t.selected)}${audioControl(t, 'audio-control--tuner')}${pills(false)}</span>
     </div>
     ${result}
   </header>
   <header class="statusbar mobile-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptM}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selectedM)}${audioControl(t)}${pills(true)}</span>
+      <span class="statusbar-meta__content">${metaText(t.selectedM)}${audioControl(t, 'audio-control--tuner')}${pills(true)}</span>
     </div>
     ${result}
   </header>`;

@@ -33,3 +33,59 @@ export function bindAudioControls(controls, player) {
     handlers.forEach(([button, handler]) => button.removeEventListener?.('click', handler));
   };
 }
+
+export function bindAudioVisualizer(
+  controls,
+  player,
+  visualizer,
+  {
+    requestFrame = window.requestAnimationFrame,
+    cancelFrame = window.cancelAnimationFrame,
+    reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)'),
+  } = {}
+) {
+  const buttons = [...controls];
+  let frame = null;
+  let playing = false;
+
+  const setLevels = (levels) => {
+    buttons.forEach((button) => {
+      button.querySelectorAll('.audio-control__bar').forEach((bar, index) => {
+        bar.style.setProperty('--audio-level', levels[index] ?? 0);
+      });
+    });
+  };
+
+  const reset = () => {
+    if (frame !== null) cancelFrame(frame);
+    frame = null;
+    visualizer.reset();
+    setLevels([]);
+  };
+
+  const paint = () => {
+    frame = null;
+    if (!playing || reducedMotion.matches) return;
+    setLevels(visualizer.sample());
+    frame = requestFrame(paint);
+  };
+
+  const update = (state) => {
+    playing = state.playing;
+    if (!playing || reducedMotion.matches) {
+      reset();
+      return;
+    }
+    if (frame === null) frame = requestFrame(paint);
+  };
+
+  const onMotionChange = () => update({ playing });
+  const unsubscribe = player.subscribe(update);
+  reducedMotion.addEventListener?.('change', onMotionChange);
+
+  return () => {
+    unsubscribe();
+    reducedMotion.removeEventListener?.('change', onMotionChange);
+    reset();
+  };
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-06T00:00:00.000Z",
+  "title": "Design System: Arthur Shakov Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Archive Black",
+        "canonical": "#0A0C0A",
+        "tonalRamp": [
+          "#0A0C0A",
+          "#171C17",
+          "#2A322A",
+          "#3C463C",
+          "#6E7A6B",
+          "#93A08F",
+          "#C4CFC0",
+          "#E9EFE4"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Signal Lime",
+        "canonical": "#A8E05B",
+        "tonalRamp": [
+          "#22300F",
+          "#405C1D",
+          "#5E832B",
+          "#7DAA3B",
+          "#A8E05B",
+          "#B8E776",
+          "#C4EC8A",
+          "#E7F7CD"
+        ]
+      }
+    },
+    "motion": [
+      {
+        "name": "caret-blink",
+        "value": "1.1s step-end",
+        "purpose": "Terminal caret only; equalizer movement obeys prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "390px reference"
+      },
+      {
+        "name": "desktop",
+        "value": "960px"
+      },
+      {
+        "name": "wide",
+        "value": "1920px cap"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Active language pill",
+      "kind": "chip",
+      "refersTo": "active-pill",
+      "description": "Current locale in the status bar.",
+      "html": "<span class=\"ds-pill ds-pill--on\">en</span>",
+      "css": ".ds-pill { display:inline-block; padding:3px 7px; font:700 12px/1.2 'JetBrains Mono', monospace; border-radius:0; } .ds-pill--on { background:#A8E05B; color:#0A0C0A; }"
+    },
+    {
+      "name": "Passive language pill",
+      "kind": "chip",
+      "refersTo": "passive-pill",
+      "description": "Available locale in the status bar.",
+      "html": "<span class=\"ds-pill ds-pill--off\">ru</span>",
+      "css": ".ds-pill { display:inline-block; padding:3px 7px; font:400 12px/1.2 'JetBrains Mono', monospace; border-radius:0; } .ds-pill--off { border:1px solid #2A322A; color:#93A08F; } .ds-pill--off:hover { color:#C4EC8A; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Signal Archive",
+    "overview": "A flat, dark terminal-inspired portfolio where the work remains primary and rare lime signals mark state, focus, and action.",
+    "keyCharacteristics": [
+      "Flat monochrome surfaces",
+      "One monospaced voice",
+      "Sparse lime signals",
+      "Static vertical grid and editorial rail"
+    ],
+    "rules": [
+      {
+        "name": "Rare Signal Rule",
+        "body": "Lime represents a state or action, never a broad decorative fill.",
+        "section": "colors"
+      },
+      {
+        "name": "Single Voice Rule",
+        "body": "New interface elements inherit the mono system.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Use existing colour roles and JetBrains Mono.",
+      "Make interaction state explicit.",
+      "Honour reduced-motion preferences."
+    ],
+    "donts": [
+      "Do not add rounded cards, gradients, glass decoration, or a new colour family.",
+      "Do not make the equalizer decorative only."
+    ]
+  }
+}

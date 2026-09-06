@@ -10,6 +10,7 @@ Add an optional atmospheric music layer to the bilingual portfolio. It must enri
 - Playback starts only after an explicit user action. Its enabled/disabled choice persists for a return visit.
 - Track transitions use a 1–2 second crossfade. A failed load or playback rejection leaves the control in its off state and exposes no broken UI.
 - `prefers-reduced-motion` disables the equalizer animation, but not the visitor's ability to play or pause music.
+- When motion is allowed, the five equalizer bars use smoothed live frequency data from the active audio rather than a decorative loop. Their transform origin is `center bottom`.
 
 ## Control contract
 
@@ -23,7 +24,7 @@ Add an optional atmospheric music layer to the bilingual portfolio. It must enri
 All variants preserve the incumbent terminal-inspired visual identity, its palette, monospaced typography, sharp edges, and restrained density. They differ on one primary axis each.
 
 1. **Status signal — hierarchy.** A four- or five-bar equalizer button sits in the status-bar metadata beside the language control. It is the quietest, most systemic option.
-2. **Floating tuner — topology.** A compact fixed module in the lower-right corner pairs the equalizer with `ON AIR` and the active track name. It stays visually independent of the header and avoids reshaping it.
+2. **Floating tuner — topology.** A compact fixed lower-right module contains only the equalizer button and its `sound on/off` state. It stays visually independent of the header and avoids reshaping it.
 3. **Now-playing line — structural decomposition.** A slim terminal-output line between page sections shows the active track and an equalizer aligned to the opposite edge. It makes the soundtrack an intentional page beat at the cost of a little vertical space.
 
 ## Scope and verification

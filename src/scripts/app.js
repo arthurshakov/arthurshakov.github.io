@@ -2,7 +2,8 @@
 // фильтры works, смена кадра в // preview, клик по строке -> preview.
 
 import { createPlaylistPlayer } from './audio-player.js';
-import { bindAudioControls } from './audio-controls.js';
+import { bindAudioControls, bindAudioVisualizer } from './audio-controls.js';
+import { createAudioVisualizer } from './audio-visualizer.js';
 
 (() => {
   const boot = window.__PORTFOLIO__;
@@ -169,13 +170,17 @@ import { bindAudioControls } from './audio-controls.js';
 
   const audioToggles = $$('[data-audio-toggle]');
   if (audioToggles.length) {
+    const visualizer = createAudioVisualizer();
     const player = createPlaylistPlayer({
       tracks: [
         '/assets/audio/filtered-aperture.mp3',
         '/assets/audio/through-the-glass.mp3',
       ],
+      prepareAudio: (audio) => visualizer.attach(audio),
+      resumeAudioGraph: () => visualizer.resume(),
     });
     bindAudioControls(audioToggles, player);
+    bindAudioVisualizer(audioToggles, player, visualizer);
   }
 
   // ------------------------------------------------------------- lenis-скролл

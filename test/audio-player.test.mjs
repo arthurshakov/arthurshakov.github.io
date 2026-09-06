@@ -70,8 +70,10 @@ function createTimers() {
 
 function makePlayer({ rejectPlay = false, crossfadeMs = 1000 } = {}) {
   const audios = [];
+  const prepared = [];
   const storage = createMemoryStorage();
   const timers = createTimers();
+  let graphResumes = 0;
   let time = 0;
   const player = createPlaylistPlayer({
     tracks: ['/first.mp3', '/second.mp3'],
@@ -88,9 +90,22 @@ function makePlayer({ rejectPlay = false, crossfadeMs = 1000 } = {}) {
     },
     setTimer: timers.setTimer,
     clearTimer: timers.clearTimer,
+    prepareAudio: (audio) => prepared.push(audio),
+    resumeAudioGraph: async () => {
+      graphResumes += 1;
+    },
   });
 
-  return { player, audios, storage, timers };
+  return {
+    player,
+    audios,
+    storage,
+    timers,
+    prepared,
+    get graphResumes() {
+      return graphResumes;
+    },
+  };
 }
 
 test('does not create or play audio before an explicit start', () => {
@@ -101,7 +116,7 @@ test('does not create or play audio before an explicit start', () => {
 });
 
 test('starts the first track and stores the enabled choice', async () => {
-  const { player, audios, storage } = makePlayer();
+  const { player, audios, storage, prepared } = makePlayer();
 
   await player.start();
 
@@ -109,7 +124,16 @@ test('starts the first track and stores the enabled choice', async () => {
   assert.equal(audios[0].playCalls, 1);
   assert.equal(audios[0].paused, false);
   assert.equal(storage.getItem('portfolio:music'), 'on');
+  assert.deepEqual(prepared, [audios[0]]);
   assert.deepEqual(player.getState(), { playing: true, trackIndex: 0 });
+});
+
+test('resumes the audio graph from the explicit start path', async () => {
+  const setup = makePlayer();
+
+  await setup.player.start();
+
+  assert.equal(setup.graphResumes, 1);
 });
 
 test('crossfades to the next track after a track ends', async () => {
@@ -138,4 +162,3 @@ test('returns to off when playback is rejected', async () => {
   assert.equal(storage.getItem('portfolio:music'), 'off');
   assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
 });
-

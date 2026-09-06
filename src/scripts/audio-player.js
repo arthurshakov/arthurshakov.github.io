@@ -10,6 +10,8 @@ export function createPlaylistPlayer({
   now = () => Date.now(),
   setTimer = window.setInterval,
   clearTimer = window.clearInterval,
+  prepareAudio = () => {},
+  resumeAudioGraph = async () => {},
 } = {}) {
   if (!Array.isArray(tracks) || tracks.length === 0) {
     throw new TypeError('createPlaylistPlayer requires at least one track');
@@ -50,6 +52,7 @@ export function createPlaylistPlayer({
   const createAudio = (index) => {
     const audio = audioFactory(tracks[index]);
     audio.preload = 'auto';
+    prepareAudio(audio);
     return audio;
   };
 
@@ -122,6 +125,7 @@ export function createPlaylistPlayer({
     currentAudio ??= createAudio(currentIndex);
 
     try {
+      await resumeAudioGraph();
       await currentAudio.play();
     } catch (error) {
       playing = false;
@@ -169,4 +173,3 @@ export function createPlaylistPlayer({
     },
   };
 }
-
