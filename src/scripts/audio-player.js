@@ -76,10 +76,15 @@ export function createPlaylistPlayer({
     return audio;
   };
 
+  const pauseAudio = (audio) => {
+    if (!audio) return;
+    audio.pause();
+  };
+
   const stopAudio = (audio) => {
     if (!audio) return;
     removeEndedListener(audio);
-    audio.pause();
+    pauseAudio(audio);
     try {
       audio.currentTime = 0;
     } catch {
@@ -173,14 +178,15 @@ export function createPlaylistPlayer({
     persist('off');
     notify();
 
-    if (!currentAudio) return;
-    const outgoingVolume = currentAudio.volume;
+    const outgoingAudio = currentAudio;
+    if (!outgoingAudio) return;
+    const outgoingVolume = outgoingAudio.volume;
     runFade({
       duration: fadeMs,
       onFrame: (progress) => {
-        currentAudio.volume = outgoingVolume * (1 - progress);
+        outgoingAudio.volume = outgoingVolume * (1 - progress);
       },
-      onComplete: () => stopAudio(currentAudio),
+      onComplete: () => pauseAudio(outgoingAudio),
     });
   };
 

@@ -169,6 +169,23 @@ test('fades the active track out before stopping it', async () => {
   assert.equal(audios[0].paused, true);
 });
 
+test('resumes the active track from the position where it was paused', async () => {
+  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+
+  await player.start();
+  advance(200);
+  timers.tick();
+  audios[0].currentTime = 37;
+  player.stop();
+  advance(200);
+  timers.tick();
+
+  assert.equal(audios[0].currentTime, 37);
+  await player.start();
+  assert.equal(audios[0].currentTime, 37);
+  assert.equal(audios[0].playCalls, 2);
+});
+
 test('resumes the audio graph from the explicit start path', async () => {
   const setup = makePlayer();
 
