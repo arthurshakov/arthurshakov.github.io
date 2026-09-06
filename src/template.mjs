@@ -34,6 +34,21 @@ function preloader(t, lang) {
   return '<div class="preloader" data-preloader aria-live="polite" aria-atomic="true"></div>';
 }
 
+function audioControl(t) {
+  const bars = Array.from(
+    { length: 5 },
+    () => '<span class="audio-control__bar"></span>'
+  ).join('');
+
+  return `<button class="audio-control" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
+    t.audio.on
+  )}" data-audio-label-off="${escAttr(t.audio.off)}" data-audio-start="${escAttr(
+    t.audio.start
+  )}" data-audio-stop="${escAttr(t.audio.stop)}" aria-label="${escAttr(t.audio.start)}"><span class="audio-control__bars" data-audio-bars aria-hidden="true">${bars}</span><span class="audio-control__label" data-audio-label>${esc(
+    t.audio.off
+  )}</span></button>`;
+}
+
 // ---------- status bar ----------
 function statusBar(t, lang) {
   const command = `./render --locale=${lang}`;
@@ -76,14 +91,14 @@ function statusBar(t, lang) {
   <header class="statusbar desktop-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptD}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selected)}${pills(false)}</span>
+      <span class="statusbar-meta__content">${metaText(t.selected)}${audioControl(t)}${pills(false)}</span>
     </div>
     ${result}
   </header>
   <header class="statusbar mobile-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptM}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selectedM)}${pills(true)}</span>
+      <span class="statusbar-meta__content">${metaText(t.selectedM)}${audioControl(t)}${pills(true)}</span>
     </div>
     ${result}
   </header>`;

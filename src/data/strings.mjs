@@ -20,6 +20,12 @@ export const strings = {
     selected: '12 selected · 60+ total',
     selectedM: '12 selected · 60+ total',
     langLabel: '--lang=',
+    audio: {
+      on: 'звук вкл',
+      off: 'звук выкл',
+      start: 'включить фоновую музыку',
+      stop: 'выключить фоновую музыку',
+    },
     // section headers
     secWhoami: 'whoami',
     secWorks: 'works',
@@ -118,6 +124,12 @@ export const strings = {
     selected: '12 selected · 60+ total',
     selectedM: '12 selected · 60+ total',
     langLabel: '--lang=',
+    audio: {
+      on: 'sound on',
+      off: 'sound off',
+      start: 'turn on background music',
+      stop: 'turn off background music',
+    },
     secWhoami: 'whoami',
     secWorks: 'works',
     secPreview: 'preview',

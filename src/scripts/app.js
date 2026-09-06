@@ -1,6 +1,9 @@
 // Прогрессивное усиление. Разметка уже отрендерена на сборке — здесь только поведение:
 // фильтры works, смена кадра в // preview, клик по строке -> preview.
 
+import { createPlaylistPlayer } from './audio-player.js';
+import { bindAudioControls } from './audio-controls.js';
+
 (() => {
   const boot = window.__PORTFOLIO__;
   const preloader = document.querySelector('[data-preloader]');
@@ -163,6 +166,17 @@
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const audioToggles = $$('[data-audio-toggle]');
+  if (audioToggles.length) {
+    const player = createPlaylistPlayer({
+      tracks: [
+        '/assets/audio/filtered-aperture.mp3',
+        '/assets/audio/through-the-glass.mp3',
+      ],
+    });
+    bindAudioControls(audioToggles, player);
+  }
 
   // ------------------------------------------------------------- lenis-скролл
   // Плавный (инерционный) скролл. При prefers-reduced-motion не инициализируем —
