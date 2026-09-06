@@ -78,11 +78,13 @@ function makePlayer({
   crossfadeMs = 1000,
   fadeInMs,
   fadeOutMs,
+  initialPreference,
   manualClock = false,
 } = {}) {
   const audios = [];
   const prepared = [];
   const storage = createMemoryStorage();
+  if (initialPreference) storage.setItem('portfolio:music', initialPreference);
   const timers = createTimers();
   let graphResumes = 0;
   let time = 0;
@@ -129,6 +131,13 @@ test('does not create or play audio before an explicit start', () => {
   const { player, audios } = makePlayer();
 
   assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
+  assert.equal(audios.length, 0);
+});
+
+test('reports a stored enabled preference without creating audio', () => {
+  const { player, audios } = makePlayer({ initialPreference: 'on' });
+
+  assert.equal(player.hasStoredEnabledPreference(), true);
   assert.equal(audios.length, 0);
 });
 

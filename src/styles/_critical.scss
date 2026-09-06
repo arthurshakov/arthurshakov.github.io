@@ -78,3 +78,30 @@ html.preloader-pending .preloader {
 html:not(.fonts-loaded) .page {
   visibility: hidden;
 }
+
+// Минимальное состояние эквалайзера до загрузки основного CSS. Без него
+// браузер сначала показывает полноразмерные inline-спаны, а потом резко
+// сжимает их при подключении styles.css.
+.audio-control__bars {
+  display: block;
+  height: vc(14);
+  position: relative;
+  width: vc(18);
+}
+
+.audio-control__bar {
+  background: currentColor;
+  bottom: 0;
+  display: block;
+  height: vc(13);
+  position: absolute;
+  transform: scaleY(0.15);
+  transform-origin: center bottom;
+  width: vc(2);
+}
+
+.audio-control__bar:nth-child(1) { left: 0; }
+.audio-control__bar:nth-child(2) { left: #{vc(4)}; }
+.audio-control__bar:nth-child(3) { left: #{vc(8)}; }
+.audio-control__bar:nth-child(4) { left: #{vc(12)}; }
+.audio-control__bar:nth-child(5) { left: #{vc(16)}; }

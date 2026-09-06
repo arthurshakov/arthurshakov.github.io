@@ -39,6 +39,14 @@ export function createPlaylistPlayer({
     }
   };
 
+  const hasStoredEnabledPreference = () => {
+    try {
+      return storage?.getItem(STORAGE_KEY) === 'on';
+    } catch {
+      return false;
+    }
+  };
+
   const clearFade = () => {
     if (!fadeTimer) return;
     clearTimer(fadeTimer);
@@ -247,6 +255,7 @@ export function createPlaylistPlayer({
       return () => listeners.delete(listener);
     },
     getState: state,
+    hasStoredEnabledPreference,
     destroy() {
       if (destroyed) return;
       destroyed = true;

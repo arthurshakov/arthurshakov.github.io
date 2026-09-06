@@ -186,6 +186,13 @@ import { createAudioVisualizer } from './audio-visualizer.js';
     bindAudioControls(audioToggles, player);
     bindAudioVisualizer(audioToggles, player, visualizer);
 
+    if (player.hasStoredEnabledPreference()) {
+      window.addEventListener('pointerdown', (event) => {
+        if (event.target?.closest?.('[data-audio-toggle]')) return;
+        player.start().catch(() => {});
+      }, { once: true, passive: true });
+    }
+
     const resumeVisualizer = () => visualizer.resumeIfAttached().catch(() => {});
     let resumeAfterVisibility = false;
     window.addEventListener('pointerdown', resumeVisualizer, { passive: true });
