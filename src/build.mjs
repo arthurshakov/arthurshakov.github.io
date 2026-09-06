@@ -75,6 +75,7 @@ async function buildPages(shots, criticalCss) {
 
 async function copyStatic() {
   await copyFile(p('src/scripts/app.js'), p('dist/app.js'));
+  await copyFile(p('src/scripts/pjax.js'), p('dist/pjax.js'));
   await copyFile(p('src/scripts/audio-player.js'), p('dist/audio-player.js'));
   await copyFile(p('src/scripts/audio-controls.js'), p('dist/audio-controls.js'));
   await copyFile(p('src/scripts/audio-visualizer.js'), p('dist/audio-visualizer.js'));
