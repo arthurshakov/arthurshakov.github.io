@@ -73,7 +73,13 @@ function createTimers() {
   };
 }
 
-function makePlayer({ rejectPlay = false, crossfadeMs = 1000, fadeMs, manualClock = false } = {}) {
+function makePlayer({
+  rejectPlay = false,
+  crossfadeMs = 1000,
+  fadeInMs,
+  fadeOutMs,
+  manualClock = false,
+} = {}) {
   const audios = [];
   const prepared = [];
   const storage = createMemoryStorage();
@@ -89,7 +95,8 @@ function makePlayer({ rejectPlay = false, crossfadeMs = 1000, fadeMs, manualCloc
     },
     storage,
     crossfadeMs,
-    fadeMs,
+    fadeInMs,
+    fadeOutMs,
     now: () => {
       if (manualClock) return time;
       time += 250;
@@ -139,21 +146,21 @@ test('starts the first track and stores the enabled choice', async () => {
 });
 
 test('fades the first track in over the configured duration', async () => {
-  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+  const { player, audios, timers, advance } = makePlayer({ fadeInMs: 100, manualClock: true });
 
   await player.start();
 
   assert.equal(audios[0].volume, 0);
-  advance(100);
+  advance(50);
   timers.tick();
   assert.equal(audios[0].volume, 0.5);
-  advance(100);
+  advance(50);
   timers.tick();
   assert.equal(audios[0].volume, 1);
 });
 
 test('fades the active track out before stopping it', async () => {
-  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+  const { player, audios, timers, advance } = makePlayer({ fadeOutMs: 100, manualClock: true });
 
   await player.start();
   advance(200);
@@ -161,16 +168,20 @@ test('fades the active track out before stopping it', async () => {
   player.stop();
 
   assert.equal(audios[0].paused, false);
-  advance(100);
+  advance(50);
   timers.tick();
   assert.equal(audios[0].volume, 0.5);
-  advance(100);
+  advance(50);
   timers.tick();
   assert.equal(audios[0].paused, true);
 });
 
 test('resumes the active track from the position where it was paused', async () => {
-  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+  const { player, audios, timers, advance } = makePlayer({
+    fadeInMs: 200,
+    fadeOutMs: 200,
+    manualClock: true,
+  });
 
   await player.start();
   advance(200);

@@ -36,19 +36,19 @@
   background: currentColor;
   bottom: 0;
   display: block;
-  height: var(--audio-bar-height);
+  height: vc(13);
   position: absolute;
-  transform: scaleY(calc(0.32 + var(--audio-level, 0) * 0.68));
+  transform: scaleY(calc(0.15 + var(--audio-level, 0) * 0.85));
   transform-origin: center bottom;
   transition: transform 70ms linear;
   width: vc(2);
 }
 
-.audio-control__bar:nth-child(1) { --audio-bar-height: #{vc(5)}; left: 0; }
-.audio-control__bar:nth-child(2) { --audio-bar-height: #{vc(10)}; left: #{vc(4)}; }
-.audio-control__bar:nth-child(3) { --audio-bar-height: #{vc(7)}; left: #{vc(8)}; }
-.audio-control__bar:nth-child(4) { --audio-bar-height: #{vc(13)}; left: #{vc(12)}; }
-.audio-control__bar:nth-child(5) { --audio-bar-height: #{vc(8)}; left: #{vc(16)}; }
+.audio-control__bar:nth-child(1) { left: 0; }
+.audio-control__bar:nth-child(2) { left: #{vc(4)}; }
+.audio-control__bar:nth-child(3) { left: #{vc(8)}; }
+.audio-control__bar:nth-child(4) { left: #{vc(12)}; }
+.audio-control__bar:nth-child(5) { left: #{vc(16)}; }
 
 .audio-control__label {
   white-space: nowrap;

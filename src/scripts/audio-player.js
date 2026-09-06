@@ -7,7 +7,8 @@ export function createPlaylistPlayer({
   audioFactory = (src) => new Audio(src),
   storage = window.localStorage,
   crossfadeMs = 1500,
-  fadeMs = 200,
+  fadeInMs = 200,
+  fadeOutMs = 200,
   now = () => Date.now(),
   setTimer = window.setInterval,
   clearTimer = window.clearInterval,
@@ -165,7 +166,7 @@ export function createPlaylistPlayer({
 
     const startingVolume = currentAudio.volume;
     runFade({
-      duration: fadeMs,
+      duration: fadeInMs,
       onFrame: (progress) => {
         currentAudio.volume = startingVolume + (1 - startingVolume) * progress;
       },
@@ -182,7 +183,7 @@ export function createPlaylistPlayer({
     if (!outgoingAudio) return;
     const outgoingVolume = outgoingAudio.volume;
     runFade({
-      duration: fadeMs,
+      duration: fadeOutMs,
       onFrame: (progress) => {
         outgoingAudio.volume = outgoingVolume * (1 - progress);
       },
