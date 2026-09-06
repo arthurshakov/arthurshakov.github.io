@@ -58,6 +58,11 @@ function createTimers() {
     clearTimer(timer) {
       timer.active = false;
     },
+    tick() {
+      [...timers].forEach((timer) => {
+        if (timer.active) timer.callback();
+      });
+    },
     flush() {
       for (let pass = 0; pass < 20; pass += 1) {
         [...timers].forEach((timer) => {
@@ -68,7 +73,7 @@ function createTimers() {
   };
 }
 
-function makePlayer({ rejectPlay = false, crossfadeMs = 1000 } = {}) {
+function makePlayer({ rejectPlay = false, crossfadeMs = 1000, fadeMs, manualClock = false } = {}) {
   const audios = [];
   const prepared = [];
   const storage = createMemoryStorage();
@@ -84,7 +89,9 @@ function makePlayer({ rejectPlay = false, crossfadeMs = 1000 } = {}) {
     },
     storage,
     crossfadeMs,
+    fadeMs,
     now: () => {
+      if (manualClock) return time;
       time += 250;
       return time;
     },
@@ -104,6 +111,9 @@ function makePlayer({ rejectPlay = false, crossfadeMs = 1000 } = {}) {
     prepared,
     get graphResumes() {
       return graphResumes;
+    },
+    advance(milliseconds) {
+      time += milliseconds;
     },
   };
 }
@@ -126,6 +136,37 @@ test('starts the first track and stores the enabled choice', async () => {
   assert.equal(storage.getItem('portfolio:music'), 'on');
   assert.deepEqual(prepared, [audios[0]]);
   assert.deepEqual(player.getState(), { playing: true, trackIndex: 0 });
+});
+
+test('fades the first track in over the configured duration', async () => {
+  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+
+  await player.start();
+
+  assert.equal(audios[0].volume, 0);
+  advance(100);
+  timers.tick();
+  assert.equal(audios[0].volume, 0.5);
+  advance(100);
+  timers.tick();
+  assert.equal(audios[0].volume, 1);
+});
+
+test('fades the active track out before stopping it', async () => {
+  const { player, audios, timers, advance } = makePlayer({ fadeMs: 200, manualClock: true });
+
+  await player.start();
+  advance(200);
+  timers.tick();
+  player.stop();
+
+  assert.equal(audios[0].paused, false);
+  advance(100);
+  timers.tick();
+  assert.equal(audios[0].volume, 0.5);
+  advance(100);
+  timers.tick();
+  assert.equal(audios[0].paused, true);
 });
 
 test('resumes the audio graph from the explicit start path', async () => {

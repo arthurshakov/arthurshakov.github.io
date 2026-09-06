@@ -7,6 +7,7 @@ export function createPlaylistPlayer({
   audioFactory = (src) => new Audio(src),
   storage = window.localStorage,
   crossfadeMs = 1500,
+  fadeMs = 200,
   now = () => Date.now(),
   setTimer = window.setInterval,
   clearTimer = window.clearInterval,
@@ -42,6 +43,25 @@ export function createPlaylistPlayer({
     fadeTimer = null;
   };
 
+  const runFade = ({ duration, onFrame, onComplete = () => {} }) => {
+    clearFade();
+    if (duration <= 0) {
+      onFrame(1);
+      onComplete();
+      return;
+    }
+
+    const startedAt = now();
+    fadeTimer = setTimer(() => {
+      const progress = clamp((now() - startedAt) / duration);
+      onFrame(progress);
+
+      if (progress < 1) return;
+      clearFade();
+      onComplete();
+    }, 50);
+  };
+
   const removeEndedListener = (audio) => {
     const listener = endedListeners.get(audio);
     if (!listener) return;
@@ -68,6 +88,7 @@ export function createPlaylistPlayer({
   };
 
   const attachEndedListener = (audio) => {
+    removeEndedListener(audio);
     const listener = () => {
       transition(audio).catch(() => {
         if (audio === currentAudio) {
@@ -103,18 +124,15 @@ export function createPlaylistPlayer({
     currentIndex = nextIndex;
     notify();
 
-    const startedAt = now();
-    clearFade();
-    fadeTimer = setTimer(() => {
-      const progress = clamp((now() - startedAt) / crossfadeMs);
-      incoming.volume = progress;
-      outgoing.volume = 1 - progress;
-
-      if (progress < 1) return;
-      clearFade();
-      stopAudio(outgoing);
-      incoming.volume = 1;
-    }, 50);
+    const outgoingVolume = outgoing.volume;
+    runFade({
+      duration: crossfadeMs,
+      onFrame: (progress) => {
+        incoming.volume = progress;
+        outgoing.volume = outgoingVolume * (1 - progress);
+      },
+      onComplete: () => stopAudio(outgoing),
+    });
   };
 
   const start = async () => {
@@ -123,6 +141,7 @@ export function createPlaylistPlayer({
 
     clearFade();
     currentAudio ??= createAudio(currentIndex);
+    if (currentAudio.paused) currentAudio.volume = 0;
 
     try {
       await resumeAudioGraph();
@@ -138,14 +157,31 @@ export function createPlaylistPlayer({
     playing = true;
     persist('on');
     notify();
+
+    const startingVolume = currentAudio.volume;
+    runFade({
+      duration: fadeMs,
+      onFrame: (progress) => {
+        currentAudio.volume = startingVolume + (1 - startingVolume) * progress;
+      },
+    });
   };
 
   const stop = () => {
     clearFade();
     playing = false;
-    stopAudio(currentAudio);
     persist('off');
     notify();
+
+    if (!currentAudio) return;
+    const outgoingVolume = currentAudio.volume;
+    runFade({
+      duration: fadeMs,
+      onFrame: (progress) => {
+        currentAudio.volume = outgoingVolume * (1 - progress);
+      },
+      onComplete: () => stopAudio(currentAudio),
+    });
   };
 
   return {

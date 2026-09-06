@@ -170,12 +170,14 @@ import { createAudioVisualizer } from './audio-visualizer.js';
 
   const audioToggles = $$('[data-audio-toggle]');
   if (audioToggles.length) {
+    const musicFadeMs = 200;
     const visualizer = createAudioVisualizer();
     const player = createPlaylistPlayer({
       tracks: [
         '/assets/audio/filtered-aperture.mp3',
         '/assets/audio/through-the-glass.mp3',
       ],
+      fadeMs: musicFadeMs,
       prepareAudio: (audio) => visualizer.attach(audio),
       resumeAudioGraph: () => visualizer.resume(),
     });
