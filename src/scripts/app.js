@@ -170,8 +170,8 @@ import { createAudioVisualizer } from './audio-visualizer.js';
 
   const audioToggles = $$('[data-audio-toggle]');
   if (audioToggles.length) {
-    const musicFadeInMs = 200;
-    const musicFadeOutMs = 200;
+    const musicFadeInMs = 500;
+    const musicFadeOutMs = 50;
     const visualizer = createAudioVisualizer();
     const player = createPlaylistPlayer({
       tracks: [
@@ -185,6 +185,21 @@ import { createAudioVisualizer } from './audio-visualizer.js';
     });
     bindAudioControls(audioToggles, player);
     bindAudioVisualizer(audioToggles, player, visualizer);
+
+    const resumeVisualizer = () => visualizer.resumeIfAttached().catch(() => {});
+    let resumeAfterVisibility = false;
+    window.addEventListener('pointerdown', resumeVisualizer, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        resumeAfterVisibility = player.suspend();
+        return;
+      }
+
+      resumeVisualizer();
+      if (!resumeAfterVisibility) return;
+      resumeAfterVisibility = false;
+      player.resume().catch(() => {});
+    });
   }
 
   // ------------------------------------------------------------- lenis-скролл

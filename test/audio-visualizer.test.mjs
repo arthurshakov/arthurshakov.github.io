@@ -60,6 +60,8 @@ test('creates and resumes the audio graph only after an audio element is attache
   });
 
   assert.equal(factoryCalls, 0);
+  await visualizer.resumeIfAttached();
+  assert.equal(factoryCalls, 0);
 
   visualizer.attach({});
   await visualizer.resume();

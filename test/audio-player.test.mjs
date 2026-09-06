@@ -160,10 +160,14 @@ test('fades the first track in over the configured duration', async () => {
 });
 
 test('fades the active track out before stopping it', async () => {
-  const { player, audios, timers, advance } = makePlayer({ fadeOutMs: 100, manualClock: true });
+  const { player, audios, timers, advance } = makePlayer({
+    fadeInMs: 100,
+    fadeOutMs: 100,
+    manualClock: true,
+  });
 
   await player.start();
-  advance(200);
+  advance(100);
   timers.tick();
   player.stop();
 
@@ -197,6 +201,22 @@ test('resumes the active track from the position where it was paused', async () 
   assert.equal(audios[0].playCalls, 2);
 });
 
+test('temporarily suspends and resumes without changing the saved preference', async () => {
+  const { player, audios, storage } = makePlayer();
+
+  await player.start();
+  player.suspend();
+
+  assert.equal(audios[0].paused, true);
+  assert.equal(storage.getItem('portfolio:music'), 'on');
+  assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
+
+  await player.resume();
+  assert.equal(audios[0].playCalls, 2);
+  assert.equal(storage.getItem('portfolio:music'), 'on');
+  assert.deepEqual(player.getState(), { playing: true, trackIndex: 0 });
+});
+
 test('resumes the audio graph from the explicit start path', async () => {
   const setup = makePlayer();
 
@@ -227,6 +247,16 @@ test('returns to off when playback is rejected', async () => {
   const { player, storage } = makePlayer({ rejectPlay: true });
 
   await assert.rejects(player.start(), /Playback blocked/);
+
+  assert.equal(storage.getItem('portfolio:music'), 'off');
+  assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
+});
+
+test('returns to off when the active audio element errors', async () => {
+  const { player, audios, storage } = makePlayer();
+
+  await player.start();
+  audios[0].emit('error');
 
   assert.equal(storage.getItem('portfolio:music'), 'off');
   assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });

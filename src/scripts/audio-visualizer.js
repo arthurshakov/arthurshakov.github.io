@@ -27,6 +27,11 @@ export function createAudioVisualizer({
     return graph;
   };
 
+  const resumeGraph = async (currentGraph) => {
+    const resume = currentGraph?.context?.resume ?? currentGraph?.resume;
+    if (resume) await resume.call(currentGraph.context ?? currentGraph);
+  };
+
   return {
     attach(audio) {
       if (!audio || attached.has(audio)) return;
@@ -42,9 +47,10 @@ export function createAudioVisualizer({
       attached.add(audio);
     },
     async resume() {
-      const currentGraph = ensureGraph();
-      const resume = currentGraph?.context?.resume ?? currentGraph?.resume;
-      if (resume) await resume.call(currentGraph.context ?? currentGraph);
+      await resumeGraph(ensureGraph());
+    },
+    async resumeIfAttached() {
+      await resumeGraph(graph);
     },
     sample() {
       const analyser = graph?.analyser;
@@ -75,4 +81,3 @@ export function createAudioVisualizer({
     },
   };
 }
-

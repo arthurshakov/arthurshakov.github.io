@@ -7,8 +7,8 @@ export function createPlaylistPlayer({
   audioFactory = (src) => new Audio(src),
   storage = window.localStorage,
   crossfadeMs = 1500,
-  fadeInMs = 200,
-  fadeOutMs = 200,
+  fadeInMs = 300,
+  fadeOutMs = 100,
   now = () => Date.now(),
   setTimer = window.setInterval,
   clearTimer = window.clearInterval,
@@ -26,6 +26,7 @@ export function createPlaylistPlayer({
   let destroyed = false;
   const listeners = new Set();
   const endedListeners = new WeakMap();
+  const errorListeners = new WeakMap();
 
   const state = () => ({ playing, trackIndex: currentIndex });
   const notify = () => listeners.forEach((listener) => listener(state()));
@@ -70,10 +71,18 @@ export function createPlaylistPlayer({
     endedListeners.delete(audio);
   };
 
+  const removeErrorListener = (audio) => {
+    const listener = errorListeners.get(audio);
+    if (!listener) return;
+    audio.removeEventListener('error', listener);
+    errorListeners.delete(audio);
+  };
+
   const createAudio = (index) => {
     const audio = audioFactory(tracks[index]);
     audio.preload = 'auto';
     prepareAudio(audio);
+    attachErrorListener(audio);
     return audio;
   };
 
@@ -85,6 +94,7 @@ export function createPlaylistPlayer({
   const stopAudio = (audio) => {
     if (!audio) return;
     removeEndedListener(audio);
+    removeErrorListener(audio);
     pauseAudio(audio);
     try {
       audio.currentTime = 0;
@@ -106,6 +116,20 @@ export function createPlaylistPlayer({
     };
     endedListeners.set(audio, listener);
     audio.addEventListener('ended', listener);
+  };
+
+  const attachErrorListener = (audio) => {
+    removeErrorListener(audio);
+    const listener = () => {
+      if (audio !== currentAudio || !playing) return;
+      clearFade();
+      playing = false;
+      pauseAudio(audio);
+      persist('off');
+      notify();
+    };
+    errorListeners.set(audio, listener);
+    audio.addEventListener('error', listener);
   };
 
   const transition = async (outgoing) => {
@@ -141,7 +165,7 @@ export function createPlaylistPlayer({
     });
   };
 
-  const start = async () => {
+  const start = async ({ persistPreference = true } = {}) => {
     if (destroyed) throw new Error('Playlist player has been destroyed');
     if (playing) return;
 
@@ -154,14 +178,14 @@ export function createPlaylistPlayer({
       await currentAudio.play();
     } catch (error) {
       playing = false;
-      persist('off');
+      if (persistPreference) persist('off');
       notify();
       throw error;
     }
 
     attachEndedListener(currentAudio);
     playing = true;
-    persist('on');
+    if (persistPreference) persist('on');
     notify();
 
     const startingVolume = currentAudio.volume;
@@ -191,9 +215,25 @@ export function createPlaylistPlayer({
     });
   };
 
+  const suspend = () => {
+    if (!playing) return false;
+    clearFade();
+    playing = false;
+    pauseAudio(currentAudio);
+    notify();
+    return true;
+  };
+
+  const resume = async () => {
+    if (playing || !currentAudio) return;
+    await start({ persistPreference: false });
+  };
+
   return {
     start,
     stop,
+    suspend,
+    resume,
     async toggle() {
       if (playing) {
         stop();
