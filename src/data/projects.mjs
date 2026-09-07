@@ -29,11 +29,14 @@ export const projects = [
       webm: '/assets/video/tass-power-x-time.webm',
       mp4: '/assets/video/tass-power-x-time.mp4',
     },
-    tags: ['GSAP', 'JavaScript', 'timeline'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Barba.js', 'Canvas', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд интерактивного спецпроекта: бесшовные переходы между разделами на Barba.js, сложную скролл-анимацию таймлайна на GSAP (ScrollTrigger и ScrollSmoother), а также интерактивные карточки и световые эффекты на Canvas. Реализовал динамическую навигацию по эпохам и событиям, оптимизировал производительность и создал отдельную мобильную версию с жестовым управлением и туториалом.',
+      en: 'At Nine Lines, I developed the frontend for this interactive campaign: seamless page transitions powered by Barba.js, complex timeline scroll animations using GSAP (ScrollTrigger and ScrollSmoother), and Canvas-based interactive cards with lighting effects. I implemented dynamic navigation across historical eras and milestones, optimized performance, and delivered a dedicated mobile experience with gesture controls and an onboarding tutorial.',
+    },
   },
 
-    // VMESTE AI
+  // VMESTE AI
   {
     slug: 'vmeste-ai',
     year: 2026,

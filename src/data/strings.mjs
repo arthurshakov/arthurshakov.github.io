@@ -1,13 +1,15 @@
 // Тексты «хрома» интерфейса. Значения — дословно из Main*.dc.html / MainEN*.dc.html.
 // Где артборды desktop и mobile расходятся по копирайту — обе версии (d / m).
 
+const STACK_STRING = 'JavaScript / TypeScript · Vue / Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma';
+
 export const strings = {
   ru: {
     htmlLang: 'ru',
     dir: 'ltr',
     title: 'Артур Шаков — frontend-разработчик, интерактивные спецпроекты',
     description:
-      'Портфолио Артура Шакова: frontend интерактивных спецпроектов под ключ. Vue/Nuxtб GSAP, THREE.js. 2× Awwwards Honorable Mention.',
+      'Портфолио Артура Шакова: frontend интерактивных спецпроектов под ключ. Vue/Nuxt, GSAP, THREE.js. 2× Awwwards Honorable Mention.',
     // status bar
     prompt: {
       user: 'arthur_shakov',
@@ -53,18 +55,17 @@ export const strings = {
       awardsNote: '[+ Mobile Excellence]',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ-вёрстка, сложные анимации (GSAP, THREE.js), SPA на Vue/Nuxt, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с Claude Code. Начинал в Whitemark — два Awwwards; сейчас — в агентстве «Девять Линий».',
-        stack: 'JavaScript · TypeScript · Vue/Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · PHP/Bitrix · Webpack/Vite',
+        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — два Awwwards; сейчас — в агентстве «Девять Линий». Доступен для проектов.',
+        stack: STACK_STRING,
         clients: 'РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group',
-        workflow: 'Claude Code (spec-first — сначала спецификация, потом код)',
+        workflow: 'Claude Code · Antigravity · Codex (spec-first — сначала спецификация, потом код)',
         status: 'доступен для проектов',
-        location: 'Чегем · удалёнка/гибрид · готов к переезду · UTC+3',
+        location: 'Чегем · удалёнка/гибрид · готов к переезду · UTC+3',
       },
       mobile: {
-        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ-вёрстка, анимации (GSAP, THREE.js), SPA на Vue/Nuxt, интеграция с бэкендом, выкат. Работаю spec-first, в паре с Claude Code. Начинал в Whitemark — два Awwwards; сейчас — «Девять Линий».',
-        stack: 'JavaScript · TypeScript · Vue/Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · PHP/Bitrix',
+        // bio и stack берутся с десктопа автоматически
         clients: 'РБК · ТАСС · X5 · food.ru · Норникель · Сбер · Росатом · Etalon Group',
-        workflow: 'Claude Code (spec-first — сначала спецификация)',
+        workflow: 'Claude Code · Antigravity · Codex (spec-first)',
         // на мобиле status и location объединены в одну строку
         statusCombined: 'доступен для проектов · Чегем · переезд',
       },
@@ -155,18 +156,17 @@ export const strings = {
       awardsNote: '[+ Mobile Excellence]',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt SPAs, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with Claude Code. Started at Whitemark — two Awwwards; now at Nine Lines agency.',
-        stack: 'JavaScript · TypeScript · Vue/Nuxt · GSAP · THREE.js · video.js · SCSS · PHP/Bitrix · Webpack/Vite',
+        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — two Awwwards; now at Nine Lines agency. Available for work.',
+        stack: STACK_STRING,
         clients: 'RBC · TASS · X5 (Pyaterochka, Perekrestok, Chizhik) · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
-        workflow: 'Claude Code (spec-first — a written spec before code)',
+        workflow: 'Claude Code · Antigravity · Codex (spec-first — a written spec before code)',
         status: 'available for work',
         location: 'Chegem, Russia · remote/hybrid · open to relocation · UTC+3',
       },
       mobile: {
-        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, animation (GSAP, THREE.js), Vue/Nuxt SPAs, backend integration, shipping. Work spec-first, paired with Claude Code. Started at Whitemark — two Awwwards; now at Nine Lines.',
-        stack: 'JavaScript · TypeScript · Vue/Nuxt · GSAP · THREE.js · video.js · SCSS · PHP/Bitrix',
+        // bio and stack fall back to desktop automatically
         clients: 'RBC · TASS · X5 · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
-        workflow: 'Claude Code (spec-first — spec before code)',
+        workflow: 'Claude Code · Antigravity · Codex (spec-first)',
         statusCombined: 'available for work · Chegem · relocation ok',
       },
     },
