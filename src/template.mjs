@@ -169,7 +169,7 @@ function works(t, lang) {
       const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
       return `<div class="works-row${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
         p.slug
-      )}" data-cats="${escAttr((p.cats || []).join(' '))}">
+      )}" data-categories="${escAttr((p.categories || []).join(' '))}">
           <span class="works-row__year works-column--year">${p.year}</span>
           <span class="works-row__project works-column--project">${esc(p.slug)}${star}</span>
           <span class="works-row__client works-column--client">${esc(p.client[lang])}</span>
@@ -187,7 +187,7 @@ function works(t, lang) {
       const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
       return `<div class="works-card${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
         p.slug
-      )}" data-cats="${escAttr((p.cats || []).join(' '))}">
+      )}" data-categories="${escAttr((p.categories || []).join(' '))}">
           <div class="works-card__top"><span class="works-card__year">${p.year}</span><span class="works-card__name">${esc(
             p.slug
           )}</span>${star}</div>
@@ -256,46 +256,49 @@ function preview(t, lang, shots = {}) {
   <section class="section section--preview" id="preview">
     <div class="section-header section-header--preview">
       <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secPreview)}</span>
-      <span class="section-header__meta" data-pv-slug>${esc(first.slug)}</span>
+      <span class="section-header__meta" data-preview-slug>${esc(first.slug)}</span>
     </div>
 
     <div class="preview-grid">
       <div class="preview-frame">
         <div class="preview-address">
           <span class="preview-address__command">$ open</span>
-          <a class="preview-address__url" data-pv-open href="${escAttr(
+          <a class="preview-address__url" data-preview-open href="${escAttr(
             first.url
-          )}" target="_blank" rel="noopener"><span data-pv-site>${esc(
+          )}" target="_blank" rel="noopener"><span data-preview-site>${esc(
             first.site
           )}</span> ${icon('ext', 'icon-size-11')}</a>
         </div>
-        <picture>
-          <source data-pv-shot-src type="${shotType(shots[first.slug])}" srcset="${escAttr(
-            shotMod(first.slug, shots[first.slug])
-          )}">
-          <img class="preview-screenshot" data-pv-shot-img src="${escAttr(shot(first.slug))}" alt="${escAttr(
-            first.slug
-          )}" width="1000" height="565" decoding="async" draggable="false">
-        </picture>
+        <div class="preview-media">
+          <picture data-preview-picture>
+            <source data-preview-shot-source type="${shotType(shots[first.slug])}" srcset="${escAttr(
+              shotMod(first.slug, shots[first.slug])
+            )}">
+            <img class="preview-screenshot" data-preview-shot-image src="${escAttr(shot(first.slug))}" alt="${escAttr(
+              first.slug
+            )}" width="1000" height="565" decoding="async" draggable="false">
+          </picture>
+          <video class="preview-screenshot preview-video" data-preview-video width="1000" height="565" muted loop playsinline preload="none" aria-hidden="true"></video>
+        </div>
       </div>
 
       <div class="preview-info">
         <div class="preview-name-row">
-          <span class="preview-name" data-pv-name>${esc(first.slug)}</span>
-          <span data-pv-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
+          <span class="preview-name" data-preview-name>${esc(first.slug)}</span>
+          <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
         </div>
-        <div class="preview-subtitle" data-pv-sub>${esc(first.client[lang])} · ${first.year}</div>
-        <p class="preview-description" data-pv-desc>${esc(first.desc[lang])}</p>
-        <div class="preview-tags" data-pv-tags>${tags(first)}</div>
+        <div class="preview-subtitle" data-preview-subtitle>${esc(first.client[lang])} · ${first.year}</div>
+        <p class="preview-description" data-preview-description>${esc(first.description[lang])}</p>
+        <div class="preview-tags" data-preview-tags>${tags(first)}</div>
         <div class="preview-actions">
-          <a class="btn btn--primary" data-pv-cta href="${escAttr(
+          <a class="btn btn--primary" data-preview-call-to-action href="${escAttr(
             first.url
-          )}" target="_blank" rel="noopener"><span data-pv-cta-label>${esc(
+          )}" target="_blank" rel="noopener"><span data-preview-call-to-action-label>${esc(
             t.openSite
           )}</span> ${icon('ext', 'icon-size-13')}</a>
         </div>
-        <div class="preview-awards" data-pv-awards${awardsHidden}>
-          ${icon('star', 'icon-size-12', true)} <span data-pv-awards-text>${esc(
+        <div class="preview-awards" data-preview-awards${awardsHidden}>
+          ${icon('star', 'icon-size-12', true)} <span data-preview-awards-text>${esc(
             first.awwwards ? first.awwwards[lang] : ''
           )}</span>
         </div>
@@ -305,7 +308,7 @@ function preview(t, lang, shots = {}) {
     <div class="preview-strip-caption"><span class="desktop-inline-only">${esc(
       t.stripCaptionD
     )}</span><span class="mobile-inline-only">${esc(t.stripCaptionM)}</span></div>
-    <div class="preview-strip" data-pv-strip role="group" aria-label="${escAttr(t.secPreview)}">
+    <div class="preview-strip" data-preview-strip role="group" aria-label="${escAttr(t.secPreview)}">
       ${projects
         .map(
           (p, i) => `<button class="preview-thumbnail${
@@ -370,13 +373,14 @@ function bootData(lang, t, shots = {}) {
     url: p.url,
     site: p.site,
     star: !!p.star,
-    cats: p.cats || [],
+    categories: p.categories || [],
     tags: p.tags || [],
-    desc: p.desc[lang],
+    description: p.description[lang],
     awwwards: p.awwwards ? p.awwwards[lang] : null,
     shot: shot(p.slug),
     shotMod: shotMod(p.slug, shots[p.slug]),
     shotModType: shotType(shots[p.slug]),
+    video: p.video || null,
   }));
   return {
     lang,

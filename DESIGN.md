@@ -130,6 +130,12 @@ Forms are square and structural: 0px radius, 1px borders, and rectangular active
 - **Shape:** 1px outlined rectangles; selected state is lime fill for chips and 2px lime outline for thumbnails.
 - **Hover:** uses the existing accent or structural-line hover treatment; no soft card elevation.
 
+### Preview Media
+
+- **Fallback:** every project preview starts as a static screenshot; it remains visible until its video has a decoded frame.
+- **Playback:** a project may opt into a muted, inline loop with WebM as the preferred source and H.264/MP4 as fallback. Playback begins only when the preview is visible, pauses when it is hidden or another project is selected, and resumes when the video project returns.
+- **Motion preference:** `prefers-reduced-motion` deliberately keeps the static screenshot. The still image remains the complete no-JavaScript experience.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -138,6 +144,7 @@ Forms are square and structural: 0px radius, 1px borders, and rectangular active
 - **Do** make interaction state explicit through lime, labels, focus rings, and semantic HTML.
 - **Do** preserve the status bar's compact information rhythm on both breakpoints.
 - **Do** honour reduced-motion preferences by retaining readable static states.
+- **Do** keep a static project screenshot visible until optional preview media is ready.
 
 ### Don't:
 

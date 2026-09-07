@@ -7,7 +7,10 @@ import { createAudioVisualizer } from './audio-visualizer.js';
 import { createPjaxRouter } from './pjax.js';
 
 (() => {
-  const boot = window.__PORTFOLIO__;
+  // Данные текущей языковой версии страницы встраиваются в HTML на сборке.
+  const pageData = window.__PORTFOLIO__;
+  // Элементы прелоадера собираются один раз: затем функция анимации работает
+  // только с этими ссылками, не повторяя поиск по DOM.
   const preloader = document.querySelector('[data-preloader]');
   const preloaderCommands = [...document.querySelectorAll('[data-preloader-command]')];
   const preloaderResults = [...document.querySelectorAll('[data-preloader-result]')];
@@ -41,6 +44,8 @@ import { createPjaxRouter } from './pjax.js';
   // виден флэш запасным шрифтом, пока грузится JetBrains Mono.
   const markFontsLoaded = () => document.documentElement.classList.add('fonts-loaded');
 
+  // Анимация старта ждёт готовых стилей и шрифтов, чтобы контент не мигал
+  // промежуточной типографикой во время раскрытия.
   const mainStylesLink = document.getElementById('main-styles');
   const stylesReady = !mainStylesLink || mainStylesLink.rel === 'stylesheet'
     ? Promise.resolve()
@@ -53,12 +58,13 @@ import { createPjaxRouter } from './pjax.js';
       return;
     }
 
+    // Системная настройка доступности отключает декоративную анимацию.
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const setText = (els, value) => els.forEach((el) => {
-      el.textContent = value;
+    const setText = (elements, value) => elements.forEach((element) => {
+      element.textContent = value;
     });
-    const setResult = (visible) => preloaderResults.forEach((el) => {
-      el.hidden = !visible;
+    const setResult = (visible) => preloaderResults.forEach((resultElement) => {
+      resultElement.hidden = !visible;
     });
     const clearPrompt = () => {
       setText(preloaderCommands, '');
@@ -88,14 +94,16 @@ import { createPjaxRouter } from './pjax.js';
       return;
     }
 
-    const typeInto = (timeline, els, text, duration) => {
+    // GSAP меняет только длину строки, а текст для каждого кадра вычисляется
+    // из исходной команды — так получается эффект печати без таймеров.
+    const typeInto = (timeline, elements, text, duration) => {
       if (!text) return timeline;
       const state = { length: 0 };
       return timeline.to(state, {
         length: text.length,
         duration,
         ease: 'none',
-        onUpdate: () => setText(els, text.slice(0, Math.round(state.length))),
+        onUpdate: () => setText(elements, text.slice(0, Math.round(state.length))),
       });
     };
 
@@ -128,32 +136,36 @@ import { createPjaxRouter } from './pjax.js';
     // анимация ставится на ту же метку таймлайна. При PROMPT_FADE = 0 это
     // мгновенная очистка в том же кадре, при большем — затухание внахлёст.
     const fadeOutPrompt = (timeline, position) => {
-      const els = [...preloaderCommands, ...preloaderCarets, ...preloaderResults];
-      timeline.to(els, {
+      const promptElements = [...preloaderCommands, ...preloaderCarets, ...preloaderResults];
+      timeline.to(promptElements, {
         opacity: 0,
         duration: PROMPT_FADE,
         ease: 'power1.out',
         onComplete: () => {
           clearPrompt();
-          window.gsap.set(els, { clearProps: 'opacity' });
+          window.gsap.set(promptElements, { clearProps: 'opacity' });
         },
       }, position);
     };
 
+    // Фолбэк из <head> не даёт странице открыться раньше, чем завершится
+    // управляемая GSAP-последовательность.
     holdFallback();
-    const tl = window.gsap.timeline({ onComplete: unlockScroll });
-    typeInto(tl, preloaderCommands, commandText, commandText.length * CHAR_DURATION);
-    tl.call(() => setResult(true), null, `+=${EXEC_DELAY}`);
+    const timeline = window.gsap.timeline({ onComplete: unlockScroll });
+    typeInto(timeline, preloaderCommands, commandText, commandText.length * CHAR_DURATION);
+    timeline.call(() => setResult(true), null, `+=${EXEC_DELAY}`);
     // Одна и та же метка на таймлайне: уходит оверлей, уходят строка
     // команды с ready, контент начинает выезжать из маски.
-    tl.call(() => {
+    timeline.call(() => {
       preloader.hidden = true;
     }, null, `+=${READY_HOLD}`);
-    const revealAt = tl.duration();
-    fadeOutPrompt(tl, revealAt);
-    revealContent(tl, revealAt);
+    const revealAt = timeline.duration();
+    fadeOutPrompt(timeline, revealAt);
+    revealContent(timeline, revealAt);
   }
 
+  // Даже при ошибке загрузки шрифтов снимаем защитный класс: страница должна
+  // остаться доступной, а не бесконечно ждать прелоадер.
   Promise.all([stylesReady, fontsReady]).then(markFontsLoaded, markFontsLoaded).then(() => {
     // Хард-фолбэк из <head> мог уже снять preloader-pending, пока грузились
     // шрифты/стили — тогда прелоадер уже скрыт и повторно анимировать не надо.
@@ -162,13 +174,17 @@ import { createPjaxRouter } from './pjax.js';
     }
   });
 
-  if (!boot) return;
+  // Без данных сборки интерактивность не инициализируется, но статичная
+  // разметка остаётся рабочей как прогрессивный фолбэк.
+  if (!pageData) return;
 
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+  // Короткие помощники для выборки одного или нескольких DOM-элементов.
+  const query = (selector, context = document) => context.querySelector(selector);
+  const queryAll = (selector, context = document) => [...context.querySelectorAll(selector)];
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const audioToggles = $$('[data-audio-toggle]');
+  // ------------------------------------------------------------- фоновая музыка
+  const audioToggles = queryAll('[data-audio-toggle]');
   if (audioToggles.length) {
     const musicFadeInMs = 500;
     const musicFadeOutMs = 50;
@@ -187,6 +203,8 @@ import { createPjaxRouter } from './pjax.js';
     bindAudioControls(audioToggles, player);
     bindAudioVisualizer(audioToggles, player, visualizer);
 
+    // Браузеры разрешают звук только после жеста пользователя. Если посетитель
+    // ранее включал музыку, возобновляем её при первом клике вне переключателя.
     if (player.hasStoredEnabledPreference()) {
       window.addEventListener('pointerdown', (event) => {
         if (event.target?.closest?.('[data-audio-toggle]')) return;
@@ -194,6 +212,8 @@ import { createPjaxRouter } from './pjax.js';
       }, { once: true, passive: true });
     }
 
+    // AudioContext тоже может быть заблокирован до жеста или при скрытой вкладке.
+    // Здесь отдельно поддерживается визуализатор и сам проигрыватель.
     const resumeVisualizer = () => visualizer.resumeIfAttached().catch(() => {});
     let resumeAfterVisibility = false;
     window.addEventListener('pointerdown', resumeVisualizer, { passive: true });
@@ -216,7 +236,7 @@ import { createPjaxRouter } from './pjax.js';
   if (!reduceMotion.matches && typeof window.Lenis === 'function') {
     lenis = new window.Lenis({
       duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      easing: (progress) => Math.min(1, 1.001 - Math.pow(2, -10 * progress)),
     });
     const raf = (time) => {
       lenis.raf(time);
@@ -226,42 +246,54 @@ import { createPjaxRouter } from './pjax.js';
   }
 
   // ---------------------------------------------------------------- интерактивность страницы
-  let currentSlug = boot.projects[0] ? boot.projects[0].slug : null;
+  // Состояние выбирается независимо от DOM, чтобы его можно было восстановить
+  // после PJAX-навигации, когда элементы страницы пересоздаются.
+  let currentSlug = pageData.projects[0] ? pageData.projects[0].slug : null;
   let activeFilter = 'all';
+  let disposePreviewMedia = () => {};
+  const videoPositions = new Map();
 
-  function bindPageInteractivity(currentBoot) {
-    if (!currentBoot) return;
+  function bindPageInteractivity(currentPageData) {
+    if (!currentPageData) return;
 
-    const byId = new Map(currentBoot.projects.map((p) => [p.slug, p]));
-    const rows = $$('[data-rows] .works-row');
-    const cards = $$('[data-cards] .works-card');
-    const chips = $$('.chip');
+    // При PJAX-навигации снимаем старые observers и обработчики, прежде чем
+    // привязать их к новой разметке.
+    disposePreviewMedia();
 
-    function matches(el, filter) {
+    // Быстрый доступ к проекту по slug вместо поиска по массиву при каждом клике.
+    const projectsBySlug = new Map(currentPageData.projects.map((project) => [project.slug, project]));
+    const rows = queryAll('[data-rows] .works-row');
+    const cards = queryAll('[data-cards] .works-card');
+    const chips = queryAll('.chip');
+
+    function matches(projectElement, filter) {
+      // Кнопка all не фильтрует; остальные сравниваются с категориями из data-атрибута.
       if (filter === 'all') return true;
-      return (el.dataset.cats || '').split(/\s+/).includes(filter);
+      return (projectElement.dataset.categories || '').split(/\s+/).includes(filter);
     }
 
-    function relastify(list, hiddenClass, lastClass) {
+    function markLastVisibleElement(elements, hiddenClass, lastClass) {
+      // Нижней видимой строке нужна отдельная стилизация границы.
       let last = null;
-      list.forEach((el) => {
-        el.classList.remove(lastClass);
-        if (!el.classList.contains(hiddenClass)) last = el;
+      elements.forEach((projectElement) => {
+        projectElement.classList.remove(lastClass);
+        if (!projectElement.classList.contains(hiddenClass)) last = projectElement;
       });
       if (last) last.classList.add(lastClass);
     }
 
     function applyFilter(filter) {
+      // Синхронно обновляем состояние кнопок, список на десктопе и карточки на mobile.
       activeFilter = filter;
-      chips.forEach((c) => {
-        const on = c.dataset.filter === filter;
-        c.classList.toggle('chip--on', on);
-        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      chips.forEach((chip) => {
+        const isActive = chip.dataset.filter === filter;
+        chip.classList.toggle('chip--on', isActive);
+        chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
-      rows.forEach((el) => el.classList.toggle('is-hidden', !matches(el, filter)));
-      cards.forEach((el) => el.classList.toggle('is-hidden', !matches(el, filter)));
-      relastify(rows, 'is-hidden', 'works-row--last');
-      relastify(cards, 'is-hidden', 'works-card--last');
+      rows.forEach((projectElement) => projectElement.classList.toggle('is-hidden', !matches(projectElement, filter)));
+      cards.forEach((projectElement) => projectElement.classList.toggle('is-hidden', !matches(projectElement, filter)));
+      markLastVisibleElement(rows, 'is-hidden', 'works-row--last');
+      markLastVisibleElement(cards, 'is-hidden', 'works-card--last');
     }
 
     chips.forEach((chip) => {
@@ -269,112 +301,275 @@ import { createPjaxRouter } from './pjax.js';
     });
 
     // ---------------------------------------------------------------- preview
-    const pv = {
-      slug: $('[data-pv-slug]'),
-      site: $('[data-pv-site]'),
-      open: $('[data-pv-open]'),
-      shotSrc: $('[data-pv-shot-src]'),
-      shotImg: $('[data-pv-shot-img]'),
-      name: $('[data-pv-name]'),
-      star: $('[data-pv-star]'),
-      sub: $('[data-pv-sub]'),
-      desc: $('[data-pv-desc]'),
-      tags: $('[data-pv-tags]'),
-      cta: $('[data-pv-cta]'),
-      awards: $('[data-pv-awards]'),
-      awardsText: $('[data-pv-awards-text]'),
+    // Все части preview собраны в объект, чтобы смена проекта обновляла один
+    // согласованный набор DOM-элементов.
+    const preview = {
+      slug: query('[data-preview-slug]'),
+      site: query('[data-preview-site]'),
+      open: query('[data-preview-open]'),
+      shotSrc: query('[data-preview-shot-source]'),
+      shotImg: query('[data-preview-shot-image]'),
+      picture: query('[data-preview-picture]'),
+      video: query('[data-preview-video]'),
+      name: query('[data-preview-name]'),
+      star: query('[data-preview-star]'),
+      sub: query('[data-preview-subtitle]'),
+      description: query('[data-preview-description]'),
+      tags: query('[data-preview-tags]'),
+      cta: query('[data-preview-call-to-action]'),
+      awards: query('[data-preview-awards]'),
+      awardsText: query('[data-preview-awards-text]'),
     };
-    const thumbs = $$('.preview-thumbnail');
+    const thumbnails = queryAll('.preview-thumbnail');
+    const previewFrame = query('.preview-frame');
+    // Эти значения описывают жизненный цикл видео, а не данные проекта:
+    // видно ли превью, какой ролик загружен и какую позицию уже восстановили.
+    let previewVisible = false;
+    let loadedVideoSlug = null;
+    let restoredVideoSlug = null;
+    let revealRequest = 0;
+    let playbackRequest = 0;
+
+    function pauseVideo() {
+      if (!preview.video) return;
+      // Любое устаревшее завершение play() больше не может показать ролик,
+      // который уже ушёл за границы preview.
+      playbackRequest += 1;
+      // Запоминаем позицию перед паузой: при возврате к проекту ролик продолжается,
+      // а не начинает воспроизведение с нуля.
+      if (loadedVideoSlug && Number.isFinite(preview.video.currentTime)) {
+        videoPositions.set(loadedVideoSlug, preview.video.currentTime);
+      }
+      preview.video.pause();
+    }
+
+    function showImage() {
+      // Скриншот — универсальный фолбэк: для проектов без ролика, reduce-motion,
+      // скрытого превью, неактивной вкладки и ошибки загрузки.
+      if (preview.video) {
+        pauseVideo();
+        revealRequest += 1;
+        preview.video.classList.remove('is-visible');
+      }
+      if (preview.picture) preview.picture.hidden = false;
+    }
+
+    function loadVideo(project) {
+      // Источники добавляются лениво, только для выбранного проекта: иначе
+      // браузер загрузил бы ролики всех карточек сразу.
+      if (!preview.video || !project.video || loadedVideoSlug === project.slug) return;
+      preview.video.replaceChildren();
+      const webm = document.createElement('source');
+      webm.src = project.video.webm;
+      webm.type = 'video/webm';
+      const mp4 = document.createElement('source');
+      mp4.src = project.video.mp4;
+      mp4.type = 'video/mp4';
+      preview.video.append(webm, mp4);
+      preview.video.poster = project.shot;
+      loadedVideoSlug = project.slug;
+      restoredVideoSlug = null;
+      preview.video.load();
+    }
+
+    function revealVideo() {
+      if (!preview.video) return;
+      // requestAnimationFrame отделяет смену класса от загрузки кадра, поэтому
+      // CSS-переход opacity успевает анимироваться.
+      const request = ++revealRequest;
+      requestAnimationFrame(() => {
+        if (request === revealRequest) preview.video?.classList.add('is-visible');
+      });
+    }
+
+    function restoreVideoPosition() {
+      // currentTime можно задавать лишь после появления метаданных; флаг не даёт
+      // повторно прыгать по таймлайну при каждом событии готовности.
+      if (!preview.video || restoredVideoSlug === loadedVideoSlug || preview.video.readyState < 1) return;
+      const position = videoPositions.get(loadedVideoSlug);
+      if (Number.isFinite(position)) preview.video.currentTime = position;
+      restoredVideoSlug = loadedVideoSlug;
+    }
+
+    function syncPreviewMedia() {
+      const project = projectsBySlug.get(currentSlug);
+      // Видео разрешено только у выбранного проекта, в видимом preview и активной
+      // вкладке. Во всех остальных состояниях остаётся статичная картинка.
+      if (!project || !project.video || reduceMotion.matches || !previewVisible || document.hidden) {
+        showImage();
+        return;
+      }
+      loadVideo(project);
+      restoreVideoPosition();
+      // Не запускаем воспроизведение до первого декодированного кадра. При
+      // первом входе в блок load() и observer приходят в разном порядке;
+      // событие canplay ниже вызовет эту функцию повторно, когда кадр готов.
+      if (preview.video?.readyState < 2) return;
+      const request = ++playbackRequest;
+      revealVideo();
+      // muted + playsinline позволяют autoplay. AbortError здесь ожидаем,
+      // когда пользователь успел увести preview до завершения play().
+      preview.video.play().catch((error) => {
+        if (request !== playbackRequest || error.name === 'AbortError') return;
+        showImage();
+      });
+    }
+
+    function preloadVideo() {
+      // Начинаем подгрузку заранее, но не запускаем ролик, пока preview не видно.
+      const project = projectsBySlug.get(currentSlug);
+      if (!project || !project.video || reduceMotion.matches) return;
+      loadVideo(project);
+    }
+
+    // После первого декодированного кадра повторно синхронизируем состояние:
+    // теперь можно восстановить позицию, показать и запустить видео.
+    const onVideoReady = () => {
+      if (loadedVideoSlug !== currentSlug || !preview.video) return;
+      syncPreviewMedia();
+    };
+    const onVideoError = showImage;
+    preview.video?.addEventListener('loadeddata', onVideoReady);
+    preview.video?.addEventListener('canplay', onVideoReady);
+    preview.video?.addEventListener('error', onVideoError);
+    // Основной observer запускает/ставит на паузу ролик, когда в зоне видимости
+    // находится не менее 15% блока preview.
+    const observer = typeof IntersectionObserver === 'function' && previewFrame
+      ? new IntersectionObserver(([entry]) => {
+          previewVisible = entry.isIntersecting;
+          syncPreviewMedia();
+        }, { threshold: 0.15 })
+      : null;
+    // Второй observer подготавливает файл за один экран до preview, чтобы не
+    // показывать долгую загрузку в момент скролла к нему.
+    const preloadObserver = typeof IntersectionObserver === 'function' && previewFrame
+      ? new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) preloadVideo();
+        }, { rootMargin: '100% 0px' })
+      : null;
+    // В старом браузере без IntersectionObserver выбираем доступность: видео
+    // можно запустить, а изображение всё равно останется фолбэком при ошибке.
+    if (!observer) previewVisible = true;
+    observer?.observe(previewFrame);
+    preloadObserver?.observe(previewFrame);
+    const onVisibilityChange = () => syncPreviewMedia();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    // Возвращаем функцию очистки наружу, чтобы следующий PJAX-экран не оставил
+    // обработчики и сетевые загрузки у удалённых DOM-элементов.
+    disposePreviewMedia = () => {
+      observer?.disconnect();
+      preloadObserver?.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      preview.video?.removeEventListener('loadeddata', onVideoReady);
+      preview.video?.removeEventListener('canplay', onVideoReady);
+      preview.video?.removeEventListener('error', onVideoError);
+      pauseVideo();
+    };
 
     function setActive(slug, { scroll = false } = {}) {
-      const p = byId.get(slug);
-      if (!p) return;
+      // Это единственная точка смены проекта: она обновляет данные, выделение
+      // в списках и состояние медиа одновременно.
+      const project = projectsBySlug.get(slug);
+      if (!project) return;
       currentSlug = slug;
 
-      if (pv.slug) pv.slug.textContent = p.slug;
-      if (pv.site) pv.site.textContent = p.site;
-      if (pv.open) pv.open.href = p.url;
-      if (pv.shotSrc) {
+      if (preview.slug) preview.slug.textContent = project.slug;
+      if (preview.site) preview.site.textContent = project.site;
+      if (preview.open) preview.open.href = project.url;
+      if (preview.shotSrc) {
         // Единственный современный <source>: и type, и srcset берутся из
         // манифеста сборки (какой формат — avif/webp — оказался легче).
-        pv.shotSrc.setAttribute('type', p.shotModType);
-        pv.shotSrc.setAttribute('srcset', p.shotMod);
+        preview.shotSrc.setAttribute('type', project.shotModType);
+        preview.shotSrc.setAttribute('srcset', project.shotMod);
       }
-      if (pv.shotImg) {
-        pv.shotImg.src = p.shot;
-        pv.shotImg.alt = p.slug;
+      if (preview.shotImg) {
+        preview.shotImg.src = project.shot;
+        preview.shotImg.alt = project.slug;
       }
-      if (pv.name) pv.name.textContent = p.slug;
-      if (pv.star) pv.star.hidden = !p.star;
-      if (pv.sub) pv.sub.textContent = `${p.client} · ${p.year}`;
-      if (pv.desc) pv.desc.textContent = p.desc;
-      if (pv.tags) {
-        pv.tags.textContent = '';
-        p.tags.forEach((tag) => {
-          const s = document.createElement('span');
-          s.className = 'tag';
-          s.textContent = tag;
-          pv.tags.appendChild(s);
+      showImage();
+      if (preview.name) preview.name.textContent = project.slug;
+      if (preview.star) preview.star.hidden = !project.star;
+      if (preview.sub) preview.sub.textContent = `${project.client} · ${project.year}`;
+      if (preview.description) preview.description.textContent = project.description;
+      if (preview.tags) {
+        // Теги пересоздаются, потому что их количество и текст меняются у проекта.
+        preview.tags.textContent = '';
+        project.tags.forEach((tag) => {
+          const tagElement = document.createElement('span');
+          tagElement.className = 'tag';
+          tagElement.textContent = tag;
+          preview.tags.appendChild(tagElement);
         });
       }
-      if (pv.cta) pv.cta.href = p.url;
-      if (pv.awards) {
-        pv.awards.hidden = !p.awwwards;
-        if (p.awwwards && pv.awardsText) pv.awardsText.textContent = p.awwwards;
+      if (preview.cta) preview.cta.href = project.url;
+      if (preview.awards) {
+        preview.awards.hidden = !project.awwwards;
+        if (project.awwwards && preview.awardsText) preview.awardsText.textContent = project.awwwards;
       }
 
-      thumbs.forEach((btn) => {
-        const on = btn.dataset.slug === slug;
-        btn.classList.toggle('is-active', on);
-        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      thumbnails.forEach((thumbnail) => {
+        const isActive = thumbnail.dataset.slug === slug;
+        thumbnail.classList.toggle('is-active', isActive);
+        thumbnail.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
-      [...rows, ...cards].forEach((el) =>
-        el.classList.toggle('is-active', el.dataset.slug === slug)
+      [...rows, ...cards].forEach((projectElement) =>
+        projectElement.classList.toggle('is-active', projectElement.dataset.slug === slug)
       );
+
+      // После обновления данных перепроверяем: может понадобиться включить новое
+      // видео или вернуть фолбэк-картинку.
+      syncPreviewMedia();
 
       if (scroll) scrollToPreview();
     }
 
     function scrollToPreview() {
-      const el = document.getElementById('preview');
-      if (!el) return;
+      // Используем Lenis, если он активен, чтобы клик и колесо имели одинаковую
+      // плавность; иначе оставляем нативное поведение браузера.
+      const previewElement = document.getElementById('preview');
+      if (!previewElement) return;
       if (lenis) {
-        lenis.scrollTo(el, { offset: 0 });
+        lenis.scrollTo(previewElement, { offset: 0 });
         return;
       }
-      el.scrollIntoView({
+      previewElement.scrollIntoView({
         behavior: reduceMotion.matches ? 'auto' : 'smooth',
         block: 'start',
       });
     }
 
-    thumbs.forEach((btn) => {
-      btn.addEventListener('click', () => setActive(btn.dataset.slug));
+    // Миниатюры меняют активный проект, не прокручивая страницу.
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener('click', () => setActive(thumbnail.dataset.slug));
     });
 
     // клик по строке / карточке -> preview (но не по вложенной ссылке "open")
-    function wireRow(el) {
-      el.addEventListener('click', (e) => {
-        if (e.target.closest('a')) return;
-        setActive(el.dataset.slug, { scroll: true });
+    function wireRow(projectElement) {
+      projectElement.addEventListener('click', (event) => {
+        if (event.target.closest('a')) return;
+        setActive(projectElement.dataset.slug, { scroll: true });
       });
     }
     rows.forEach(wireRow);
     cards.forEach(wireRow);
 
+    // После PJAX возвращаем выбранный фильтр и проект, если они существуют
+    // в текущей языковой версии/на текущей странице.
     if (activeFilter !== 'all') {
       applyFilter(activeFilter);
     }
-    if (currentSlug && byId.has(currentSlug)) {
+    if (currentSlug && projectsBySlug.has(currentSlug)) {
       setActive(currentSlug);
-    } else if (currentBoot.projects[0]) {
-      setActive(currentBoot.projects[0].slug);
+    } else if (currentPageData.projects[0]) {
+      setActive(currentPageData.projects[0].slug);
     }
 
+    // Изменившийся контент влияет на вычисленную длину smooth-scroll.
     lenis?.resize?.();
   }
 
-  bindPageInteractivity(boot);
+  // Первая привязка для HTML, отрендеренного при начальной загрузке.
+  bindPageInteractivity(pageData);
 
   // ---------------------------------------------------------------- PJAX навигация
   createPjaxRouter({

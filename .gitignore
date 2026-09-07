@@ -3,3 +3,7 @@ dist/
 .DS_Store
 .superpowers/
 .impeccable/live/
+
+# Локальные исходники видео: они слишком тяжёлые для Git и не требуются сборке.
+# Оптимизированные production-файлы живут в src/assets/video/ и отслеживаются.
+/video/

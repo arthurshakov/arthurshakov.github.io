@@ -67,6 +67,25 @@
   display: block;
 }
 
+.preview-media {
+  position: relative;
+}
+
+.preview-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 500ms ease-out;
+}
+
+.preview-video.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
 // ---------- правая колонка ----------
 .preview-name-row {
   display: flex;

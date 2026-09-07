@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-06T00:00:00.000Z",
+  "generatedAt": "2026-09-07T00:00:00.000Z",
   "title": "Design System: Arthur Shakov Portfolio",
   "extensions": {
     "colorMeta": {
@@ -40,6 +40,11 @@
         "name": "caret-blink",
         "value": "1.1s step-end",
         "purpose": "Terminal caret only; equalizer movement obeys prefers-reduced-motion."
+      },
+      {
+        "name": "preview-video-playback",
+        "value": "native video loop",
+        "purpose": "Muted preview videos play only while their frame is visible; reduced motion keeps the poster image."
       }
     ],
     "breakpoints": [
@@ -73,6 +78,14 @@
       "description": "Available locale in the status bar.",
       "html": "<span class=\"ds-pill ds-pill--off\">ru</span>",
       "css": ".ds-pill { display:inline-block; padding:3px 7px; font:400 12px/1.2 'JetBrains Mono', monospace; border-radius:0; } .ds-pill--off { border:1px solid #2A322A; color:#93A08F; } .ds-pill--off:hover { color:#C4EC8A; }"
+    },
+    {
+      "name": "Preview media frame",
+      "kind": "custom",
+      "refersTo": "preview-media",
+      "description": "A static project screenshot that may hand off to a muted video loop after the first decoded frame.",
+      "html": "<div class=\"ds-preview-media\"><img src=\"poster.jpg\" alt=\"Project preview\"></div>",
+      "css": ".ds-preview-media { aspect-ratio:1000/565; border:1px solid #2A322A; background:#0A0C0A; } .ds-preview-media img { display:block; width:100%; height:100%; object-fit:cover; }"
     }
   ],
   "narrative": {
@@ -99,7 +112,8 @@
     "dos": [
       "Use existing colour roles and JetBrains Mono.",
       "Make interaction state explicit.",
-      "Honour reduced-motion preferences."
+      "Honour reduced-motion preferences.",
+      "Keep the static project screenshot visible until optional preview media is ready."
     ],
     "donts": [
       "Do not add rounded cards, gradients, glass decoration, or a new colour family.",

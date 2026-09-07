@@ -89,6 +89,15 @@ async function copyStatic() {
       copyFile(p('audio', source), path.join(audioDir, output))
     )
   );
+  const sourceVideoDir = p('src/assets/video');
+  if (existsSync(sourceVideoDir)) {
+    const videoDir = p('dist/assets/video');
+    const videoFiles = (await readdir(sourceVideoDir)).filter((file) => /\.(mp4|webm)$/i.test(file));
+    await mkdir(videoDir, { recursive: true });
+    await Promise.all(
+      videoFiles.map((file) => copyFile(path.join(sourceVideoDir, file), path.join(videoDir, file)))
+    );
+  }
   const resume = p('arthur-shakov-resume.pdf');
   if (existsSync(resume)) {
     await copyFile(resume, p('dist/assets/arthur-shakov-resume.pdf'));
