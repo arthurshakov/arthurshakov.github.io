@@ -317,6 +317,8 @@ import { createPjaxRouter } from './pjax.js';
       description: query('[data-preview-description]'),
       tags: query('[data-preview-tags]'),
       cta: query('[data-preview-call-to-action]'),
+      note: query('[data-preview-note]'),
+      noteText: query('[data-preview-note-text]'),
       awards: query('[data-preview-awards]'),
       awardsText: query('[data-preview-awards-text]'),
     };
@@ -502,9 +504,41 @@ import { createPjaxRouter } from './pjax.js';
         });
       }
       if (preview.cta) preview.cta.href = project.url;
+      if (preview.note) {
+        preview.note.hidden = !project.note;
+        if (preview.noteText) {
+          preview.noteText.textContent = project.note || '';
+        }
+      }
       if (preview.awards) {
         preview.awards.hidden = !project.awwwards;
-        if (project.awwwards && preview.awardsText) preview.awardsText.textContent = project.awwwards;
+        if (project.awwwards && preview.awardsText) {
+          preview.awardsText.replaceChildren();
+          if (project.awwwards.url) {
+            const awardLink = document.createElement('a');
+            awardLink.className = 'preview-awards__link';
+            awardLink.href = project.awwwards.url;
+            awardLink.target = '_blank';
+            awardLink.rel = 'noopener';
+            const lastSpace = project.awwwards.text.lastIndexOf(' ');
+            if (lastSpace > -1) awardLink.append(`${project.awwwards.text.slice(0, lastSpace)} `);
+            const awardSuffix = document.createElement('span');
+            awardSuffix.className = 'preview-awards__suffix';
+            awardSuffix.textContent = project.awwwards.text.slice(lastSpace + 1);
+            const awardIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            awardIcon.setAttribute('class', 'icon icon-size-11');
+            awardIcon.setAttribute('aria-hidden', 'true');
+            awardIcon.setAttribute('focusable', 'false');
+            const awardIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            awardIconUse.setAttribute('href', '#i-ext');
+            awardIcon.appendChild(awardIconUse);
+            awardSuffix.appendChild(awardIcon);
+            awardLink.appendChild(awardSuffix);
+            preview.awardsText.appendChild(awardLink);
+          } else {
+            preview.awardsText.textContent = project.awwwards.text;
+          }
+        }
       }
 
       thumbnails.forEach((thumbnail) => {

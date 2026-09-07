@@ -6,69 +6,23 @@ const TODO_RU = '// описание — TODO';
 const TODO_EN = '// description — TODO';
 
 export const projects = [
-  {
-    slug: 'glass-decor',
-    year: 2019,
-    client: { ru: 'Glass Decor (веб-студия Whitemark)', en: 'Glass Decor (web-studio Whitemark)' },
-    type: { ru: 'THREE.js · GSAP · Vue', en: 'THREE.js · GSAP · Vue' },
-    url: 'https://www.awwwards.com/sites/glass-decor',
-    site: 'glass-decor.ru',
-    categories: ['awwwards'],
-    star: true,
-    awwwards: {
-      ru: 'Awwwards — Honorable Mention + Mobile Excellence',
-      en: 'Awwwards — Honorable Mention + Mobile Excellence',
-      url: 'https://www.awwwards.com/sites/glass-decor',
-    },
-    video: {
-      webm: '/assets/video/glass-decor.webm',
-      mp4: '/assets/video/glass-decor.mp4',
-    },
-    tags: ['THREE.js', 'GSAP', 'Vue', 'Bitrix'],
-    description: {
-      ru: 'Сайт производителя декоративного стекла. Весь frontend: THREE.js-сцены, GSAP-анимации, Vue-каталог на выгрузке из админки, интеграция с Bitrix, отдельные мобильная и английская версии.',
-      en: 'Website for a decorative-glass manufacturer. Full frontend: THREE.js scenes, GSAP animation, a Vue catalogue fed from the Bitrix admin panel, CMS integration, and separate mobile and English builds.',
-    },
-  },
-  {
-    slug: 'hill8',
-    year: 2018,
-    client: { ru: 'Whitemark', en: 'Whitemark' },
-    type: { ru: 'frontend + Bitrix', en: 'frontend + Bitrix' },
-    url: 'https://www.awwwards.com/sites/hill8',
-    site: 'awwwards.com/sites/hill8',
-    categories: ['awwwards'],
-    star: true,
-    awwwards: {
-      ru: 'Awwwards — Honorable Mention',
-      en: 'Awwwards — Honorable Mention',
-      url: 'https://www.awwwards.com/sites/hill8',
-    },
-    tags: ['frontend', 'Bitrix', 'GSAP'],
-    description: { ru: TODO_RU, en: TODO_EN },
-  },
-  {
-    slug: 'gigachat',
-    year: 2025,
-    client: { ru: 'РБК × Сбер', en: 'RBC × Sber' },
-    type: { ru: 'GenAI-спецпроект', en: 'GenAI campaign' },
-    url: 'https://genai.rbc.ru/',
-    site: 'genai.rbc.ru',
-    categories: ['genai'],
-    star: false,
-    awwwards: null,
-    tags: ['GenAI', 'JavaScript', 'SCSS'],
-    description: { ru: TODO_RU, en: TODO_EN },
-  },
+  // POWER X TIME
   {
     slug: 'power-x-time',
     year: 2024,
-    client: { ru: 'ТАСС × Росатом', en: 'TASS × Rosatom' },
+    client: {
+      ru: 'ТАСС × Росатом  (веб-студия Ninelines)',
+      en: 'TASS × Rosatom  (Ninelines web-studio)',
+    },
     type: { ru: 'интерактивный таймлайн', en: 'interactive timeline' },
     // url: 'https://spec.tass.ru/power-x-time/',
     url: 'https://tass-power-x-time.linestest.com/',
-    site: 'spec.tass.ru/power-x-time',
+    site: 'tass-power-x-time.linestest.com',
     categories: [],
+    note: {
+      ru: 'кампания завершена · боевой сайт отключён · ссылка ведёт на тестовый стенд',
+      en: 'campaign ended · live site offline · link points to staging environment',
+    },
     star: false,
     awwwards: null,
     video: {
@@ -78,19 +32,8 @@ export const projects = [
     tags: ['GSAP', 'JavaScript', 'timeline'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
-  {
-    slug: 'nornickel-90',
-    year: 2025,
-    client: { ru: 'ТАСС', en: 'TASS' },
-    type: { ru: 'спецпроект-лонгрид', en: 'editorial longread' },
-    url: 'https://tass.ru/specialprojects/nornickel-90',
-    site: 'tass.ru/specialprojects/nornickel-90',
-    categories: [],
-    star: false,
-    awwwards: null,
-    tags: ['longread', 'GSAP', 'JavaScript'],
-    description: { ru: TODO_RU, en: TODO_EN },
-  },
+
+    // VMESTE AI
   {
     slug: 'vmeste-ai',
     year: 2026,
@@ -104,6 +47,92 @@ export const projects = [
     tags: ['video', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // GLASS DECOR
+  {
+    slug: 'glass-decor',
+    year: 2019,
+    client: {
+      ru: 'Glass Decor (веб-студия Whitemark)',
+      en: 'Glass Decor (Whitemark web-studio)',
+    },
+    type: {
+      ru: 'сайт-каталог',
+      en: 'product showcase',
+    },
+    url: 'https://glass-decor.ru/en/',
+    site: 'glass-decor.ru',
+    categories: ['awwwards'],
+    star: true,
+    awwwards: {
+      ru: 'Awwwards — Honorable Mention + Mobile Excellence',
+      en: 'Awwwards — Honorable Mention + Mobile Excellence',
+      url: 'https://www.awwwards.com/sites/glass-decor',
+    },
+    video: {
+      webm: '/assets/video/glass-decor.webm',
+      mp4: '/assets/video/glass-decor.mp4',
+    },
+    tags: ['GSAP', 'Vue', 'THREE.js', 'Gulp', 'Bitrix CMS'],
+    description: {
+      ru: 'В Whitemark я полностью разработал фронтенд: анимации и переходы на GSAP, THREE.js, а также каталог на Vue, связанный с административной панелью Bitrix CMS. Также интегрировал адаптивную вёрстку в Bitrix CMS и подготовил отдельные мобильную и двуязычную — русскую и английскую — версии сайта.',
+      en: 'At Whitemark, I built the frontend: immersive Three.js scenes, GSAP and THREE.js-led animations and transitions, and a Vue-based catalogue connected to the Bitrix CMS admin panel. I also integrated the responsive layouts into Bitrix CMS and delivered dedicated mobile and bilingual English/Russian versions.',
+    },
+  },
+
+  // HILL8
+  {
+    slug: 'hill8',
+    year: 2018,
+    client: {
+      ru: 'Hill8 (веб-студия Whitemark)',
+      en: 'Hill8 (Whitemark web-studio)',
+    },
+    type: { ru: 'frontend + Bitrix', en: 'frontend + Bitrix' },
+    url: 'https://www.awwwards.com/sites/hill8',
+    site: 'awwwards.com/sites/hill8',
+    categories: ['awwwards'],
+    star: true,
+    awwwards: {
+      ru: 'Awwwards — Honorable Mention',
+      en: 'Awwwards — Honorable Mention',
+      url: 'https://www.awwwards.com/sites/hill8',
+    },
+    tags: ['frontend', 'Bitrix', 'GSAP'],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // GIGACHAT
+  // {
+  //   slug: 'gigachat',
+  //   year: 2025,
+  //   client: { ru: 'РБК × Сбер', en: 'RBC × Sber' },
+  //   type: { ru: 'GenAI-спецпроект', en: 'GenAI campaign' },
+  //   url: 'https://genai.rbc.ru/',
+  //   site: 'genai.rbc.ru',
+  //   categories: ['genai'],
+  //   star: false,
+  //   awwwards: null,
+  //   tags: ['GenAI', 'JavaScript', 'SCSS'],
+  //   description: { ru: TODO_RU, en: TODO_EN },
+  // },
+
+  // NORNICKEL 90
+  // {
+  //   slug: 'nornickel-90',
+  //   year: 2025,
+  //   client: { ru: 'ТАСС', en: 'TASS' },
+  //   type: { ru: 'спецпроект-лонгрид', en: 'editorial longread' },
+  //   url: 'https://tass.ru/specialprojects/nornickel-90',
+  //   site: 'tass.ru/specialprojects/nornickel-90',
+  //   categories: [],
+  //   star: false,
+  //   awwwards: null,
+  //   tags: ['longread', 'GSAP', 'JavaScript'],
+  //   description: { ru: TODO_RU, en: TODO_EN },
+  // },
+
+  // BEST CASHIER
   {
     slug: 'best-cashier',
     year: 2026,
@@ -117,6 +146,8 @@ export const projects = [
     tags: ['game', 'Canvas', 'JavaScript'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // KLASSNYE SBORY
   {
     slug: 'klassnie-sbory',
     year: 2026,
@@ -130,6 +161,8 @@ export const projects = [
     tags: ['Nuxt', 'GSAP', 'promo'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // SL SOFT
   {
     slug: 'sl-soft',
     year: 2025,
@@ -143,6 +176,8 @@ export const projects = [
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // ETALON GROUP
   {
     slug: 'etalon-group',
     year: 2025,
@@ -156,6 +191,8 @@ export const projects = [
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // CAREER NORNICKEL
   {
     slug: 'career-nornickel',
     year: 2026,
@@ -169,6 +206,8 @@ export const projects = [
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
+
+  // ASTRA DRIVE
   {
     slug: 'astra-drive',
     year: 2025,

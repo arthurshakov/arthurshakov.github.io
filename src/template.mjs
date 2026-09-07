@@ -250,7 +250,24 @@ function preview(t, lang, shots = {}) {
   const first = projects[0];
   const tags = (p) =>
     (p.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('');
-  const awardsHidden = first.awwwards ? '' : ' hidden';
+  const firstNote = first.note ? first.note[lang] : null;
+  const noteHidden = firstNote ? '' : ' hidden';
+  const noteText = firstNote ? esc(firstNote) : '';
+  const award = first.awwwards
+    ? { text: first.awwwards[lang], url: first.awwwards.url }
+    : null;
+  const awardsHidden = award ? '' : ' hidden';
+  const awardLastSpace = award ? award.text.lastIndexOf(' ') : -1;
+  const awardPrefix = award && awardLastSpace > -1 ? `${esc(award.text.slice(0, awardLastSpace))} ` : '';
+  const awardSuffix = award ? esc(award.text.slice(awardLastSpace + 1)) : '';
+  const awardText = award
+    ? award.url
+      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener">${awardPrefix}<span class="preview-awards__suffix">${awardSuffix}${icon(
+          'ext',
+          'icon-size-11'
+        )}</span></a>`
+      : esc(award.text)
+    : '';
 
   return `
   <section class="section section--preview" id="preview">
@@ -297,10 +314,11 @@ function preview(t, lang, shots = {}) {
             t.openSite
           )}</span> ${icon('ext', 'icon-size-13')}</a>
         </div>
+        <div class="preview-note" data-preview-note${noteHidden}>
+          <span class="preview-note__slash">// </span><span class="preview-note__text" data-preview-note-text>${noteText}</span>
+        </div>
         <div class="preview-awards" data-preview-awards${awardsHidden}>
-          ${icon('star', 'icon-size-12', true)} <span data-preview-awards-text>${esc(
-            first.awwwards ? first.awwwards[lang] : ''
-          )}</span>
+          ${icon('star', 'icon-size-12', true)} <span data-preview-awards-text>${awardText}</span>
         </div>
       </div>
     </div>
@@ -376,11 +394,14 @@ function bootData(lang, t, shots = {}) {
     categories: p.categories || [],
     tags: p.tags || [],
     description: p.description[lang],
-    awwwards: p.awwwards ? p.awwwards[lang] : null,
+    awwwards: p.awwwards
+      ? { text: p.awwwards[lang], url: p.awwwards.url }
+      : null,
     shot: shot(p.slug),
     shotMod: shotMod(p.slug, shots[p.slug]),
     shotModType: shotType(shots[p.slug]),
     video: p.video || null,
+    note: p.note ? p.note[lang] : null,
   }));
   return {
     lang,

@@ -200,6 +200,38 @@
   border-color: var(--accent-hover);
 }
 
+.preview-note {
+  display: flex;
+  align-items: baseline;
+  color: var(--text-2);
+  line-height: 1.5;
+
+  @include mobile {
+    margin-top: vc(12);
+    font-size: vc(11);
+  }
+
+  @include desktop {
+    margin-top: vc(14);
+    font-size: vc(12);
+    max-width: 52ch;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.preview-note__slash {
+  color: var(--text-3);
+  margin-right: vc(4);
+  flex: none;
+}
+
+.preview-note__text {
+  color: var(--text-2);
+}
+
 .preview-awards {
   display: flex;
   align-items: center;
@@ -215,6 +247,30 @@
     margin-top: vc(18);
     font-size: vc(12);
   }
+}
+
+.preview-awards__link {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: vc(3);
+    text-decoration: underline;
+  }
+}
+
+.preview-awards__suffix {
+  white-space: nowrap;
+}
+
+.preview-awards__suffix .icon {
+  margin-left: vc(4);
 }
 
 // ---------- лента превью ----------

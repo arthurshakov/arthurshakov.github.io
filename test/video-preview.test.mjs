@@ -7,19 +7,23 @@ import { renderPage } from '../src/template.mjs';
 
 test('projects can opt into preview video while image-only projects keep the fallback', () => {
   assert.deepEqual(projects[0].video, {
+    webm: '/assets/video/tass-power-x-time.webm',
+    mp4: '/assets/video/tass-power-x-time.mp4',
+  });
+  assert.deepEqual(projects[1].video, {
     webm: '/assets/video/glass-decor.webm',
     mp4: '/assets/video/glass-decor.mp4',
   });
-  assert.equal(projects[1].video, undefined);
+  assert.equal(projects[2].video, undefined);
 
   const html = renderPage('en');
 
   assert.match(html, /data-preview-video/);
   assert.match(html, /data-preview-picture/);
-  assert.match(html, /glass-decor\.webm/);
-  assert.match(html, /glass-decor\.mp4/);
+  assert.match(html, /tass-power-x-time\.webm/);
+  assert.match(html, /tass-power-x-time\.mp4/);
   assert.match(html, /"video":\{"webm":/);
-  assert.match(html, /"mp4":"\/assets\/video\/glass-decor\.mp4"/);
+  assert.match(html, /"mp4":"\/assets\/video\/tass-power-x-time\.mp4"/);
 });
 
 test('returning to an already loaded video reveals it before playback resumes', async () => {
@@ -45,7 +49,7 @@ test('preview video warms one viewport before it enters view and fades over its 
   assert.match(source, /rootMargin: '100% 0px'/);
   assert.match(source, /preloadObserver\?\.observe\(previewFrame\)/);
   assert.match(styles, /\.preview-video\.is-visible/);
-  assert.match(styles, /transition: opacity 120ms ease-out/);
+  assert.match(styles, /transition: opacity 500ms ease-out/);
   assert.match(styles, /visibility: hidden/);
   assert.doesNotMatch(html, /data-preview-video[^>]* hidden/);
   assert.doesNotMatch(source, /preview\.video\.hidden/);
