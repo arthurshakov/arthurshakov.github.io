@@ -22,6 +22,19 @@ function createButton() {
     };
   });
 
+  const trackCurrent = { textContent: '' };
+  const trackTotal = { textContent: '' };
+  const trackName = { textContent: '' };
+  const control = {
+    dataset: {},
+    querySelector(selector) {
+      if (selector === '[data-audio-track-current]') return trackCurrent;
+      if (selector === '[data-audio-track-total]') return trackTotal;
+      if (selector === '[data-audio-track-name]') return trackName;
+      return null;
+    },
+  };
+
   return {
     dataset: {
       audioLabelOn: 'sound on',
@@ -30,6 +43,8 @@ function createButton() {
       audioStop: 'turn off background music',
     },
     label: { textContent: '' },
+    parentElement: control,
+    control,
     addEventListener(type, listener) {
       listeners.set(type, listener);
     },
@@ -80,7 +95,26 @@ test('renders an off audio button in both locales', () => {
     assert.match(html, /<button[^>]*data-audio-toggle[^>]*aria-pressed="false"/);
     assert.match(html, /data-audio-label/);
     assert.match(html, /data-audio-bars/);
+    assert.match(html, /data-audio-previous/);
+    assert.match(html, /data-audio-next/);
+    assert.match(html, /data-audio-track/);
   }
+});
+
+test('shares the ordered playlist with the browser bootstrap data', () => {
+  const html = renderPage('en');
+  const bootData = JSON.parse(html.match(/window\.__PORTFOLIO__=(.+);<\/script>/)[1]);
+
+  assert.deepEqual(
+    bootData.audioTracks.map(({ file }) => file),
+    [
+      'filtered-aperture.mp3',
+      'into-the-light.mp3',
+      'radiant-pulse.mp3',
+      'mountain-breath.mp3',
+      'eastern-silk.mp3',
+    ]
+  );
 });
 
 test('binds an equalizer button to the player state and action', async () => {
@@ -99,6 +133,7 @@ test('binds an equalizer button to the player state and action', async () => {
   assert.equal(button.getAttribute('aria-pressed'), 'true');
   assert.equal(button.getAttribute('aria-label'), 'turn off background music');
   assert.equal(button.label.textContent, 'sound on');
+  assert.equal(button.control.dataset.audioState, 'on');
 
   unbind();
 });

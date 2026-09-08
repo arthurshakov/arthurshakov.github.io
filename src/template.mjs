@@ -4,6 +4,7 @@
 // app.js только усиливает (фильтры, смена кадра, клик по строке).
 
 import { strings, contactHref } from './data/strings.mjs';
+import { audioTracks } from './data/audio.mjs';
 import { projects } from './data/projects.mjs';
 
 const esc = (s) =>
@@ -40,13 +41,11 @@ function audioControl(t, variant = '') {
     () => '<span class="audio-control__bar"></span>'
   ).join('');
 
-  return `<button class="audio-control ${variant}" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
+  return `<div class="audio-control ${variant}" data-audio-control><button class="audio-control__toggle" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
     t.audio.on
   )}" data-audio-label-off="${escAttr(t.audio.off)}" data-audio-start="${escAttr(
     t.audio.start
-  )}" data-audio-stop="${escAttr(t.audio.stop)}" aria-label="${escAttr(t.audio.start)}"><span class="audio-control__bars" data-audio-bars aria-hidden="true">${bars}</span><span class="audio-control__label" data-audio-label>${esc(
-    t.audio.off
-  )}</span></button>`;
+  )}" data-audio-stop="${escAttr(t.audio.stop)}" aria-label="${escAttr(t.audio.start)}"><span class="audio-control__bars" data-audio-bars aria-hidden="true">${bars}</span><span class="audio-control__label" data-audio-label>${esc(t.audio.off)}</span></button><button class="audio-control__skip" type="button" data-audio-previous aria-label="${escAttr(t.audio.previous)}">←</button><span class="audio-control__track" data-audio-track><span class="audio-control__track-position"><span data-audio-track-current>01</span><span aria-hidden="true"> / </span><span data-audio-track-total>03</span></span><span data-audio-track-name>${esc(t.audio.track)}</span></span><button class="audio-control__skip" type="button" data-audio-next aria-label="${escAttr(t.audio.next)}">→</button></div>`;
 }
 
 // ---------- status bar ----------
@@ -412,6 +411,7 @@ function bootData(lang, t, shots = {}) {
   return {
     lang,
     t: { openSite: t.openSite },
+    audioTracks,
     projects: list,
   };
 }

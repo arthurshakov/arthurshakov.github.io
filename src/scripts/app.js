@@ -189,18 +189,18 @@ import { createPjaxRouter } from './pjax.js';
     const musicFadeInMs = 500;
     const musicFadeOutMs = 50;
     const visualizer = createAudioVisualizer();
+    const musicTracks = pageData.audioTracks.map(({ file, name }) => ({
+      src: `/assets/audio/${file}`,
+      name,
+    }));
     const player = createPlaylistPlayer({
-      tracks: [
-        '/assets/audio/filtered-aperture.mp3',
-        '/assets/audio/radiant-pulse.mp3',
-        '/assets/audio/through-the-glass.mp3',
-      ],
+      tracks: musicTracks.map((track) => track.src),
       fadeInMs: musicFadeInMs,
       fadeOutMs: musicFadeOutMs,
       prepareAudio: (audio) => visualizer.attach(audio),
       resumeAudioGraph: () => visualizer.resume(),
     });
-    bindAudioControls(audioToggles, player);
+    bindAudioControls(audioToggles, player, musicTracks.map((track) => track.name));
     bindAudioVisualizer(audioToggles, player, visualizer);
 
     // Браузеры разрешают звук только после жеста пользователя. Если посетитель

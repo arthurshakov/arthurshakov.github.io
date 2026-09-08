@@ -134,6 +134,26 @@ test('does not create or play audio before an explicit start', () => {
   assert.equal(audios.length, 0);
 });
 
+test('moves to the next track with a crossfade while playing', async () => {
+  const { player, audios, timers, advance } = makePlayer({
+    crossfadeMs: 100,
+    manualClock: true,
+  });
+
+  await player.start();
+  await player.next();
+
+  assert.equal(player.getState().trackIndex, 1);
+  assert.equal(audios.length, 2);
+  assert.equal(audios[1].playCalls, 1);
+  assert.equal(audios[1].volume, 0);
+
+  advance(100);
+  timers.tick();
+  assert.equal(audios[0].paused, true);
+  assert.equal(audios[1].volume, 1);
+});
+
 test('reports a stored enabled preference without creating audio', () => {
   const { player, audios } = makePlayer({ initialPreference: 'on' });
 

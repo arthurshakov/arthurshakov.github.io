@@ -140,10 +140,9 @@ export function createPlaylistPlayer({
     audio.addEventListener('error', listener);
   };
 
-  const transition = async (outgoing) => {
+  const transition = async (outgoing, nextIndex = (currentIndex + 1) % tracks.length) => {
     if (!playing || destroyed || outgoing !== currentAudio) return;
 
-    const nextIndex = (currentIndex + 1) % tracks.length;
     const incoming = createAudio(nextIndex);
     incoming.volume = 0;
 
@@ -237,11 +236,33 @@ export function createPlaylistPlayer({
     await start({ persistPreference: false });
   };
 
+  const select = async (index) => {
+    const nextIndex = ((index % tracks.length) + tracks.length) % tracks.length;
+    if (nextIndex === currentIndex) return;
+
+    if (!playing) {
+      stopAudio(currentAudio);
+      currentAudio = null;
+      currentIndex = nextIndex;
+      notify();
+      return;
+    }
+
+    await transition(currentAudio, nextIndex);
+  };
+
   return {
     start,
     stop,
     suspend,
     resume,
+    select,
+    next() {
+      return select(currentIndex + 1);
+    },
+    previous() {
+      return select(currentIndex - 1);
+    },
     async toggle() {
       if (playing) {
         stop();

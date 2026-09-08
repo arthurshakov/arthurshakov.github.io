@@ -10,16 +10,11 @@ import * as sass from 'sass';
 import sharp from 'sharp';
 
 import { renderPage } from './template.mjs';
+import { audioTracks } from './data/audio.mjs';
 import { projects } from './data/projects.mjs';
 
 const root = path.join(import.meta.dirname, '..');
 const p = (...s) => path.join(root, ...s);
-
-const AUDIO_FILES = {
-  'Filtered_Aperture.mp3': 'filtered-aperture.mp3',
-  'Radiant_Pulse.mp3': 'radiant-pulse.mp3',
-  'Through_the_Glass.mp3': 'through-the-glass.mp3',
-};
 
 // Полный кадр отдаём в исходном разрешении (~3000px, без адресной строки браузера),
 // только пережимаем. Миниатюра ленты — 1000px по ширине (крупная, чтобы не мылила).
@@ -85,8 +80,8 @@ async function copyStatic() {
   const audioDir = p('dist/assets/audio');
   await mkdir(audioDir, { recursive: true });
   await Promise.all(
-    Object.entries(AUDIO_FILES).map(([source, output]) =>
-      copyFile(p('audio', source), path.join(audioDir, output))
+    audioTracks.map(({ file }) =>
+      copyFile(p('audio', file), path.join(audioDir, file))
     )
   );
   const sourceVideoDir = p('src/assets/video');
