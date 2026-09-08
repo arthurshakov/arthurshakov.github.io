@@ -73,6 +73,7 @@ export function bindAudioVisualizer(
   } = {}
 ) {
   const buttons = [...controls];
+  /** @type {number | null} */
   let frame = null;
   let playing = false;
 

@@ -11,18 +11,20 @@ import { createPjaxRouter } from './pjax.js';
   const pageData = window.__PORTFOLIO__;
   // Элементы прелоадера собираются один раз: затем функция анимации работает
   // только с этими ссылками, не повторяя поиск по DOM.
-  const preloader = document.querySelector('[data-preloader]');
-  const preloaderCommands = [...document.querySelectorAll('[data-preloader-command]')];
-  const preloaderResults = [...document.querySelectorAll('[data-preloader-result]')];
+  const preloader = /** @type {HTMLElement | null} */ (document.querySelector('[data-preloader]'));
+  const preloaderCommands = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-preloader-command]')]);
+  const preloaderResults = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-preloader-result]')]);
   // Курсор убирается вместе с командой: иначе в момент очистки строки он
   // прыгнул бы влево, на своё «чистое» место после $.
   const preloaderCarets = [...document.querySelectorAll('[data-preloader-prompt] .caret')];
+  /** @type {HTMLElement | null} */
   const content = document.querySelector('.body');
   const finishFallback = () => window.__finishPreloaderFallback?.();
   const holdFallback = () => window.__holdPreloaderFallback?.();
   // Инстанс создаётся ниже, синхронно — к моменту старта прелоадера он уже
   // здесь. Нужен, чтобы на время прелоадера остановить скролл: lenis сам
   // скроллит программно и не считается с overflow: hidden.
+  /** @type {any} */
   let lenis = null;
 
   // Тайминги прелоадера — в секундах, как их ждёт gsap.
@@ -46,7 +48,7 @@ import { createPjaxRouter } from './pjax.js';
 
   // Анимация старта ждёт готовых стилей и шрифтов, чтобы контент не мигал
   // промежуточной типографикой во время раскрытия.
-  const mainStylesLink = document.getElementById('main-styles');
+  const mainStylesLink = /** @type {HTMLLinkElement | null} */ (document.getElementById('main-styles'));
   const stylesReady = !mainStylesLink || mainStylesLink.rel === 'stylesheet'
     ? Promise.resolve()
     : new Promise((resolve) => mainStylesLink.addEventListener('load', resolve, { once: true }));
@@ -209,7 +211,7 @@ import { createPjaxRouter } from './pjax.js';
     // ранее включал музыку, возобновляем её при первом клике вне переключателя.
     if (player.hasStoredEnabledPreference()) {
       window.addEventListener('pointerdown', (event) => {
-        if (event.target?.closest?.('[data-audio-toggle]')) return;
+        if (event.target instanceof Element && event.target.closest('[data-audio-toggle]')) return;
         player.start().catch(() => {});
       }, { once: true, passive: true });
     }
@@ -276,11 +278,11 @@ import { createPjaxRouter } from './pjax.js';
 
     function markLastVisibleElement(elements, hiddenClass, lastClass) {
       // Нижней видимой строке нужна отдельная стилизация границы.
-      let last = null;
-      elements.forEach((projectElement) => {
+      let last = /** @type {any} */ (null);
+      for (const projectElement of elements) {
         projectElement.classList.remove(lastClass);
         if (!projectElement.classList.contains(hiddenClass)) last = projectElement;
-      });
+      }
       if (last) last.classList.add(lastClass);
     }
 

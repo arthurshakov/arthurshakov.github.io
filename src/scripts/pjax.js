@@ -79,6 +79,7 @@ export function parsePage(html, { parser = null } = {}) {
     (m) => m[1]
   );
   const audioToggleMatch = html.match(/<button[^>]*data-audio-toggle[^>]*>/i);
+  /** @type {{ on: string, off: string, start: string, stop: string } | null} */
   let audioLabels = null;
   if (audioToggleMatch) {
     const tag = audioToggleMatch[0];
@@ -94,6 +95,7 @@ export function parsePage(html, { parser = null } = {}) {
     };
   }
 
+  /** @type {any} */
   let bootData = null;
   if (bootMatch) {
     try {
@@ -149,6 +151,7 @@ export function applyPage(parsed, { doc = document, windowObj = typeof window !=
 
   // Обновляем локализованные подписи кнопки аудио, не трогая сам DOM-узел и обработчики
   if (parsed.audioLabels) {
+    /** @type {NodeListOf<HTMLElement>} */
     const audioButtons = doc.querySelectorAll('[data-audio-toggle]');
     audioButtons.forEach((btn) => {
       const isPlaying = (btn.dataset?.audioState || btn.getAttribute('data-audio-state')) === 'on';
@@ -190,6 +193,24 @@ export function applyPage(parsed, { doc = document, windowObj = typeof window !=
   }
 }
 
+/**
+ * @typedef {Object} PjaxNavigateEvent
+ * @property {string} url
+ * @property {any} bootData
+ * @property {string} lang
+ */
+
+/**
+ * @typedef {Object} PjaxRouterOptions
+ * @property {((url: string) => Promise<string>)} [fetchHtml]
+ * @property {((event: PjaxNavigateEvent) => void)} [onNavigate]
+ * @property {any} [windowObj]
+ * @property {any} [docObj]
+ */
+
+/**
+ * @param {PjaxRouterOptions} [options]
+ */
 export function createPjaxRouter({
   fetchHtml = (url) =>
     fetch(url).then((res) => {
@@ -199,7 +220,7 @@ export function createPjaxRouter({
   onNavigate = () => {},
   windowObj = typeof window !== 'undefined' ? window : null,
   docObj = typeof document !== 'undefined' ? document : null,
-} = {}) {
+} = /** @type {PjaxRouterOptions} */ ({})) {
   const cache = new Map();
   let isNavigating = false;
 
@@ -264,6 +285,7 @@ export function createPjaxRouter({
   }
 
   function shouldIntercept(anchor, event) {
+    if (!windowObj) return false;
     if (event.defaultPrevented) return false;
     if (event.button !== 0) return false;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
@@ -281,7 +303,8 @@ export function createPjaxRouter({
 
   if (docObj && windowObj) {
     docObj.addEventListener('click', (event) => {
-      const anchor = event.target?.closest?.('a');
+      const target = event.target instanceof Element ? event.target : null;
+      const anchor = target?.closest('a');
       if (!anchor) return;
       if (!shouldIntercept(anchor, event)) return;
 

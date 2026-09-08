@@ -5,6 +5,7 @@
 const TODO_RU = '// описание — TODO';
 const TODO_EN = '// description — TODO';
 
+/** @type {import('../types/portfolio.d.ts').Project[]} */
 export const projects = [
   // POWER X TIME
   {

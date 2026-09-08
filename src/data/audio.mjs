@@ -1,4 +1,5 @@
 // Порядок здесь — единственный источник истины для плеера и сборки.
+/** @type {import('../types/portfolio.d.ts').AudioTrack[]} */
 export const audioTracks = [
   { file: 'filtered-aperture.mp3', name: 'filtered aperture' },
   { file: 'into-the-light.mp3', name: 'into the light' },

@@ -2,6 +2,24 @@ const STORAGE_KEY = 'portfolio:music';
 
 const clamp = (value) => Math.max(0, Math.min(1, value));
 
+/**
+ * @typedef {Object} PlaylistPlayerOptions
+ * @property {any[]} tracks
+ * @property {((src: any) => HTMLAudioElement)} [audioFactory]
+ * @property {Storage | null} [storage]
+ * @property {number} [crossfadeMs]
+ * @property {number} [fadeInMs]
+ * @property {number} [fadeOutMs]
+ * @property {(() => number)} [now]
+ * @property {((handler: any, timeout?: number) => any)} [setTimer]
+ * @property {((id: any) => void)} [clearTimer]
+ * @property {((audio: HTMLAudioElement) => void)} [prepareAudio]
+ * @property {(() => Promise<void>)} [resumeAudioGraph]
+ */
+
+/**
+ * @param {PlaylistPlayerOptions} [options]
+ */
 export function createPlaylistPlayer({
   tracks,
   audioFactory = (src) => new Audio(src),
@@ -14,14 +32,17 @@ export function createPlaylistPlayer({
   clearTimer = window.clearInterval,
   prepareAudio = () => {},
   resumeAudioGraph = async () => {},
-} = {}) {
+} = /** @type {PlaylistPlayerOptions} */ ({})) {
   if (!Array.isArray(tracks) || tracks.length === 0) {
     throw new TypeError('createPlaylistPlayer requires at least one track');
   }
 
+  /** @type {HTMLAudioElement | null} */
   let currentAudio = null;
+  /** @type {HTMLAudioElement | null} */
   let fadingAudio = null;
   let currentIndex = 0;
+  /** @type {any} */
   let fadeTimer = null;
   let transitionToken = 0;
   let playing = false;
@@ -235,11 +256,12 @@ export function createPlaylistPlayer({
     if (persistPreference) persist('on');
     notify();
 
-    const startingVolume = currentAudio.volume;
+    const audio = currentAudio;
+    const startingVolume = audio.volume;
     runFade({
       duration: fadeInMs,
       onFrame: (progress) => {
-        currentAudio.volume = startingVolume + (1 - startingVolume) * progress;
+        audio.volume = startingVolume + (1 - startingVolume) * progress;
       },
     });
   };
