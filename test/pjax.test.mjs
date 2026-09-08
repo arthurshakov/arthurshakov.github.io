@@ -3,6 +3,7 @@ import { access } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
+import { projects } from '../src/data/projects.mjs';
 import { renderPage } from '../src/template.mjs';
 import { normalizePath, parsePage, applyPage, createPjaxRouter } from '../src/scripts/pjax.js';
 
@@ -39,7 +40,7 @@ test('parsePage extracts metadata, main content, and boot data from rendered pag
     assert.ok(parsed.audioLabels.stop);
     assert.ok(parsed.bootData);
     assert.equal(parsed.bootData.lang, lang);
-    assert.equal(parsed.bootData.projects.length, 12);
+    assert.equal(parsed.bootData.projects.length, projects.length);
   }
 });
 

@@ -16,6 +16,10 @@
 
 .whoami-value--name {
   color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  gap: vc(14);
+  flex-wrap: wrap;
   font-weight: 700;
   font-size: vc(21);
   line-height: 1.2;
@@ -36,11 +40,15 @@
   flex-wrap: wrap;
 }
 
-.whoami-value--status {
+.whoami-status {
   color: var(--accent);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: vc(8);
+  gap: vc(6);
+  font-size: 0.56em;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 0.2em;
 }
 
 .whoami-note {

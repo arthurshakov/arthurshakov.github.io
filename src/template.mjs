@@ -118,7 +118,7 @@ function whoami(t) {
   const grid = `
     <div class="whoami desktop-only">
       <div class="whoami-grid">
-        <span class="whoami-label">${esc(t.w.name)}</span><span class="whoami-value whoami-value--name">${esc(w.name)}</span>
+        <span class="whoami-label">${esc(t.w.name)}</span><span class="whoami-value whoami-value--name"><span>${esc(w.name)}</span><span class="whoami-status">${status}${esc(desk.status)}</span></span>
         <span class="whoami-label">${esc(t.w.role)}</span><span class="whoami-value">${esc(w.role)}</span>
         <span class="whoami-label">${esc(t.w.bio)}</span><span class="whoami-value whoami-value--bio">${esc(desk.bio)}</span>
         <span class="whoami-label">${esc(t.w.stack)}</span><span class="whoami-value">${esc(desk.stack)}</span>
@@ -126,7 +126,6 @@ function whoami(t) {
         <span class="whoami-label">${esc(t.w.clients)}</span><span class="whoami-value">${esc(desk.clients)}</span>
         <span class="whoami-label">${esc(t.w.workflow)}</span><span class="whoami-value">${esc(desk.workflow)}</span>
         <span class="whoami-label">${esc(t.w.languages)}</span><span class="whoami-value">${esc(w.languages)}</span>
-        <span class="whoami-label">${esc(t.w.status)}</span><span class="whoami-value whoami-value--status">${status}${esc(desk.status)}</span>
         <span class="whoami-label">${esc(t.w.location)}</span><span class="whoami-value whoami-value--location">${esc(desk.location)}</span>
       </div>
     </div>`;
@@ -135,14 +134,9 @@ function whoami(t) {
   const mStack = mob.stack ?? desk.stack ?? '';
   const mClients = mob.clients ?? desk.clients ?? '';
   const mWorkflow = mob.workflow ?? desk.workflow ?? '';
-  const mStatus =
-    mob.statusCombined ??
-    desk.statusCombined ??
-    (desk.status && desk.location ? `${desk.status} · ${desk.location}` : (desk.status ?? ''));
-
   const stack = `
     <div class="whoami mobile-only">
-      <div class="whoami-label">${esc(t.w.name)}</div><div class="whoami-value whoami-value--name">${esc(w.name)}</div>
+      <div class="whoami-label">${esc(t.w.name)}</div><div class="whoami-value whoami-value--name"><span>${esc(w.name)}</span><span class="whoami-status">${status}${esc(desk.status)}</span></div>
       <div class="whoami-label">${esc(t.w.role)}</div><div class="whoami-value">${esc(w.role)}</div>
       <div class="whoami-label">${esc(t.w.bio)}</div><div class="whoami-value whoami-value--bio">${esc(mBio)}</div>
       <div class="whoami-label">${esc(t.w.stack)}</div><div class="whoami-value">${esc(mStack)}</div>
@@ -150,7 +144,7 @@ function whoami(t) {
       <div class="whoami-label">${esc(t.w.clients)}</div><div class="whoami-value">${esc(mClients)}</div>
       <div class="whoami-label">${esc(t.w.workflow)}</div><div class="whoami-value">${esc(mWorkflow)}</div>
       <div class="whoami-label">${esc(t.w.languages)}</div><div class="whoami-value">${esc(w.languages)}</div>
-      <div class="whoami-label">${esc(t.w.status)}</div><div class="whoami-value whoami-value--status">${status}${esc(mStatus)}</div>
+      <div class="whoami-label">${esc(t.w.location)}</div><div class="whoami-value whoami-value--location">${esc(desk.location)}</div>
     </div>`;
 
   return `

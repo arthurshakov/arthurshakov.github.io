@@ -6,15 +6,19 @@ import { projects } from '../src/data/projects.mjs';
 import { renderPage } from '../src/template.mjs';
 
 test('projects can opt into preview video while image-only projects keep the fallback', () => {
-  assert.deepEqual(projects[0].video, {
+  const powerXTime = projects.find(({ slug }) => slug === 'power-x-time');
+  const glassDecor = projects.find(({ slug }) => slug === 'glass-decor');
+  const vmesteAi = projects.find(({ slug }) => slug === 'vmeste-ai');
+
+  assert.deepEqual(powerXTime.video, {
     webm: '/assets/video/tass-power-x-time.webm',
     mp4: '/assets/video/tass-power-x-time.mp4',
   });
-  assert.deepEqual(projects[1].video, {
+  assert.deepEqual(glassDecor.video, {
     webm: '/assets/video/glass-decor.webm',
     mp4: '/assets/video/glass-decor.mp4',
   });
-  assert.equal(projects[2].video, undefined);
+  assert.equal(vmesteAi.video, undefined);
 
   const html = renderPage('en');
 

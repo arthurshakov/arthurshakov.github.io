@@ -7,14 +7,14 @@ export const strings = {
   ru: {
     htmlLang: 'ru',
     dir: 'ltr',
-    title: 'Артур Шаков — frontend-разработчик, интерактивные спецпроекты',
+    title: 'Артур Шаков — веб-разработчик: frontend, AI-assisted backend, спецпроекты',
     description:
-      'Портфолио Артура Шакова: frontend интерактивных спецпроектов под ключ. Vue/Nuxt, GSAP, THREE.js. 2× Awwwards Honorable Mention.',
+      'Портфолио Артура Шакова: frontend, AI-assisted backend и интерактивные спецпроекты. Vue/Nuxt, GSAP, THREE.js. 2× Awwwards Honorable Mention.',
     // status bar
     prompt: {
       user: 'arthur_shakov',
       at: '@',
-      host: 'frontend',
+      host: 'web-developer',
       sep: ':',
       path: '~/portfolio',
       dollar: '$',
@@ -50,24 +50,24 @@ export const strings = {
     },
     whoami: {
       name: 'Артур Шаков',
-      role: 'frontend-разработчик — интерактивные спецпроекты под ключ',
+      role: 'веб-разработчик — frontend, AI-assisted backend и интерактивные спецпроекты',
       awardsText: '2× Awwwards Honorable Mention',
       awardsNote: '[+ Mobile Excellence]',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — два Awwwards; сейчас — в агентстве «Девять Линий». Доступен для проектов.',
+        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — два Awwwards; сейчас — в агентстве «Девять Линий».',
         stack: STACK_STRING,
         clients: 'РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group',
-        workflow: 'Claude Code · Antigravity · Codex (spec-first — сначала спецификация, потом код)',
-        status: 'доступен для проектов',
-        location: 'Чегем · удалёнка/гибрид · готов к переезду · UTC+3',
+        workflow: 'Claude Code · Antigravity · Codex (spec-first — сначала спецификация, затем код)',
+        status: 'доступен для проектов',
+        location: 'UTC+3 · удалёнка/гибрид · готов рассмотреть переезд',
       },
       mobile: {
         // bio и stack берутся с десктопа автоматически
         clients: 'РБК · ТАСС · X5 · food.ru · Норникель · Сбер · Росатом · Etalon Group',
         workflow: 'Claude Code · Antigravity · Codex (spec-first)',
         // на мобиле status и location объединены в одну строку
-        statusCombined: 'доступен для проектов · Чегем · переезд',
+        statusCombined: 'доступен для проектов · UTC+3 · готов рассмотреть переезд',
       },
     },
     // works
@@ -111,13 +111,13 @@ export const strings = {
   en: {
     htmlLang: 'en',
     dir: 'ltr',
-    title: 'Arthur Shakov — frontend developer, interactive campaign & editorial projects',
+    title: 'Arthur Shakov — web developer: frontend, AI-assisted backend & interactive projects',
     description:
-      'Portfolio of Arthur Shakov: frontend for interactive campaign & editorial projects, end to end. GSAP, THREE.js, Vue/Nuxt. 2× Awwwards Honorable Mention.',
+      'Portfolio of Arthur Shakov: frontend, AI-assisted backend & interactive projects. GSAP, THREE.js, Vue/Nuxt. 2× Awwwards Honorable Mention.',
     prompt: {
       user: 'arthur_shakov',
       at: '@',
-      host: 'frontend',
+      host: 'web-developer',
       sep: ':',
       path: '~/portfolio',
       dollar: '$',
@@ -151,17 +151,17 @@ export const strings = {
     },
     whoami: {
       name: 'Arthur Shakov',
-      role: 'frontend developer — interactive campaign & editorial projects, end to end',
+      role: 'web developer — frontend, AI-assisted backend & interactive projects',
       awardsText: '2× Awwwards Honorable Mention',
       awardsNote: '[+ Mobile Excellence]',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — two Awwwards; now at Nine Lines agency. Available for work.',
+        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — two Awwwards; now at Nine Lines agency.',
         stack: STACK_STRING,
         clients: 'RBC · TASS · X5 (Pyaterochka, Perekrestok, Chizhik) · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
         workflow: 'Claude Code · Antigravity · Codex (spec-first — a written spec before code)',
         status: 'available for work',
-        location: 'Chegem, Russia · remote/hybrid · open to relocation · UTC+3',
+        location: 'UTC+3 · remote/hybrid · open to relocation',
       },
       mobile: {
         // bio and stack fall back to desktop automatically
