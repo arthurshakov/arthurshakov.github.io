@@ -1,7 +1,7 @@
 // Тексты «хрома» интерфейса. Значения — дословно из Main*.dc.html / MainEN*.dc.html.
 // Где артборды desktop и mobile расходятся по копирайту — обе версии (d / m).
 
-const STACK_STRING = 'JavaScript / TypeScript · Vue / Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma';
+const STACK_STRING = 'JavaScript / TypeScript · React · Vue / Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma';
 
 export const strings = {
   ru: {
