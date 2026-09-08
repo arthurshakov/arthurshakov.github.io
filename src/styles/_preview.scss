@@ -233,9 +233,6 @@
 }
 
 .preview-awards {
-  display: flex;
-  align-items: center;
-  gap: vc(8);
   color: var(--text-2);
 
   @include mobile {
@@ -246,6 +243,28 @@
   @include desktop {
     margin-top: vc(18);
     font-size: vc(12);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+[data-preview-awards-text] {
+  display: flex;
+  flex-direction: column;
+  gap: vc(6);
+}
+
+.preview-awards__item {
+  display: flex;
+  align-items: flex-start;
+  gap: vc(8);
+  line-height: 1.4;
+
+  .icon {
+    flex: none;
+    margin-top: vc(2);
   }
 }
 

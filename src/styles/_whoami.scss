@@ -35,9 +35,13 @@
 
 .whoami-value--awards {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: vc(8);
-  flex-wrap: wrap;
+
+  .icon {
+    flex: none;
+    margin-top: vc(2);
+  }
 }
 
 .whoami-status {

@@ -40,15 +40,21 @@ export const projects = [
   {
     slug: 'vmeste-ai',
     year: 2026,
-    client: { ru: 'Фонд Потанина × ТАСС', en: 'Potanin Foundation × TASS' },
+    client: {
+      ru: 'Фонд Потанина × ТАСС  (веб-студия Ninelines)',
+      en: 'Potanin Foundation × TASS  (Ninelines web-studio)',
+    },
     type: { ru: 'цикл видеолекций', en: 'video-lecture series' },
     url: 'https://tass.ru/specialprojects/vmeste-ai',
     site: 'tass.ru/specialprojects/vmeste-ai',
     categories: [],
     star: false,
     awwwards: null,
-    tags: ['video', 'JavaScript', 'SCSS'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['video.js', 'Barba.js', 'Swiper', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд мультимедийного спецпроекта: бесшовные PJAX-переходы между разделами на Barba.js, интерактивный плеер на video.js со стримингом HLS (.m3u8) и кликабельными тайм-кодами, а также синхронизированные Swiper-слайдеры с фоновыми видеолупами. Реализовал эффекты матового стекла на SVG-фильтрах шума, кастомный курсор и отдельный табовый интерфейс для мобильных устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this multimedia campaign: seamless Barba.js page transitions, an interactive video.js player with HLS streaming (.m3u8) and clickable timecodes, alongside synchronized Swiper sliders with background video loops. I implemented frosted-glass styling using SVG noise filters, a custom cursor, and a dedicated tabbed interface for mobile devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // GLASS DECOR
@@ -67,11 +73,19 @@ export const projects = [
     site: 'glass-decor.ru',
     categories: ['awwwards'],
     star: true,
-    awwwards: {
-      ru: 'Awwwards — Honorable Mention + Mobile Excellence',
-      en: 'Awwwards — Honorable Mention + Mobile Excellence',
-      url: 'https://www.awwwards.com/sites/glass-decor',
-    },
+    awards: [
+      {
+        ru: 'Awwwards — Honorable Mention + Mobile Excellence',
+        en: 'Awwwards — Honorable Mention + Mobile Excellence',
+        url: 'https://www.awwwards.com/sites/glass-decor',
+      },
+
+      {
+        ru: 'CSS Design Awards — Special Kudos',
+        en: 'CSS Design Awards — Special Kudos',
+        url: 'https://www.cssdesignawards.com/sites/glass-decor/37869/',
+      },
+    ],
     video: {
       webm: '/assets/video/glass-decor.webm',
       mp4: '/assets/video/glass-decor.mp4',
@@ -91,18 +105,33 @@ export const projects = [
       ru: 'Hill8 (веб-студия Whitemark)',
       en: 'Hill8 (Whitemark web-studio)',
     },
-    type: { ru: 'frontend + Bitrix', en: 'frontend + Bitrix' },
-    url: 'https://www.awwwards.com/sites/hill8',
-    site: 'awwwards.com/sites/hill8',
+    type: { ru: 'сайт апартаментов · выборщик', en: 'residential showcase · selector' },
+    url: 'http://hill8.whitemark-it.com/',
+    site: 'hill8.whitemark-it.com',
     categories: ['awwwards'],
     star: true,
-    awwwards: {
-      ru: 'Awwwards — Honorable Mention',
-      en: 'Awwwards — Honorable Mention',
-      url: 'https://www.awwwards.com/sites/hill8',
+    note: {
+      ru: 'боевой сайт отключён · ссылка ведёт на тестовый стенд',
+      en: 'live site offline · link points to staging environment',
     },
-    tags: ['frontend', 'Bitrix', 'GSAP'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    awards: [
+      {
+        ru: 'Awwwards — Honorable Mention',
+        en: 'Awwwards — Honorable Mention',
+        url: 'https://www.awwwards.com/sites/hill8',
+      },
+      {
+        ru: 'CSS Design Awards — Special Kudos',
+        en: 'CSS Design Awards — Special Kudos',
+        url: 'https://www.cssdesignawards.com/sites/hill8/34364/',
+      },
+    ],
+    tags: ['GSAP', 'Vue', 'Bitrix CMS', 'JavaScript'],
+    description: {
+      ru: 'В Whitemark я разработал фронтенд промосайта премиального комплекса апартаментов HILL8: бесшовные кинематографичные переходы между страницами и меню на GSAP, интерактивный выборщик апартаментов на Vue (с подбором на схеме комплекса, поэтажными планами и фильтрацией по планировкам), а также адаптивную вёрстку с интеграцией в Bitrix CMS. Проект отмечен Awwwards Honorable Mention, CSS Design Awards и признан лучшим девелоперским сайтом Европы на European Property Awards.',
+
+      en: 'At Whitemark, I built the frontend for the HILL8 luxury apartment complex: seamless cinematic page and menu transitions powered by GSAP, an interactive Vue-based apartment selector (featuring interactive building schemes, floor plans, and layout filtering), and responsive layouts integrated into Bitrix CMS. The project received an Awwwards Honorable Mention, a CSS Design Awards Special Kudos, and won Developer Website Europe at the European Property Awards.',
+    },
   },
 
   // GIGACHAT

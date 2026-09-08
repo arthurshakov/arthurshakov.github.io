@@ -513,33 +513,52 @@ import { createPjaxRouter } from './pjax.js';
         }
       }
       if (preview.awards) {
-        preview.awards.hidden = !project.awwwards;
-        if (project.awwwards && preview.awardsText) {
+        const awards = project.awards || (project.awwwards ? [project.awwwards] : []);
+        preview.awards.hidden = awards.length === 0;
+        if (preview.awardsText) {
           preview.awardsText.replaceChildren();
-          if (project.awwwards.url) {
-            const awardLink = document.createElement('a');
-            awardLink.className = 'preview-awards__link';
-            awardLink.href = project.awwwards.url;
-            awardLink.target = '_blank';
-            awardLink.rel = 'noopener';
-            const lastSpace = project.awwwards.text.lastIndexOf(' ');
-            if (lastSpace > -1) awardLink.append(`${project.awwwards.text.slice(0, lastSpace)} `);
-            const awardSuffix = document.createElement('span');
-            awardSuffix.className = 'preview-awards__suffix';
-            awardSuffix.textContent = project.awwwards.text.slice(lastSpace + 1);
-            const awardIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            awardIcon.setAttribute('class', 'icon icon-size-11');
-            awardIcon.setAttribute('aria-hidden', 'true');
-            awardIcon.setAttribute('focusable', 'false');
-            const awardIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            awardIconUse.setAttribute('href', '#i-ext');
-            awardIcon.appendChild(awardIconUse);
-            awardSuffix.appendChild(awardIcon);
-            awardLink.appendChild(awardSuffix);
-            preview.awardsText.appendChild(awardLink);
-          } else {
-            preview.awardsText.textContent = project.awwwards.text;
-          }
+          awards.forEach((award) => {
+            const item = document.createElement('div');
+            item.className = 'preview-awards__item';
+
+            const starIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            starIcon.setAttribute('class', 'icon icon-size-12 icon--accent');
+            starIcon.setAttribute('aria-hidden', 'true');
+            starIcon.setAttribute('focusable', 'false');
+            const starIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            starIconUse.setAttribute('href', '#i-star');
+            starIcon.appendChild(starIconUse);
+            item.appendChild(starIcon);
+
+            if (award.url) {
+              const awardLink = document.createElement('a');
+              awardLink.className = 'preview-awards__link';
+              awardLink.href = award.url;
+              awardLink.target = '_blank';
+              awardLink.rel = 'noopener';
+              const lastSpace = award.text.lastIndexOf(' ');
+              if (lastSpace > -1) awardLink.append(`${award.text.slice(0, lastSpace)} `);
+              const awardSuffix = document.createElement('span');
+              awardSuffix.className = 'preview-awards__suffix';
+              awardSuffix.textContent = award.text.slice(lastSpace + 1);
+              const awardIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+              awardIcon.setAttribute('class', 'icon icon-size-11');
+              awardIcon.setAttribute('aria-hidden', 'true');
+              awardIcon.setAttribute('focusable', 'false');
+              const awardIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+              awardIconUse.setAttribute('href', '#i-ext');
+              awardIcon.appendChild(awardIconUse);
+              awardSuffix.appendChild(awardIcon);
+              awardLink.appendChild(awardSuffix);
+              item.appendChild(awardLink);
+            } else {
+              const textSpan = document.createElement('span');
+              textSpan.textContent = award.text;
+              item.appendChild(textSpan);
+            }
+
+            preview.awardsText.appendChild(item);
+          });
         }
       }
 

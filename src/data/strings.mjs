@@ -56,9 +56,10 @@ export const strings = {
       role: 'веб-разработчик — frontend, AI-assisted backend и интерактивные спецпроекты',
       awardsText: '2× Awwwards Honorable Mention',
       awardsNote: '[+ Mobile Excellence]',
+      awardsExtra: '· 2× CSSDA Special Kudos',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — два Awwwards; сейчас — в агентстве «Девять Линий».',
+        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — награды Awwwards и CSS Design Awards; сейчас — в агентстве «Девять Линий».',
         stack: STACK_STRING,
         clients: 'РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group',
         workflow: 'Claude Code · Antigravity · Codex (spec-first — сначала спецификация, затем код)',
@@ -160,9 +161,10 @@ export const strings = {
       role: 'web developer — frontend, AI-assisted backend & interactive projects',
       awardsText: '2× Awwwards Honorable Mention',
       awardsNote: '[+ Mobile Excellence]',
+      awardsExtra: '· 2× CSSDA Special Kudos',
       languages: 'RU native · EN C1',
       desktop: {
-        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — two Awwwards; now at Nine Lines agency.',
+        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — Awwwards & CSS Design Awards; now at Nine Lines agency.',
         stack: STACK_STRING,
         clients: 'RBC · TASS · X5 (Pyaterochka, Perekrestok, Chizhik) · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
         workflow: 'Claude Code · Antigravity · Codex (spec-first — a written spec before code)',

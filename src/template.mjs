@@ -106,9 +106,9 @@ function statusBar(t, lang) {
 // ---------- whoami ----------
 function whoami(t) {
   const w = t.whoami;
-  const awards = `${icon('star', 'icon-size-13', true)} ${esc(w.awardsText)} <span class="whoami-note">${esc(
-    w.awardsNote
-  )}</span>`;
+  const awards = `${icon('star', 'icon-size-13', true)} <span>${esc(w.awardsText)}${
+    w.awardsNote ? ` <span class="whoami-note">${esc(w.awardsNote)}</span>` : ''
+  }${w.awardsExtra ? ` ${esc(w.awardsExtra)}` : ''}</span>`;
   const status = `${icon('dot', 'icon-size-9', true)} `;
 
   const desk = w.desktop || {};
@@ -258,21 +258,25 @@ function preview(t, lang, shots = {}) {
   const firstNote = first.note ? first.note[lang] : null;
   const noteHidden = firstNote ? '' : ' hidden';
   const noteText = firstNote ? esc(firstNote) : '';
-  const award = first.awwwards
-    ? { text: first.awwwards[lang], url: first.awwwards.url }
-    : null;
-  const awardsHidden = award ? '' : ' hidden';
-  const awardLastSpace = award ? award.text.lastIndexOf(' ') : -1;
-  const awardPrefix = award && awardLastSpace > -1 ? `${esc(award.text.slice(0, awardLastSpace))} ` : '';
-  const awardSuffix = award ? esc(award.text.slice(awardLastSpace + 1)) : '';
-  const awardText = award
-    ? award.url
-      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener">${awardPrefix}<span class="preview-awards__suffix">${awardSuffix}${icon(
+  const firstAwards = first.awards
+    ? first.awards.map((a) => ({ text: a[lang], url: a.url || null }))
+    : first.awwwards
+      ? [{ text: first.awwwards[lang], url: first.awwwards.url || null }]
+      : [];
+  const awardsHidden = firstAwards.length ? '' : ' hidden';
+  const renderAwardItem = (award) => {
+    const lastSpace = award.text.lastIndexOf(' ');
+    const prefix = lastSpace > -1 ? `${esc(award.text.slice(0, lastSpace))} ` : '';
+    const suffix = esc(award.text.slice(lastSpace + 1));
+    const content = award.url
+      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener">${prefix}<span class="preview-awards__suffix">${suffix}${icon(
           'ext',
           'icon-size-11'
         )}</span></a>`
-      : esc(award.text)
-    : '';
+      : `<span>${esc(award.text)}</span>`;
+    return `<div class="preview-awards__item">${icon('star', 'icon-size-12', true)}${content}</div>`;
+  };
+  const awardsHtml = firstAwards.map(renderAwardItem).join('');
 
   return `
   <section class="section section--preview" id="preview">
@@ -323,7 +327,7 @@ function preview(t, lang, shots = {}) {
           <span class="preview-note__slash">// </span><span class="preview-note__text" data-preview-note-text>${noteText}</span>
         </div>
         <div class="preview-awards" data-preview-awards${awardsHidden}>
-          ${icon('star', 'icon-size-12', true)} <span data-preview-awards-text>${awardText}</span>
+          <span data-preview-awards-text>${awardsHtml}</span>
         </div>
       </div>
     </div>
@@ -388,26 +392,32 @@ function contact(t) {
 
 // ---------- данные для app.js (уже локализованные) ----------
 function bootData(lang, t, shots = {}) {
-  const list = projects.map((p) => ({
-    slug: p.slug,
-    year: p.year,
-    client: p.client[lang],
-    type: p.type[lang],
-    url: p.url,
-    site: p.site,
-    star: !!p.star,
-    categories: p.categories || [],
-    tags: p.tags || [],
-    description: p.description[lang],
-    awwwards: p.awwwards
-      ? { text: p.awwwards[lang], url: p.awwwards.url }
-      : null,
-    shot: shot(p.slug),
-    shotMod: shotMod(p.slug, shots[p.slug]),
-    shotModType: shotType(shots[p.slug]),
-    video: p.video || null,
-    note: p.note ? p.note[lang] : null,
-  }));
+  const list = projects.map((p) => {
+    const awards = p.awards
+      ? p.awards.map((a) => ({ text: a[lang], url: a.url || null }))
+      : p.awwwards
+        ? [{ text: p.awwwards[lang], url: p.awwwards.url || null }]
+        : [];
+    return {
+      slug: p.slug,
+      year: p.year,
+      client: p.client[lang],
+      type: p.type[lang],
+      url: p.url,
+      site: p.site,
+      star: !p.star,
+      categories: p.categories || [],
+      tags: p.tags || [],
+      description: p.description[lang],
+      awards,
+      awwwards: awards[0] || null,
+      shot: shot(p.slug),
+      shotMod: shotMod(p.slug, shots[p.slug]),
+      shotModType: shotType(shots[p.slug]),
+      video: p.video || null,
+      note: p.note ? p.note[lang] : null,
+    };
+  });
   return {
     lang,
     t: { openSite: t.openSite },
