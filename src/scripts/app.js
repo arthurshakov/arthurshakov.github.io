@@ -188,6 +188,7 @@ import { createPjaxRouter } from './pjax.js';
   if (audioToggles.length) {
     const musicFadeInMs = 500;
     const musicFadeOutMs = 50;
+    const musicCrossfadeMs = 1000;
     const visualizer = createAudioVisualizer();
     const musicTracks = pageData.audioTracks.map(({ file, name }) => ({
       src: `/assets/audio/${file}`,
@@ -195,6 +196,7 @@ import { createPjaxRouter } from './pjax.js';
     }));
     const player = createPlaylistPlayer({
       tracks: musicTracks.map((track) => track.src),
+      crossfadeMs: musicCrossfadeMs,
       fadeInMs: musicFadeInMs,
       fadeOutMs: musicFadeOutMs,
       prepareAudio: (audio) => visualizer.attach(audio),

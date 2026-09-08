@@ -74,6 +74,7 @@ function createTimers() {
 }
 
 function makePlayer({
+  tracks = ['/first.mp3', '/second.mp3'],
   rejectPlay = false,
   crossfadeMs = 1000,
   fadeInMs,
@@ -89,7 +90,7 @@ function makePlayer({
   let graphResumes = 0;
   let time = 0;
   const player = createPlaylistPlayer({
-    tracks: ['/first.mp3', '/second.mp3'],
+    tracks,
     audioFactory: () => {
       const audio = createFakeAudio({ rejectPlay: rejectPlay && audios.length === 0 });
       audios.push(audio);
@@ -289,4 +290,74 @@ test('returns to off when the active audio element errors', async () => {
 
   assert.equal(storage.getItem('portfolio:music'), 'off');
   assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
+});
+
+test('rapidly switching tracks cancels intermediate transitions without overlapping audio', async () => {
+  const { player, audios, timers } = makePlayer({
+    tracks: ['/1.mp3', '/2.mp3', '/3.mp3', '/4.mp3'],
+    crossfadeMs: 1000,
+  });
+
+  await player.start();
+  assert.equal(player.getState().trackIndex, 0);
+  assert.equal(audios.filter((a) => !a.paused).length, 1);
+
+  // Rapidly trigger multiple skips
+  const p1 = player.next();
+  const p2 = player.next();
+  const p3 = player.next();
+  await Promise.all([p1, p2, p3]);
+
+  // Index points to track 3 immediately
+  assert.equal(player.getState().trackIndex, 3);
+
+  // Complete crossfade
+  timers.flush();
+
+  // Exactly one track should be playing now: track 3
+  const playingAudios = audios.filter((a) => !a.paused);
+  assert.equal(playingAudios.length, 1);
+  assert.equal(audios[3].paused, false);
+  assert.equal(audios[3].volume, 1);
+  assert.equal(audios[0].paused, true);
+  assert.equal(audios[1].paused, true);
+  assert.equal(audios[2].paused, true);
+});
+
+test('switching tracks during crossfade immediately stops the previous fading track', async () => {
+  const { player, audios, timers, advance } = makePlayer({
+    tracks: ['/1.mp3', '/2.mp3', '/3.mp3'],
+    crossfadeMs: 1000,
+    manualClock: true,
+  });
+
+  await player.start();
+  assert.equal(player.getState().trackIndex, 0);
+
+  // Switch to track 1
+  await player.next();
+  assert.equal(player.getState().trackIndex, 1);
+
+  // Advance 500ms into the 1000ms crossfade
+  advance(500);
+  timers.tick();
+  assert.equal(audios[0].paused, false); // still fading out
+  assert.equal(audios[1].paused, false); // fading in
+
+  // Now switch to track 2 in the middle of the crossfade
+  await player.next();
+  assert.equal(player.getState().trackIndex, 2);
+
+  // audios[0] MUST be stopped immediately
+  assert.equal(audios[0].paused, true);
+
+  // Complete crossfade between track 1 and track 2
+  advance(1000);
+  timers.tick();
+  assert.equal(audios[1].paused, true);
+  assert.equal(audios[2].paused, false);
+  assert.equal(audios[2].volume, 1);
+
+  const playingAudios = audios.filter((a) => !a.paused);
+  assert.equal(playingAudios.length, 1);
 });
