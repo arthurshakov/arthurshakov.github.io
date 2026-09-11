@@ -133,6 +133,7 @@ Forms are square and structural: 0px radius, 1px borders, and rectangular active
 ### Preview Media
 
 - **Fallback:** every project preview starts as a static screenshot; it remains visible until its video has a decoded frame.
+- **Frame:** the preview container uses the prepared videos’ `319:180` display ratio; the screenshot and video both cover that frame so their transition does not shift or reveal mismatched edges.
 - **Playback:** a project may opt into a muted, inline loop with WebM as the preferred source and H.264/MP4 as fallback. Playback begins only when the preview is visible, pauses when it is hidden or another project is selected, and resumes when the video project returns.
 - **Motion preference:** `prefers-reduced-motion` deliberately keeps the static screenshot. The still image remains the complete no-JavaScript experience.
 

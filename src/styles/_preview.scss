@@ -60,8 +60,7 @@
 
 .preview-screenshot {
   width: 100%;
-  height: auto;
-  aspect-ratio: 1000 / 565; // кадр без адресной строки браузера (~16:9)
+  height: 100%;
   object-fit: cover;
   border: 1px solid var(--line-strong);
   display: block;
@@ -69,6 +68,13 @@
 
 .preview-media {
   position: relative;
+  aspect-ratio: 319 / 180; // display ratio of the prepared video files
+  overflow: hidden;
+}
+
+.preview-media > picture {
+  display: block;
+  height: 100%;
 }
 
 .preview-video {

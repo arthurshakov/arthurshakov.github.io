@@ -302,9 +302,9 @@ function preview(t, lang, shots = {}) {
             )}">
             <img class="preview-screenshot" data-preview-shot-image src="${escAttr(shot(first.slug))}" alt="${escAttr(
               first.slug
-            )}" width="1000" height="565" decoding="async" draggable="false">
+            )}" width="319" height="180" decoding="async" draggable="false">
           </picture>
-          <video class="preview-screenshot preview-video" data-preview-video width="1000" height="565" muted loop playsinline preload="none" aria-hidden="true"></video>
+          <video class="preview-screenshot preview-video" data-preview-video width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
         </div>
       </div>
 

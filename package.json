@@ -9,6 +9,7 @@
     "watch": "chokidar \"src/**/*\" -c \"node src/build.mjs\" --initial",
     "serve": "live-server dist --port=5173 --no-browser --quiet",
     "dev": "concurrently -k -n build,serve -c blue,green \"npm:watch\" \"npm:serve\"",
+    "prepare:videos": "node scripts/prepare-videos.mjs",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "test": "node --test",
     "typecheck": "tsc --noEmit"

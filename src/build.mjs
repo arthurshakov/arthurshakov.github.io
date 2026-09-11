@@ -24,13 +24,13 @@ const WEBP_Q = 90;
 const AVIF_Q = 90;
 const JPEG_Q = 82; // растровый фолбэк для древних браузеров
 
-// slug -> имя файла в screenshots/without-url-bar/ (файлы названы по URL).
+// slug -> имя готового скриншота в screenshots/without-url-bar/.
 const SHOT_SRC = {
   'glass-decor': 'glass-decor.ru.webp',
-  hill8: 'awwwards.com_sites_hill8.webp',
-  gigachat: 'genai.rbc.ru.webp',
+  hill8: 'hill8.webp',
+  krylatskaya33: 'krylatrskaya33.webp',
   'power-x-time': 'tass-power-x-time.linestest.com.webp',
-  'nornickel-90': 'tass.ru_specialprojects_nornickel-90.webp',
+  'tass-rzhd-bam': 'tass-rzhd-bam.webp',
   'vmeste-ai': 'tass.ru_specialprojects_vmeste-ai.webp',
   'best-cashier': 'best-cashier.food.ru.webp',
   'klassnie-sbory': 'klassnie-sbory.food.ru.webp',
@@ -38,6 +38,11 @@ const SHOT_SRC = {
   'etalon-group': 'etalongroup.com.webp',
   'career-nornickel': 'career.nornickel.ru.webp',
   'astra-drive': 'astradrive.net.webp',
+  'rbc-moskvich': 'rbc-moskvich.webp',
+  'rbc-tank': 'rbc-tank.webp',
+  'katty-pro': 'katty-pro.webp',
+  'hals-summer': 'hals-summer.webp',
+  dreamriva: 'dreamriva.webp',
 };
 
 async function newer(src, dst) {

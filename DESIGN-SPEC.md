@@ -11,7 +11,7 @@
 | `MainEN.dc.html` | EN, desktop (1440) |
 | `MainMobile.dc.html` | RU, mobile (390) |
 | `MainMobileEN.dc.html` | EN, mobile (390) |
-| `screenshots/processed/*.jpg` | скриншоты работ, ~1000px, хром браузера обрезан, имена = slug проекта |
+| `screenshots/without-url-bar/*` | готовые скриншоты без адресной строки; соответствие имён slug проекта задано в `SHOT_SRC` (`src/build.mjs`) |
 | `arthur-shakov-resume.pdf` | резюме (ссылка `--cv`) |
 | `portfolio projects.md` | полный список проектов (в портфолио — только отобранные ниже) |
 
@@ -29,7 +29,7 @@
 - Лента превью в `// preview`: клик по миниатюре меняет большой кадр и мету; активная миниатюра — рамка `2px` акцентом.
 - Доступность: контраст, фокус-кольца от палитры, `prefers-reduced-motion` (гасит мигание каретки, любые появления и плавный скролл — Lenis не инициализируется, остаётся нативный скролл).
 - Хит-таргеты на мобиле ≥ 44px.
-- Скриншоты — из `screenshots/processed/`; отдать в разных плотностях/webp по вкусу.
+- Скриншоты — из `screenshots/without-url-bar/`; `buildImages()` в `src/build.mjs` обрабатывает их через Sharp: полный кадр в исходном разрешении и миниатюра шириной до 1000px, для каждого — меньший из AVIF/WebP (качество 90) плюс JPEG (качество 82).
 
 Стек на усмотрение исполнителя (хватит vanilla HTML/(S)CSS/JS(TypeScript); допустимы Astro). Без тяжёлых фреймворков без причины.
 
@@ -86,20 +86,20 @@
 
 | slug | год | клиент | тип | URL для `$ open` / кнопки | Awwwards |
 |---|---|---|---|---|---|
-| glass-decor | 2019 | Whitemark | THREE.js · GSAP · Vue | glass-decor.ru | ★ HM + Mobile Excellence |
-| hill8 | 2018 | Whitemark | frontend + Bitrix | awwwards.com/sites/hill8 (прод-домен мёртв) | ★ HM |
-| gigachat | 2025 | РБК × Сбер | GenAI-спецпроект | genai.rbc.ru | |
-| power-x-time | 2024 | ТАСС × Росатом | интерактивный таймлайн | spec.tass.ru/power-x-time | |
-| nornickel-90 | 2025 | ТАСС | спецпроект-лонгрид | tass.ru/specialprojects/nornickel-90 | |
-| vmeste-ai | 2026 | Фонд Потанина × ТАСС | цикл видеолекций | tass.ru/specialprojects/vmeste-ai | |
-| best-cashier | 2026 | X5 / food.ru | игра-тренажёр | best-cashier.food.ru | |
-| klassnie-sbory | 2026 | Чижик | промо «снова в школу» | klassnie-sbory.food.ru | |
-| sl-soft | 2025 | Praxis | корпоративный сайт | slsoft.ru | |
-| etalon-group | 2025 | Praxis | девелопер · инвест-презентации | etalongroup.com | |
-| career-nornickel | 2026 | Норникель | карьерный сайт | career.nornickel.ru | |
-| astra-drive | 2025 | Astra | бренд-сайт | astradrive.net | |
+| power-x-time | 2024 | ТАСС × Росатом  (веб-студия Ninelines) | интерактивный таймлайн | tass-power-x-time.linestest.com |  |
+| vmeste-ai | 2026 | Фонд Потанина × ТАСС  (веб-студия Ninelines) | цикл видеолекций | tass.ru/specialprojects/vmeste-ai |  |
+| glass-decor | 2019 | Glass Decor (веб-студия Whitemark) | сайт-каталог | glass-decor.ru | ★ HM + Mobile Excellence |
+| hill8 | 2018 | Hill8 (веб-студия Whitemark) | сайт апартаментов · выборщик | hill8.whitemark-it.com | ★ HM |
+| best-cashier | 2026 | X5 / food.ru | игра-тренажёр | best-cashier.food.ru |  |
+| klassnie-sbory | 2026 | Чижик | промо «снова в школу» | klassnie-sbory.food.ru |  |
+| sl-soft | 2025 | Praxis | корпоративный сайт | slsoft.ru |  |
+| etalon-group | 2025 | Praxis | девелопер · инвест-презентации | etalongroup.com |  |
+| career-nornickel | 2026 | Норникель | карьерный сайт | career.nornickel.ru |  |
+| astra-drive | 2025 | Astra | бренд-сайт | astradrive.net |  |
+| krylatskaya33 | 2026 | РБК | спецпроект о недвижимости | krylatskaya33.rbc.ru |  |
+| tass-rzhd-bam | 2024 | ТАСС × РЖД | спецпроект «БАМ 50 лет» | tass-rzhd-bam.linestest.com |  |
 
-Скриншоты: `screenshots/processed/<slug>.jpg`. Ниже таблицы — строка `$ ls works/_archive/ | wc -l → 60+` со ссылкой на полный список.
+Скриншоты после сборки: `dist/assets/shots/<slug>.*`, миниатюры — `<slug>-thumb.*`; выбранные форматы указаны в `_manifest.json`. Исходники берутся из `screenshots/without-url-bar/` по таблице `SHOT_SRC`; готовые файлы кэшируются по mtime исходников. Ниже таблицы — строка `$ ls works/_archive/ | wc -l → 60+` со ссылкой на полный список.
 
 EN-версия: slug'и не переводятся; клиенты/типы — на английском (см. `MainEN.dc.html`), `Девять Линий` → `Nine Lines`, «спецпроект» → `campaign / editorial project`.
 

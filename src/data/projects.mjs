@@ -1,6 +1,6 @@
-// 12 работ. Порядок = featured (как в Main.dc.html), НЕ по годам.
-// Источник значений: DESIGN-SPEC.md + Main*.dc.html + "portfolio projects.md".
-// description для всех, кроме glass-decor, — заглушки (по договорённости). client/year/url/awwwards — настоящие.
+// Избранные проекты. Порядок = featured, НЕ по годам.
+// Метаданные: "portfolio projects.md" и уточнения автора.
+// Незаполненные описания отмечены TODO на обоих языках.
 
 const TODO_RU = '// описание — TODO';
 const TODO_EN = '// description — TODO';
@@ -51,6 +51,10 @@ export const projects = [
     categories: [],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/vmeste-ai.webm',
+      mp4: '/assets/video/vmeste-ai.mp4',
+    },
     tags: ['video.js', 'Barba.js', 'Swiper', 'JavaScript'],
     description: {
       ru: 'В «Девяти линиях» я разработал фронтенд мультимедийного спецпроекта: бесшовные PJAX-переходы между разделами на Barba.js, интерактивный плеер на video.js со стримингом HLS (.m3u8) и кликабельными тайм-кодами, а также синхронизированные Swiper-слайдеры с фоновыми видеолупами. Реализовал эффекты матового стекла на SVG-фильтрах шума, кастомный курсор и отдельный табовый интерфейс для мобильных устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
@@ -127,6 +131,10 @@ export const projects = [
         url: 'https://www.cssdesignawards.com/sites/hill8/34364/',
       },
     ],
+    video: {
+      webm: '/assets/video/hill8.webm',
+      mp4: '/assets/video/hill8.mp4',
+    },
     tags: ['GSAP', 'Vue', 'Bitrix CMS', 'JavaScript'],
     description: {
       ru: 'В Whitemark я разработал фронтенд промосайта премиального комплекса апартаментов HILL8: бесшовные кинематографичные переходы между страницами и меню на GSAP, интерактивный выборщик апартаментов на Vue (с подбором на схеме комплекса, поэтажными планами и фильтрацией по планировкам), а также адаптивную вёрстку с интеграцией в Bitrix CMS. Проект отмечен Awwwards Honorable Mention, CSS Design Awards и признан лучшим девелоперским сайтом Европы на European Property Awards.',
@@ -134,36 +142,6 @@ export const projects = [
       en: 'At Whitemark, I built the frontend for the HILL8 luxury apartment complex: seamless cinematic page and menu transitions powered by GSAP, an interactive Vue-based apartment selector (featuring interactive building schemes, floor plans, and layout filtering), and responsive layouts integrated into Bitrix CMS. The project received an Awwwards Honorable Mention, a CSS Design Awards Special Kudos, and won Developer Website Europe at the European Property Awards.',
     },
   },
-
-  // GIGACHAT
-  // {
-  //   slug: 'gigachat',
-  //   year: 2025,
-  //   client: { ru: 'РБК × Сбер', en: 'RBC × Sber' },
-  //   type: { ru: 'GenAI-спецпроект', en: 'GenAI campaign' },
-  //   url: 'https://genai.rbc.ru/',
-  //   site: 'genai.rbc.ru',
-  //   categories: ['genai'],
-  //   star: false,
-  //   awwwards: null,
-  //   tags: ['GenAI', 'JavaScript', 'SCSS'],
-  //   description: { ru: TODO_RU, en: TODO_EN },
-  // },
-
-  // NORNICKEL 90
-  // {
-  //   slug: 'nornickel-90',
-  //   year: 2025,
-  //   client: { ru: 'ТАСС', en: 'TASS' },
-  //   type: { ru: 'спецпроект-лонгрид', en: 'editorial longread' },
-  //   url: 'https://tass.ru/specialprojects/nornickel-90',
-  //   site: 'tass.ru/specialprojects/nornickel-90',
-  //   categories: [],
-  //   star: false,
-  //   awwwards: null,
-  //   tags: ['longread', 'GSAP', 'JavaScript'],
-  //   description: { ru: TODO_RU, en: TODO_EN },
-  // },
 
   // BEST CASHIER
   {
@@ -176,6 +154,10 @@ export const projects = [
     categories: ['games'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/best-cashier.webm',
+      mp4: '/assets/video/best-cashier.mp4',
+    },
     tags: ['game', 'Canvas', 'JavaScript'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
@@ -191,6 +173,10 @@ export const projects = [
     categories: ['promo'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/klassnie-sbory.webm',
+      mp4: '/assets/video/klassnie-sbory.mp4',
+    },
     tags: ['Nuxt', 'GSAP', 'promo'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
@@ -206,6 +192,10 @@ export const projects = [
     categories: ['corporate'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/sl-soft.webm',
+      mp4: '/assets/video/sl-soft.mp4',
+    },
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
@@ -221,6 +211,10 @@ export const projects = [
     categories: ['corporate'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/etalon-group.webm',
+      mp4: '/assets/video/etalon-group.mp4',
+    },
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
@@ -236,6 +230,10 @@ export const projects = [
     categories: ['corporate'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/career-nornickel.webm',
+      mp4: '/assets/video/career-nornickel.mp4',
+    },
     tags: ['corporate', 'JavaScript', 'SCSS'],
     description: { ru: TODO_RU, en: TODO_EN },
   },
@@ -251,7 +249,160 @@ export const projects = [
     categories: ['promo'],
     star: false,
     awwwards: null,
+    video: {
+      webm: '/assets/video/astra-drive.webm',
+      mp4: '/assets/video/astra-drive.mp4',
+    },
     tags: ['brand', 'GSAP', 'JavaScript'],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // KRYLATSKAYA 33
+  {
+    slug: 'krylatskaya33',
+    year: 2026,
+    client: { ru: 'РБК', en: 'RBC' },
+    type: { ru: 'спецпроект о недвижимости', en: 'real estate campaign' },
+    url: 'https://krylatskaya33.rbc.ru/',
+    site: 'krylatskaya33.rbc.ru',
+    categories: ['promo'],
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/krylatskaya33.webm',
+      mp4: '/assets/video/krylatskaya33.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // TASS RZHD BAM
+  {
+    slug: 'tass-rzhd-bam',
+    year: 2024,
+    client: { ru: 'ТАСС × РЖД', en: 'TASS × Russian Railways' },
+    type: { ru: 'спецпроект «БАМ 50 лет»', en: 'BAM 50th anniversary campaign' },
+    url: 'https://tass-rzhd-bam.linestest.com/',
+    site: 'tass-rzhd-bam.linestest.com',
+    categories: [],
+    note: {
+      ru: 'ссылка ведёт на тестовый стенд',
+      en: 'link points to staging environment',
+    },
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/tass-rzhd-bam.webm',
+      mp4: '/assets/video/tass-rzhd-bam.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // RBC MOSKVICH
+  {
+    slug: 'rbc-moskvich',
+    year: 2024,
+    client: { ru: 'РБК × Москвич', en: 'RBC × Moskvich' },
+    type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
+    url: 'https://rbc-moskvich.linestest.com/',
+    site: 'rbc-moskvich.linestest.com',
+    categories: ['promo'],
+    note: {
+      ru: 'ссылка ведёт на тестовый стенд',
+      en: 'link points to staging environment',
+    },
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/rbc-moskvich.webm',
+      mp4: '/assets/video/rbc-moskvich.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // RBC TANK
+  {
+    slug: 'rbc-tank',
+    year: 2023,
+    client: { ru: 'РБК × TANK', en: 'RBC × TANK' },
+    type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
+    url: 'https://rbc-tank.linestest.com/',
+    site: 'rbc-tank.linestest.com',
+    categories: ['promo'],
+    note: {
+      ru: 'ссылка ведёт на тестовый стенд',
+      en: 'link points to staging environment',
+    },
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/rbc-tank.webm',
+      mp4: '/assets/video/rbc-tank.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // KATTY PRO
+  {
+    slug: 'katty-pro',
+    year: 2025,
+    client: { ru: 'Пятёрочка × food.ru', en: 'Pyaterochka × food.ru' },
+    type: { ru: 'промоигра', en: 'promotional game' },
+    url: 'https://kattypro-box.linestest.com/',
+    site: 'kattypro-box.linestest.com',
+    categories: ['games', 'promo'],
+    note: {
+      ru: 'ссылка ведёт на тестовый стенд',
+      en: 'link points to staging environment',
+    },
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/katty-pro.webm',
+      mp4: '/assets/video/katty-pro.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // HALS SUMMER
+  {
+    slug: 'hals-summer',
+    year: 2024,
+    client: { ru: 'РБК × Галс', en: 'RBC × Hals' },
+    type: { ru: 'спецпроект «Лето в городе»', en: 'Summer in the City campaign' },
+    url: 'https://hals-summer.rbc.ru/',
+    site: 'hals-summer.rbc.ru',
+    categories: ['promo'],
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/hals-summer.webm',
+      mp4: '/assets/video/hals-summer.mp4',
+    },
+    tags: [],
+    description: { ru: TODO_RU, en: TODO_EN },
+  },
+
+  // DREAMRIVA
+  {
+    slug: 'dreamriva',
+    year: 2026,
+    client: { ru: 'РБК × Дрим Рива', en: 'RBC × Dream Riva' },
+    type: { ru: 'спецпроект о недвижимости', en: 'real estate campaign' },
+    url: 'https://dreamriva.rbc.ru/',
+    site: 'dreamriva.rbc.ru',
+    categories: ['promo'],
+    star: false,
+    awwwards: null,
+    video: {
+      webm: '/assets/video/dreamriva.webm',
+      mp4: '/assets/video/dreamriva.mp4',
+    },
+    tags: [],
     description: { ru: TODO_RU, en: TODO_EN },
   },
 ];

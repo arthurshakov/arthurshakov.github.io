@@ -5,7 +5,7 @@ import test from 'node:test';
 import { projects } from '../src/data/projects.mjs';
 import { renderPage } from '../src/template.mjs';
 
-test('projects can opt into preview video while image-only projects keep the fallback', () => {
+test('projects expose the prepared preview-video formats with a static fallback', () => {
   const powerXTime = projects.find(({ slug }) => slug === 'power-x-time');
   const glassDecor = projects.find(({ slug }) => slug === 'glass-decor');
   const vmesteAi = projects.find(({ slug }) => slug === 'vmeste-ai');
@@ -18,7 +18,10 @@ test('projects can opt into preview video while image-only projects keep the fal
     webm: '/assets/video/glass-decor.webm',
     mp4: '/assets/video/glass-decor.mp4',
   });
-  assert.equal(vmesteAi.video, undefined);
+  assert.deepEqual(vmesteAi.video, {
+    webm: '/assets/video/vmeste-ai.webm',
+    mp4: '/assets/video/vmeste-ai.mp4',
+  });
 
   const html = renderPage('en');
 
@@ -28,6 +31,16 @@ test('projects can opt into preview video while image-only projects keep the fal
   assert.match(html, /tass-power-x-time\.mp4/);
   assert.match(html, /"video":\{"webm":/);
   assert.match(html, /"mp4":"\/assets\/video\/tass-power-x-time\.mp4"/);
+});
+
+test('preview media uses the video display ratio for both its fallback and loop', async () => {
+  const styles = await readFile(new URL('../src/styles/_preview.scss', import.meta.url), 'utf8');
+  const html = renderPage('en');
+
+  assert.match(html, /<img class="preview-screenshot"[^>]*width="319" height="180"/);
+  assert.match(html, /<video class="preview-screenshot preview-video"[^>]*width="319" height="180"/);
+  assert.match(styles, /\.preview-media\s*\{[\s\S]*aspect-ratio:\s*319\s*\/\s*180/);
+  assert.match(styles, /\.preview-screenshot\s*\{[\s\S]*height:\s*100%/);
 });
 
 test('returning to an already loaded video reveals it before playback resumes', async () => {

@@ -1,6 +1,10 @@
 // Тексты «хрома» интерфейса. Значения — дословно из Main*.dc.html / MainEN*.dc.html.
 // Где артборды desktop и mobile расходятся по копирайту — обе версии (d / m).
 
+import { projects } from './projects.mjs';
+
+const PROJECT_COUNT = projects.length;
+
 const STACK_STRING = 'JavaScript / TypeScript · React · Vue / Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma';
 
 export const strings = {
@@ -19,8 +23,8 @@ export const strings = {
       path: '~/portfolio',
       dollar: '$',
     },
-    selected: '12 selected · 60+ total',
-    selectedM: '12 selected · 60+ total',
+    selected: `${PROJECT_COUNT} selected · 60+ total`,
+    selectedM: `${PROJECT_COUNT} selected · 60+ total`,
     langLabel: '--lang=',
     audio: {
       on: 'звук вкл',
@@ -36,8 +40,8 @@ export const strings = {
     secWorks: 'works',
     secPreview: 'preview',
     secContact: 'contact',
-    worksCountD: '12 отобрано из 60+',
-    worksCountM: '12 / 60+',
+    worksCountD: `${PROJECT_COUNT} отобрано из 60+`,
+    worksCountM: `${PROJECT_COUNT} / 60+`,
     // whoami — labels
     w: {
       name: 'name',
@@ -126,8 +130,8 @@ export const strings = {
       path: '~/portfolio',
       dollar: '$',
     },
-    selected: '12 selected · 60+ total',
-    selectedM: '12 selected · 60+ total',
+    selected: `${PROJECT_COUNT} selected · 60+ total`,
+    selectedM: `${PROJECT_COUNT} selected · 60+ total`,
     langLabel: '--lang=',
     audio: {
       on: 'sound on',
@@ -142,8 +146,8 @@ export const strings = {
     secWorks: 'works',
     secPreview: 'preview',
     secContact: 'contact',
-    worksCountD: '12 selected of 60+',
-    worksCountM: '12 / 60+',
+    worksCountD: `${PROJECT_COUNT} selected of 60+`,
+    worksCountM: `${PROJECT_COUNT} / 60+`,
     w: {
       name: 'name',
       role: 'role',
