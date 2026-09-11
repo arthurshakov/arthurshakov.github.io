@@ -85,8 +85,9 @@
 
 .works-column--year {
   @include desktop {
-    width: vc(52);
+    width: vc(80);
     flex: none;
+    white-space: nowrap;
   }
 }
 
@@ -224,6 +225,7 @@
   @include mobile {
     color: var(--text-3);
     font-size: vc(12);
+    white-space: nowrap;
   }
 }
 

@@ -16,7 +16,7 @@ export interface ProjectVideo {
 
 export interface Project {
   slug: string;
-  year: number;
+  year: number | string;
   client: LocalizedString;
   type: LocalizedString;
   url: string;
@@ -40,7 +40,7 @@ export interface AudioTrack {
 
 export interface LocalizedBootProject {
   slug: string;
-  year: number;
+  year: number | string;
   client: string;
   type: string;
   url: string;

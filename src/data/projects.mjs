@@ -196,7 +196,7 @@ export const projects = [
   // SL SOFT
   {
     slug: 'sl-soft',
-    year: 2025,
+    year: '2024-2026',
     client: {
       ru: 'Praxis (веб-студия Ninelines)',
       en: 'Praxis (Ninelines web-studio)',
@@ -221,8 +221,11 @@ export const projects = [
   // ETALON GROUP
   {
     slug: 'etalon-group',
-    year: 2025,
-    client: { ru: 'Praxis', en: 'Praxis' },
+    year: '2025-2026',
+    client: {
+      ru: 'Praxis (веб-студия Ninelines)',
+      en: 'Praxis (Ninelines web-studio)',
+    },
     type: { ru: 'девелопер · инвест-презентации', en: 'developer · investor decks' },
     url: 'https://www.etalongroup.com/',
     site: 'etalongroup.com',
@@ -233,14 +236,17 @@ export const projects = [
       webm: '/assets/video/etalon-group.webm',
       mp4: '/assets/video/etalon-group.mp4',
     },
-    tags: ['corporate', 'JavaScript', 'SCSS'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Webpack', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд корпоративного портала девелопера «Эталон» и раздела презентаций для инвесторов: интерактивную систему фильтрации отчётов по годам и типам, карточки документов с отображением форматов и размеров файлов, а также динамическую пагинацию. Реализовал полноэкранное навигационное меню с биржевыми котировками, модальные окна для просмотра видеопрезентаций, формы обратной связи с валидацией и адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the Etalon Group corporate portal and its investor presentations hub: an interactive document filtering system categorized by period and report type, downloadable document cards displaying file metadata, and dynamic pagination. I implemented a full-screen navigation overlay displaying live stock quotes, modal dialogs for video presentations, validated contact forms, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // CAREER NORNICKEL
   {
     slug: 'career-nornickel',
-    year: 2026,
+    year: '2024-2026',
     client: { ru: 'Норникель', en: 'Nornickel' },
     type: { ru: 'карьерный сайт', en: 'careers site' },
     url: 'https://career.nornickel.ru/',
