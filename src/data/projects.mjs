@@ -197,7 +197,10 @@ export const projects = [
   {
     slug: 'sl-soft',
     year: 2025,
-    client: { ru: 'Praxis', en: 'Praxis' },
+    client: {
+      ru: 'Praxis (веб-студия Ninelines)',
+      en: 'Praxis (Ninelines web-studio)',
+    },
     type: { ru: 'корпоративный сайт', en: 'corporate site' },
     url: 'https://slsoft.ru/',
     site: 'slsoft.ru',
@@ -208,8 +211,11 @@ export const projects = [
       webm: '/assets/video/sl-soft.webm',
       mp4: '/assets/video/sl-soft.mp4',
     },
-    tags: ['corporate', 'JavaScript', 'SCSS'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Webpack', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд корпоративного сайта разработчика российских бизнес-приложений SL Soft: плавный скролл на GSAP ScrollSmoother, анимацию загрузки с фирменным SVG-прелоадером и интерактивное мега-меню с видеопревью продуктов. Реализовал модальные окна и формы обратной связи с клиентской валидацией и интеграцией Yandex SmartCaptcha, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the SL Soft corporate website, a major Russian enterprise software vendor: smooth scrolling powered by GSAP ScrollSmoother, entrance animations with a custom SVG brand preloader, and an interactive mega-menu featuring video product previews. I implemented modal dialogs and contact forms with client-side validation and Yandex SmartCaptcha integration, alongside fully responsive layouts across devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // ETALON GROUP
