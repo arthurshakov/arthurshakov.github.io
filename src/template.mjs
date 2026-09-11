@@ -405,7 +405,7 @@ function bootData(lang, t, shots = {}) {
       type: p.type[lang],
       url: p.url,
       site: p.site,
-      star: !p.star,
+      star: Boolean(p.star),
       categories: p.categories || [],
       tags: p.tags || [],
       description: p.description[lang],
