@@ -147,7 +147,10 @@ export const projects = [
   {
     slug: 'best-cashier',
     year: 2026,
-    client: { ru: 'X5 / food.ru', en: 'X5 / food.ru' },
+    client: {
+      ru: 'X5 / food.ru  (веб-студия Ninelines)',
+      en: 'X5 / food.ru  (Ninelines web-studio)',
+    },
     type: { ru: 'игра-тренажёр', en: 'training game' },
     url: 'https://best-cashier.food.ru/',
     site: 'best-cashier.food.ru',
@@ -158,8 +161,11 @@ export const projects = [
       webm: '/assets/video/best-cashier.webm',
       mp4: '/assets/video/best-cashier.mp4',
     },
-    tags: ['game', 'Canvas', 'JavaScript'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['Nuxt', 'GSAP', 'game', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд интерактивной игры-тренажёра на Nuxt 4: симулятор кассового узла с движущейся конвейерной лентой, механику сканирования штрихкодов, взвешивания и ручного ввода кодов, а также анимированный на GSAP спидометр скорости обслуживания с контролем нормативов. Реализовал диалоговые сценарии с 7 виртуальными покупателями, образовательные модули с памятками, звуковое сопровождение и соревновательный режим с турнирной таблицей. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this interactive training game built with Nuxt 4: a checkout counter simulation with a moving conveyor belt, barcode scanning, product weighing, and manual code lookup, alongside a GSAP-animated speedometer tracking scanning speed against retail SLA benchmarks. I implemented dialogue scenarios with seven virtual customer personas, educational modules with cheat sheets, sound effects, and a competitive leaderboard mode. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // KLASSNYE SBORY
