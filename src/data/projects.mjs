@@ -172,7 +172,10 @@ export const projects = [
   {
     slug: 'klassnie-sbory',
     year: 2026,
-    client: { ru: 'Чижик', en: 'Chizhik' },
+    client: {
+      ru: 'Чижик / food.ru (веб-студия Ninelines)',
+      en: 'Chizhik / food.ru (Ninelines web-studio)',
+    },
     type: { ru: 'промо «снова в школу»', en: 'back-to-school promo' },
     url: 'https://klassnie-sbory.food.ru/',
     site: 'klassnie-sbory.food.ru',
@@ -183,8 +186,11 @@ export const projects = [
       webm: '/assets/video/klassnie-sbory.webm',
       mp4: '/assets/video/klassnie-sbory.mp4',
     },
-    tags: ['Nuxt', 'GSAP', 'promo'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['Nuxt', 'GSAP', 'promo', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд промокампании «снова в школу» на Nuxt 4: интерактивную веб-игру с адаптивной сеткой мыльных пузырей, анимацией взрыва частиц и таймером перерождения, а также анимированную на GSAP призовую рулетку с начислением «класс-коинов». Реализовал личный кабинет участника с балансом бонусов, интеграцию со сценариями мобильного приложения доставки «Чижика» (раздел «Надо успеть»), страницы правил акции и публикацию победителей розыгрышей. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this back-to-school promotional campaign built with Nuxt 4: an interactive bubble-popping game with a responsive grid layout, burst particle animations, and dynamic bubble regrowth, alongside a GSAP-animated prize roulette awarding bonus "class-coins". I implemented the participant dashboard with authentication and coin tracking, integration with Chizhik delivery app promo mechanics, campaign rules pages, and the raffle winners showcase. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // SL SOFT
