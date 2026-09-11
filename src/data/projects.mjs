@@ -247,7 +247,10 @@ export const projects = [
   {
     slug: 'career-nornickel',
     year: '2024-2026',
-    client: { ru: 'Норникель', en: 'Nornickel' },
+    client: {
+      ru: 'Норникель (веб-студия Ninelines)',
+      en: 'Nornickel (Ninelines web-studio)',
+    },
     type: { ru: 'карьерный сайт', en: 'careers site' },
     url: 'https://career.nornickel.ru/',
     site: 'career.nornickel.ru',
@@ -258,8 +261,11 @@ export const projects = [
       webm: '/assets/video/career-nornickel.webm',
       mp4: '/assets/video/career-nornickel.mp4',
     },
-    tags: ['corporate', 'JavaScript', 'SCSS'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['Vue', 'Barba.js', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд официального карьерного портала «Норникеля»: бесшовные переходы между разделами на Barba.js, интерактивный каталог вакансий на Vue с полнотекстовым поиском, мультифильтрацией и сортировкой, а также интерактивную карту городов присутствия и предприятий на Яндекс Картах. Реализовал детальные страницы вакансий с ключевыми условиями работы, формы отклика и отправки резюме с валидацией и интеграцией Yandex SmartCaptcha, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the official Nornickel career portal: seamless page transitions powered by Barba.js, an interactive Vue-based job search catalogue featuring full-text search, multi-criteria filtering, and sorting, alongside an interactive Yandex Maps experience displaying enterprise locations and production sites across Russia. I implemented detailed vacancy pages highlighting role conditions, job application and resume submission forms with client-side validation and Yandex SmartCaptcha integration, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // ASTRA DRIVE
