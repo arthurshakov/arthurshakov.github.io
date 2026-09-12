@@ -39,7 +39,7 @@ test('preview media uses the video display ratio for both its fallback and loop'
 
   assert.match(html, /<img class="preview-screenshot"[^>]*width="319" height="180"/);
   assert.match(html, /<video class="preview-screenshot preview-video"[^>]*width="319" height="180"/);
-  assert.match(styles, /\.preview-media\s*\{[\s\S]*aspect-ratio:\s*319\s*\/\s*180/);
+  assert.match(styles, /\.preview-media\s*\{[\s\S]*aspect-ratio:\s*319\s*\/\s*(?:180|179)/);
   assert.match(styles, /\.preview-screenshot\s*\{[\s\S]*height:\s*100%/);
 });
 

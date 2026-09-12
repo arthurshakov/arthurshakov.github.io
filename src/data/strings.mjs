@@ -112,8 +112,8 @@ export const strings = {
       cv: 'resume.pdf',
     },
     contactNote: '// открыт к интересным спецпроектам и продуктовым командам',
-    colophonD: 'built with vanilla JS + Lenis · no framework · © 2026',
-    colophonM: 'built with vanilla JS + Lenis · © 2026',
+    colophonD: 'сделано на vanilla JS + Lenis + GSAP · без фреймворков · © 2026',
+    colophonM: 'сделано на vanilla JS + Lenis + GSAP · без фреймворков · © 2026',
   },
 
   en: {
@@ -213,8 +213,8 @@ export const strings = {
       cv: 'resume.pdf',
     },
     contactNote: '// open to interesting campaign work and product teams',
-    colophonD: 'built with vanilla JS + Lenis · no framework · © 2026',
-    colophonM: 'built with vanilla JS + Lenis · © 2026',
+    colophonD: 'built with vanilla JS + Lenis + GSAP · no framework · © 2026',
+    colophonM: 'built with vanilla JS + Lenis + GSAP · no framework · © 2026',
   },
 };
 

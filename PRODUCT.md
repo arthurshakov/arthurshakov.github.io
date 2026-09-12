@@ -24,7 +24,7 @@ Visitors typically scan the portfolio, filter work, inspect project previews, an
 
 ## Capabilities and Constraints
 
-- Static bilingual site built with Node.js, SCSS, and vanilla JavaScript.
+- Static bilingual site built with Node.js, SCSS, and vanilla JavaScript (with Lenis & GSAP).
 - The rendered page remains usable without JavaScript.
 - Planned atmospheric audio uses two supplied tracks with a smooth crossfade and requires an explicit visitor action to begin playback.
 

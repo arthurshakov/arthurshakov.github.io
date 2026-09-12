@@ -1,5 +1,6 @@
 @use 'functions' as *;
 @use 'tokens';
+@use 'statusbar-frame';
 
 // Инлайнится в <head> строкой (см. build.mjs / template.mjs), поэтому
 // самодостаточен: не полагается на внешний styles.css. Держит первый
@@ -77,6 +78,25 @@ html.preloader-pending .preloader {
 
 html:not(.fonts-loaded) .page {
   visibility: hidden;
+}
+
+// Закрепление и подложка хэдера берутся из statusbar-frame.
+// Для состояния прелоадера хэдер остаётся relative.
+html.preloader-pending .statusbar {
+  position: relative;
+  z-index: 11;
+}
+
+@media (max-width: 959.98px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .mobile-only {
+    display: none;
+  }
 }
 
 // Минимальное состояние эквалайзера до загрузки основного CSS. Без него
