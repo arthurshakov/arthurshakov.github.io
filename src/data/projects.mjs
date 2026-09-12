@@ -272,7 +272,10 @@ export const projects = [
   {
     slug: 'astra-drive',
     year: 2025,
-    client: { ru: 'Astra', en: 'Astra' },
+    client: {
+      ru: 'Astra (веб-студия Ninelines)',
+      en: 'Astra (Ninelines web-studio)',
+    },
     type: { ru: 'бренд-сайт', en: 'brand site' },
     url: 'https://astradrive.net/',
     site: 'astradrive.net',
@@ -283,8 +286,11 @@ export const projects = [
       webm: '/assets/video/astra-drive.webm',
       mp4: '/assets/video/astra-drive.mp4',
     },
-    tags: ['brand', 'GSAP', 'JavaScript'],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Barba.js', 'Swiper', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд бренд-сайта беспроводных телекоммуникационных решений Astra Drive: бесшовные переходы между разделами на Barba.js, интерактивные табы отраслевых решений (Mining, Trains, Maritime) с динамической сменой контента и HLS-видеолупами (.m3u8), а также скролл-анимации на GSAP. Реализовал Swiper-слайдеры преимуществ оборудования, выдвижное меню, модальную форму обратной связи с интеграцией Zoho CRM (Web-to-Lead) и клиентской валидацией, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Google Analytics в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the Astra Drive wireless telecommunications brand website: seamless page transitions powered by Barba.js, interactive industry solution tabs (Mining, Trains, Maritime) with synchronized HLS video streaming (.m3u8), and scroll-driven animations using GSAP. I implemented Swiper sliders showcasing hardware capabilities, an off-canvas navigation menu, a modal contact form integrated with Zoho CRM (Web-to-Lead) featuring client-side validation, and fully responsive layouts across all devices. I also integrated custom event tracking with Google Analytics based on the project’s analytics specification.',
+    },
   },
 
   // KRYLATSKAYA 33
