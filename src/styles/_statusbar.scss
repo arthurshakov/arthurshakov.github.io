@@ -1,6 +1,9 @@
 @use 'functions' as *;
 
 .statusbar {
+  position: sticky;
+  top: 0;
+  z-index: 11;
   border-bottom: 1px solid var(--line);
   background: var(--bg-panel);
 }

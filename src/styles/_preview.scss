@@ -68,11 +68,11 @@
 
 .preview-media {
   position: relative;
-  aspect-ratio: 319 / 180; // display ratio of the prepared video files
+  aspect-ratio: 319 / 179; // display ratio of the prepared video files
   overflow: hidden;
 }
 
-.preview-media > picture {
+.preview-media>picture {
   display: block;
   height: 100%;
 }

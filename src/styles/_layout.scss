@@ -33,7 +33,10 @@
 
 // --- вертикальный ритм секций ---
 .section {
+  scroll-margin-top: vc(60);
+
   @include mobile {
+    scroll-margin-top: vc(80);
     padding: vc(8) 0 vc(36);
   }
 
