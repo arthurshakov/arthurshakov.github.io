@@ -16,8 +16,21 @@ export const GRID_ANIMATION_CONFIG = {
   // Прозрачность вертикальных шлейфов (0.0 .. 1.0)
   trailMaxAlpha: 0.25,
 
-  // Максимальная длина шлейфа в пикселях
+  // Максимальная длина шлейфа в единицах vc (vc(30))
   maxTrailLength: 30,
+
+  // Базовые размеры точки в единицах vc на десктопе (vc(1.5)xvc(1.5))
+  dotBaseWidth: 1.5,
+  dotBaseHeight: 1.5,
+  dotEnergyDelta: 0.5,
+
+  // Базовые размеры точки в единицах vc на мобилке (<960px) (vc(1)xvc(1))
+  mobileDotBaseWidth: 1,
+  mobileDotBaseHeight: 1,
+  mobileDotEnergyDelta: 0.33,
+
+  // Базовая толщина линий шлейфов и связок в единицах vc (vc(1))
+  lineWidthBase: 1,
 
   // Базовый шаг сетки на десктопе, соответствующий vc(64) в стилях
   vertStepBase: 64,
@@ -27,6 +40,10 @@ export const GRID_ANIMATION_CONFIG = {
   mobileStepBase: 40,
   mobileHorizStepBase: 40,
   mobileVertStepBase: 40,
+
+  // Чувствительность к скорости скролла (множитель импульса) на десктопе и мобилке
+  scrollSensitivity: 0.5,
+  mobileScrollSensitivity: 0.4,
 
   // Базовая яркость/прозрачность точек в состоянии покоя (0.0 .. 1.0)
   particleBaseAlpha: 0.30,
@@ -119,6 +136,13 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
   let rafId = 0;
 
   let startCol = 0;
+  let currentSensitivity = 1.0;
+  let scaledMaxTrail = 30;
+  let scaledMinTrail = 2;
+  let scaledDotW = 1.5;
+  let scaledDotH = 1.5;
+  let scaledDotEnergyDelta = 0.5;
+  let scaledLineWidth = 1;
 
   function resize() {
     dpr = window.devicePixelRatio || 1;
@@ -145,6 +169,29 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
     stepX = calcVc(baseHoriz, viewW);
     stepY = calcVc(baseVert, viewW);
     startCol = isMobile ? 0 : 1;
+
+    // Чувствительность к скроллу
+    currentSensitivity = isMobile
+      ? (config.mobileScrollSensitivity ?? config.scrollSensitivity ?? 1.0)
+      : (config.scrollSensitivity ?? 1.0);
+
+    // Размеры точек, шлейфов и линий в единицах vc(...) с учетом dpr
+    const baseDotW = isMobile
+      ? (config.mobileDotBaseWidth ?? 1)
+      : config.dotBaseWidth;
+    const baseDotH = isMobile
+      ? (config.mobileDotBaseHeight ?? 1)
+      : config.dotBaseHeight;
+    const baseEnergyDelta = isMobile
+      ? (config.mobileDotEnergyDelta ?? 0.33)
+      : config.dotEnergyDelta;
+
+    scaledMaxTrail = calcVc(config.maxTrailLength, viewW) * dpr;
+    scaledMinTrail = calcVc(2, viewW) * dpr;
+    scaledDotW = calcVc(baseDotW, viewW) * dpr;
+    scaledDotH = calcVc(baseDotH, viewW) * dpr;
+    scaledDotEnergyDelta = calcVc(baseEnergyDelta, viewW) * dpr;
+    scaledLineWidth = Math.max(1, calcVc(config.lineWidthBase, viewW)) * dpr;
 
     buildNodes(width, height);
     drawFrame(0);
@@ -179,7 +226,7 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
     const dt = Math.max(1, now - lastScrollTime);
     const dy = window.scrollY - lastScrollY;
 
-    scrollVelocity = dy / dt;
+    scrollVelocity = (dy / dt) * currentSensitivity;
     lastScrollY = window.scrollY;
     lastScrollTime = now;
 
@@ -198,12 +245,12 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
     if (!ctx) return;
     ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
 
-    const maxLen = config.maxTrailLength * dpr;
+    const maxLen = scaledMaxTrail;
     const speedFactor = Math.min(1.0, Math.abs(smoothVelocity) * 0.45 + energy * 0.55);
-    const trailLen = Math.max(2 * dpr, speedFactor * maxLen);
+    const trailLen = Math.max(scaledMinTrail, speedFactor * maxLen);
     const trailDir = smoothVelocity >= 0 ? -1 : 1;
 
-    ctx.lineWidth = 1 * dpr;
+    ctx.lineWidth = scaledLineWidth;
 
     // 1. Точки на линиях сетки и их шлейфы
     const minAlpha = config.particleBaseAlpha;
@@ -211,8 +258,8 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
     const dotAlpha = minAlpha + energy * (maxAlpha - minAlpha);
 
     ctx.fillStyle = `rgba(${config.accentRgb}, ${dotAlpha})`;
-    const dotH = (1.5 + energy * 0.5) * dpr;
-    const dotW = 1.5 * dpr;
+    const dotH = scaledDotH + energy * scaledDotEnergyDelta;
+    const dotW = scaledDotW;
 
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
@@ -342,7 +389,7 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
      * @param {number} velocity
      */
     feedVelocity(velocity) {
-      scrollVelocity = velocity * 0.1;
+      scrollVelocity = velocity * 0.1 * currentSensitivity;
       if (!isAnimating) {
         isAnimating = true;
         lastTime = performance.now();
