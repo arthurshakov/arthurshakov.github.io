@@ -1,9 +1,5 @@
 // Избранные проекты. Порядок = featured, НЕ по годам.
 // Метаданные: "portfolio projects.md" и уточнения автора.
-// Незаполненные описания отмечены TODO на обоих языках.
-
-const TODO_RU = '// описание — TODO';
-const TODO_EN = '// description — TODO';
 
 /** @type {import('../types/portfolio.d.ts').Project[]} */
 export const projects = [
@@ -322,7 +318,10 @@ export const projects = [
   {
     slug: 'tass-rzhd-bam',
     year: 2024,
-    client: { ru: 'ТАСС × РЖД', en: 'TASS × Russian Railways' },
+    client: {
+      ru: 'ТАСС × РЖД (веб-студия Ninelines)',
+      en: 'TASS × Russian Railways (Ninelines web-studio)',
+    },
     type: { ru: 'спецпроект «БАМ 50 лет»', en: 'BAM 50th anniversary campaign' },
     url: 'https://tass-rzhd-bam.linestest.com/',
     site: 'tass-rzhd-bam.linestest.com',
@@ -337,15 +336,21 @@ export const projects = [
       webm: '/assets/video/tass-rzhd-bam.webm',
       mp4: '/assets/video/tass-rzhd-bam.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Barba.js', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд мультимедийного спецпроекта к 50-летию БАМа: бесшовные PJAX-переходы на Barba.js, интерактивный исторический таймлайн со сквозной анимацией поезда на GSAP и видеоэлементами вдоль скролла, интерактивный кастомный курсор, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this BAM 50th anniversary multimedia campaign: seamless Barba.js PJAX page transitions, an interactive historical timeline featuring a continuous GSAP train animation and in-scroll video elements, a custom interactive cursor, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // RBC MOSKVICH
   {
     slug: 'rbc-moskvich',
     year: 2024,
-    client: { ru: 'РБК × Москвич', en: 'RBC × Moskvich' },
+    client: {
+      ru: 'РБК × Москвич (веб-студия Ninelines)',
+      en: 'RBC × Moskvich (Ninelines web-studio)',
+    },
     type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
     url: 'https://rbc-moskvich.linestest.com/',
     site: 'rbc-moskvich.linestest.com',
@@ -360,15 +365,21 @@ export const projects = [
       webm: '/assets/video/rbc-moskvich.webm',
       mp4: '/assets/video/rbc-moskvich.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Webpack', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд автомобильного спецпроекта РБК и бренда «Москвич»: плавный скролл на GSAP ScrollSmoother, интерактивное меню-навигатор по мифам об автомобилях и кинематографичную анимацию карточек на ScrollTrigger. Реализовал интерактивные сплит-блоки «миф / реальность» с техническими характеристиками моделей Москвич 3, 3е и Москвич 6, модальные окна о команде проекта, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this RBC and Moskvich automotive campaign: smooth scrolling powered by GSAP ScrollSmoother, an interactive sticky navigation menu browsing through common automotive myths, and cinematic card animations via ScrollTrigger. I implemented interactive "myth vs reality" split-screens detailing technical specs for the Moskvich 3, 3e, and Moskvich 6 models, project team modals, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // RBC TANK
   {
     slug: 'rbc-tank',
     year: 2023,
-    client: { ru: 'РБК × TANK', en: 'RBC × TANK' },
+    client: {
+      ru: 'РБК × TANK (веб-студия Ninelines)',
+      en: 'RBC × TANK (Ninelines web-studio)',
+    },
     type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
     url: 'https://rbc-tank.linestest.com/',
     site: 'rbc-tank.linestest.com',
@@ -383,15 +394,21 @@ export const projects = [
       webm: '/assets/video/rbc-tank.webm',
       mp4: '/assets/video/rbc-tank.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Three.js', 'Canvas', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд автомобильного спецпроекта РБК о внедорожнике TANK 300 City: плавный скролл на GSAP ScrollSmoother, интерактивный первый экран с раскрывающейся шторкой и фоновые визуальные эффекты на Three.js и Canvas. Реализовал скролл-анимации на ScrollTrigger с фиксацией секций, цитаты экспертов и фотогалереи автомобиля, полноэкранное навигационное меню, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for this RBC automotive special project featuring the TANK 300 City SUV: smooth scrolling powered by GSAP ScrollSmoother, an interactive hero section with an animated reveal curtain, and Three.js/Canvas-driven background wave visuals. I implemented ScrollTrigger-based scroll animations with pinned sections, expert editorial reviews, vehicle photo galleries, an off-canvas navigation overlay, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // KATTY PRO
   {
     slug: 'katty-pro',
     year: 2025,
-    client: { ru: 'Пятёрочка × food.ru', en: 'Pyaterochka × food.ru' },
+    client: {
+      ru: 'Пятёрочка × food.ru (веб-студия Ninelines)',
+      en: 'Pyaterochka × food.ru (Ninelines web-studio)',
+    },
     type: { ru: 'промоигра', en: 'promotional game' },
     url: 'https://kattypro-box.linestest.com/',
     site: 'kattypro-box.linestest.com',
@@ -406,15 +423,21 @@ export const projects = [
       webm: '/assets/video/katty-pro.webm',
       mp4: '/assets/video/katty-pro.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['Vue', 'GSAP', 'Vite', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд мобильной промоигры «Мур-комбо для котиков!» для «Пятёрочки» и food.ru на Vue 3: интерактивную механику подбора персонального бокса под характер питомца и микроанимации элементов на GSAP. Реализовал сценарии выбора рациона и повадок котика, динамическую распаковку призового бокса, генерацию карточки результата для шеринга, а также оптимизированную под мобильные экраны адаптивную вёрстку. Также настроил передачу пользовательских событий в веб-аналитику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the "Purr-Combo for Cats" mobile promotional game for Pyaterochka and food.ru built with Vue 3: interactive pet personality quiz mechanics, and GSAP-driven micro-animations. I implemented diet and behavior selection steps, an animated prize box unboxing flow, shareable result card generation, and high-performance mobile-first responsive layouts. I also integrated custom event tracking in accordance with the project’s analytics specification.',
+    },
   },
 
   // HALS SUMMER
   {
     slug: 'hals-summer',
     year: 2024,
-    client: { ru: 'РБК × Галс', en: 'RBC × Hals' },
+    client: {
+      ru: 'РБК × Галс (веб-студия Ninelines)',
+      en: 'RBC × Hals (Ninelines web-studio)',
+    },
     type: { ru: 'спецпроект «Лето в городе»', en: 'Summer in the City campaign' },
     url: 'https://hals-summer.rbc.ru/',
     site: 'hals-summer.rbc.ru',
@@ -425,15 +448,21 @@ export const projects = [
       webm: '/assets/video/hals-summer.webm',
       mp4: '/assets/video/hals-summer.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Barba.js', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд спецпроекта РБК и девелопера «Галс» «Лето в городе»: плавный скролл на GSAP ScrollSmoother, бесшовные переходы между разделами на Barba.js и интерактивную иллюстрированную карту Москвы со скролл-анимацией пинов на ScrollTrigger. Реализовал динамическую смену карточек маршрутов при прокрутке карты, карусель летних сценариев отдыха, модальные окна с описанием премиальных жилых кварталов, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the RBC and Hals-Development "Summer in the City" special project: smooth scrolling powered by GSAP ScrollSmoother, seamless Barba.js page transitions, and an interactive illustrated map of Moscow with ScrollTrigger-animated location pins. I implemented synchronized route card switching during map progression, a summer activity carousel, modal dialogs detailing premium residential districts, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // DREAMRIVA
   {
     slug: 'dreamriva',
     year: 2026,
-    client: { ru: 'РБК × Дрим Рива', en: 'RBC × Dream Riva' },
+    client: {
+      ru: 'РБК × Дрим Рива (веб-студия Ninelines)',
+      en: 'RBC × Dream Riva (Ninelines web-studio)',
+    },
     type: { ru: 'спецпроект о недвижимости', en: 'real estate campaign' },
     url: 'https://dreamriva.rbc.ru/',
     site: 'dreamriva.rbc.ru',
@@ -444,7 +473,10 @@ export const projects = [
       webm: '/assets/video/dreamriva.webm',
       mp4: '/assets/video/dreamriva.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['GSAP', 'Barba.js', 'SCSS', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд спецпроекта РБК о прибрежном квартале «Дрим Рива»: интерактивный сторителлинг с выбором персонажей-резидентов и скролл-анимации на GSAP (ScrollTrigger и ScrollSmoother). Реализовал полноэкранные сцены с курортной инфраструктурой и яхтенной мариной, фиксированные фоновые медиа-блоки, адаптивное навигационное меню, а также вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the RBC special project showcasing the Dream Riva waterfront residential district: interactive resident storytelling with character selection and smooth scroll animations powered by GSAP (ScrollTrigger and ScrollSmoother). I implemented full-screen scenes exploring resort-level amenities and the private yacht marina, fixed background visual stages, an off-canvas navigation menu, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 ];
