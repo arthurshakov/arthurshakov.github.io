@@ -297,7 +297,10 @@ export const projects = [
   {
     slug: 'krylatskaya33',
     year: 2026,
-    client: { ru: 'РБК', en: 'RBC' },
+    client: {
+      ru: 'РБК (веб-студия Ninelines)',
+      en: 'RBC (Ninelines web-studio)',
+    },
     type: { ru: 'спецпроект о недвижимости', en: 'real estate campaign' },
     url: 'https://krylatskaya33.rbc.ru/',
     site: 'krylatskaya33.rbc.ru',
@@ -308,8 +311,11 @@ export const projects = [
       webm: '/assets/video/krylatskaya33.webm',
       mp4: '/assets/video/krylatskaya33.mp4',
     },
-    tags: [],
-    description: { ru: TODO_RU, en: TODO_EN },
+    tags: ['Nuxt', 'GSAP', 'Lenis', 'JavaScript'],
+    description: {
+      ru: 'В «Девяти линиях» я разработал фронтенд спецпроекта РБК о недвижимости «Крылатская от А до Я» на Nuxt: сплит-скрин лейаут с маской открытия, плавный скролл на Lenis, типографический прелоадер и скролл-анимации на GSAP (ScrollTrigger). Реализовал интерактивный алфавитный гид с динамической сменой разделов, синхронизированную со скроллом медиа-карусель рендеров комплекса, детальные модальные карточки статей с алфавитной навигацией, а также адаптивную вёрстку для всех устройств. Также настроил передачу пользовательских событий в Яндекс Метрику в соответствии с аналитической схемой проекта.',
+      en: 'At Nine Lines, I developed the frontend for the RBC real estate campaign "Krylatskaya from A to Z" built with Nuxt: a split-screen layout with an animated reveal mask, smooth scrolling powered by Lenis, an animated typographic preloader, and scroll-driven interactions using GSAP (ScrollTrigger). I implemented an interactive alphabet guide with dynamic section tracking, a scroll-synchronized media carousel showcasing architectural renderings, full-detail modal article cards with rapid alphabet navigation, and fully responsive layouts across all devices. I also integrated custom event tracking with Yandex Metrica based on the project’s analytics specification.',
+    },
   },
 
   // TASS RZHD BAM
