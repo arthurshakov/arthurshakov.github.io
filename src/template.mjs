@@ -236,8 +236,11 @@ function works(t, lang) {
     <div class="works-cards mobile-only" data-cards>
         ${cards}
     </div>
+  </section>
+  `;
 
-    <div class="archive desktop-only">
+  /*
+  <div class="archive desktop-only">
       <span class="dollar">$</span> ${esc(archiveDesktop.cmd)} &nbsp;<span class="archive__arrow">${esc(
         archiveDesktop.arrow
       )}</span>&nbsp; ${esc(archiveDesktop.tail)} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveDesktop.link)}</span>
@@ -247,7 +250,7 @@ function works(t, lang) {
         archiveMobile.arrow
       )} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveMobile.link)}</span>
     </div>
-  </section>`;
+  */
 }
 
 // ---------- preview ----------
