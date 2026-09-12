@@ -84,7 +84,6 @@ export const strings = {
     filters: [
       { id: 'all', label: 'all' },
       { id: 'awwwards', label: 'awwwards' },
-      { id: 'genai', label: 'genai' },
       { id: 'games', label: 'игры' },
       { id: 'promo', label: 'промо' },
       { id: 'corporate', label: 'корпоративные' },
@@ -187,7 +186,6 @@ export const strings = {
     filters: [
       { id: 'all', label: 'all' },
       { id: 'awwwards', label: 'awwwards' },
-      { id: 'genai', label: 'genai' },
       { id: 'games', label: 'games' },
       { id: 'promo', label: 'promo' },
       { id: 'corporate', label: 'corporate' },

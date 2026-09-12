@@ -39,6 +39,18 @@ components:
     textColor: "{colors.text-secondary}"
     rounded: "{rounded.none}"
     padding: "3px 7px"
+  preview-media:
+    aspectRatio: "319 / 180"
+    backgroundColor: "{colors.background}"
+    border: "1px solid {colors.line-strong}"
+    rounded: "{rounded.none}"
+    overflow: "hidden"
+  music-tuner:
+    backgroundColor: "{colors.panel}"
+    border: "1px solid {colors.line-strong}"
+    textColor: "{colors.text-tertiary}"
+    rounded: "{rounded.none}"
+    minHeight: "44px"
 ---
 
 # Design System: Arthur Shakov Portfolio

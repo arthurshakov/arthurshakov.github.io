@@ -62,13 +62,13 @@
 **Раскладка mobile:** `padding: 0 20px`, статус-бар в две строки.
 
 **Компоненты:**
-- **Статус-бар:** `arthur_shakov` (700, bright) `:` (`--text-3`) `~/portfolio` (`--text-2`) `$` (accent) + мигающая каретка (`8×15px` блок accent, `blink 1.1s step-end`). Справа: `12 selected · 60+ total` и `--lang=` [ru][en] (активный — фон accent, текст `--bg`).
+- **Статус-бар:** `arthur_shakov` (700, bright) `:` (`--text-3`) `~/portfolio` (`--text-2`) `$` (accent) + мигающая каретка (`8×15px` блок accent, `blink 1.1s step-end`). Справа: `17 selected · 60+ total` и `--lang=` [ru][en] (активный — фон accent, текст `--bg`).
 - **Заголовок секции:** `// name` — `// ` в `--text-3`, слово в `--text-2`, `12px`, вес 500, снизу граница `1px --line`.
-- **whoami:** grid `132px 1fr`, gap `14px 28px`. Строки: name (24px/700), role, bio (`max-width: 68ch`), stack, awards (★ + текст), clients, languages, status (● dot + текст, accent), location.
-- **works — таблица:** flex-строки, `gap: 20px`, `padding: 13px 0`, граница снизу `1px --line-faint`. Колонки: `year` 52px (`--text-2`) · `project` flex 2 (bright/500, ★ у Awwwards) · `client` 190px (`--text-2`) · `type` flex 3 (`--text-3`) · action 88px (ссылка `open ↗`, видна в ховере). Шапка `11px --text-3`, граница `1px --line-strong`. Ховер строки: фон `rgba(168,224,91,0.09)`, левая граница `1px --accent`. Над таблицей — чипы-фильтры `grep: all / awwwards / genai / игры / промо / корпоративные` (активный — фон accent) и `sort: featured`.
+- **whoami:** grid `132px 1fr`, gap `14px 28px`. Строки: name (24px/700) со статусом доступности рядом (● dot + текст, accent), role, bio (`max-width: 68ch`), stack, awards (★ + текст), clients, languages, location.
+- **works — таблица:** flex-строки, `gap: 20px`, `padding: 13px 0`, граница снизу `1px --line-faint`. Колонки: `year` 52px (`--text-2`) · `project` flex 2 (bright/500, ★ у Awwwards) · `client` 190px (`--text-2`) · `type` flex 3 (`--text-3`) · action 88px (ссылка `open ↗`, видна в ховере). Шапка `11px --text-3`, граница `1px --line-strong`. Ховер строки: фон `rgba(168,224,91,0.09)`, левая граница `1px --accent`. Над таблицей — чипы-фильтры `grep: all / awwwards / игры / промо / корпоративные` (активный — фон accent) и `sort: featured`.
 - **preview:** grid `1.35fr 1fr`. Слева: строка адреса — `$ open` (`--text-3`) + `<url>` (accent) + ссылка `открыть ↗` справа; фон `--bg-elev`, граница `1px --line-strong` без низа; под ней `<img>` 16:10, `object-fit: cover`, граница `1px --line-strong`. Справа: имя+★, `Whitemark · 2019`, описание (`max-width: 52ch`), теги-чипы, кнопки `открыть сайт / кейс` (min-height 44px), плашка `★ Awwwards — Honorable Mention + Mobile Excellence`.
 - **filmstrip:** подпись `// клик по превью — меняет большой кадр`, флекс-лента с `overflow-x: auto`, миниатюры `150×90` (desktop) / `148×90` (mobile), `object-fit: cover`, граница `1px --line-strong`; активная — `2px --accent`.
-- **contact:** `$ contact --email <a> --github <a> --tg <a> --cv <a>` (флаги `--text-3`, значения — ссылки accent). Ниже `// открыт к интересным спецпроектам и продуктовым командам`. Колофон (RU: `сделано на vanilla JS + Lenis + GSAP · без фреймворков · © 2026`, EN: `built with vanilla JS + Lenis + GSAP · no framework · © 2026`, одинаковый для desktop и mobile) (`--text-dim`).
+- **contact:** `$ contact --email <a> --github <a> --tg <a> --cv <a>` (флаги `--text-3`, значения — ссылки accent). Ниже `// открыт к интересным спецпроектам и продуктовым командам`. Колофон (RU: `сделано на vanilla JS + Lenis · без фреймворков · © 2026`, EN: `built with vanilla JS + Lenis · no framework · © 2026`, одинаковый для desktop и mobile) (`--text-dim`).
 
 **Иконки:** только инлайновый SVG (sprite `<symbol>`): arrow-right, external-link, star (заливка), dot, chevron. Обводка `1.7`, сетка 24. Никаких эмодзи/юникод-глифов как иконок.
 
@@ -76,30 +76,35 @@
 
 ## Контент
 
-**Персона:** Артур Шаков / Arthur Shakov. Роль: `frontend-разработчик — интерактивные спецпроекты под ключ` / `frontend developer — interactive campaign & editorial projects, end to end`.
+**Персона:** Артур Шаков / Arthur Shakov. Роль: `веб-разработчик — frontend, AI-assisted backend и интерактивные спецпроекты` / `web developer — frontend, AI-assisted backend & interactive projects`.
 **Контакты:** `arthurshakov@gmail.com` · `github.com/arthurshakov` · Telegram `@arthur_shakov` · `arthur-shakov-resume.pdf`.
 **Локация:** Чегем · удалёнка/гибрид · готов к переезду · UTC+3. **Языки:** RU native · EN C1.
 **Awwwards:** 2× Honorable Mention (+ Mobile Excellence у Glass Decor).
 **Клиенты:** РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group.
 
-**Работы (12, порядок = `featured`, НЕ по годам):**
+**Работы (17, порядок = `featured`, НЕ по годам):**
 
 | slug | год | клиент | тип | URL для `$ open` / кнопки | Awwwards |
 |---|---|---|---|---|---|
-| power-x-time | 2024 | ТАСС × Росатом  (веб-студия Ninelines) | интерактивный таймлайн | tass-power-x-time.linestest.com |  |
-| vmeste-ai | 2026 | Фонд Потанина × ТАСС  (веб-студия Ninelines) | цикл видеолекций | tass.ru/specialprojects/vmeste-ai |  |
-| glass-decor | 2019 | Glass Decor (веб-студия Whitemark) | сайт-каталог | glass-decor.ru | ★ HM + Mobile Excellence |
-| hill8 | 2018 | Hill8 (веб-студия Whitemark) | сайт апартаментов · выборщик | hill8.whitemark-it.com | ★ HM |
+| power-x-time | 2024 | ТАСС × Росатом (веб-студия Ninelines) | интерактивный таймлайн | tass-power-x-time.linestest.com |  |
 | best-cashier | 2026 | X5 / food.ru | игра-тренажёр | best-cashier.food.ru |  |
-| klassnie-sbory | 2026 | Чижик | промо «снова в школу» | klassnie-sbory.food.ru |  |
-| sl-soft | 2025 | Praxis | корпоративный сайт | slsoft.ru |  |
-| etalon-group | 2025 | Praxis | девелопер · инвест-презентации | etalongroup.com |  |
+| glass-decor | 2019 | Glass Decor (веб-студия Whitemark) | сайт-каталог | glass-decor.ru | ★ HM + Mobile Excellence |
+| vmeste-ai | 2026 | Фонд Потанина × ТАСС (веб-студия Ninelines) | цикл видеолекций | tass.ru/specialprojects/vmeste-ai |  |
 | career-nornickel | 2026 | Норникель | карьерный сайт | career.nornickel.ru |  |
-| astra-drive | 2025 | Astra | бренд-сайт | astradrive.net |  |
 | krylatskaya33 | 2026 | РБК | спецпроект о недвижимости | krylatskaya33.rbc.ru |  |
+| klassnie-sbory | 2026 | Чижик | промо «снова в школу» | klassnie-sbory.food.ru |  |
+| astra-drive | 2025 | Astra | бренд-сайт | astradrive.net |  |
+| hill8 | 2018 | Hill8 (веб-студия Whitemark) | сайт апартаментов · выборщик | awwwards.com/sites/hill8 | ★ HM |
+| rbc-tank | 2024 | РБК × TANK (веб-студия Ninelines) | автомобильный спецпроект | rbc-tank.linestest.com |  |
+| sl-soft | 2025 | Praxis | корпоративный сайт | slsoft.ru |  |
+| katty-pro | 2024 | Пятёрочка × food.ru (веб-студия Ninelines) | промоигра с формой | katty-pro.linestest.com |  |
+| etalon-group | 2025 | Praxis | девелопер · инвест-презентации | etalongroup.com |  |
 | tass-rzhd-bam | 2024 | ТАСС × РЖД | спецпроект «БАМ 50 лет» | tass-rzhd-bam.linestest.com |  |
+| dreamriva | 2026 | РБК × Дрим Рива (веб-студия Ninelines) | спецпроект о недвижимости | dreamriva.rbc.ru |  |
+| rbc-moskvich | 2024 | РБК × Москвич (веб-студия Ninelines) | автомобильный спецпроект | rbc-moskvich.linestest.com |  |
+| hals-summer | 2024 | РБК × Галс (веб-студия Ninelines) | интерактивная карта-спецпроект | hals-summer.rbc.ru |  |
 
-Скриншоты после сборки: `dist/assets/shots/<slug>.*`, миниатюры — `<slug>-thumb.*`; выбранные форматы указаны в `_manifest.json`. Исходники берутся из `screenshots/without-url-bar/` по таблице `SHOT_SRC`; готовые файлы кэшируются по mtime исходников. Ниже таблицы — строка `$ ls works/_archive/ | wc -l → 60+` со ссылкой на полный список.
+Скриншоты после сборки: `dist/assets/shots/<slug>.*`, миниатюры — `<slug>-thumb.*`; выбранные форматы указаны в `_manifest.json`. Исходники берутся из `screenshots/without-url-bar/` по таблице `SHOT_SRC`; готовые файлы кэшируются по mtime исходников. Ниже таблицы в макете — строка `$ ls works/_archive/ | wc -l → 60+` (в текущем шаблоне скрыта, чтобы не оставлять некликабельный элемент без страницы архива).
 
 EN-версия: slug'и не переводятся; клиенты/типы — на английском (см. `MainEN.dc.html`), `Девять Линий` → `Nine Lines`, «спецпроект» → `campaign / editorial project`.
 
