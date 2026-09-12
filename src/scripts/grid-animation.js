@@ -19,8 +19,14 @@ export const GRID_ANIMATION_CONFIG = {
   // Максимальная длина шлейфа в пикселях
   maxTrailLength: 30,
 
-  // Базовый шаг сетки, соответствующий vc(64) в стилях на десктопе (и vc(52) на мобиле)
+  // Базовый шаг сетки на десктопе, соответствующий vc(64) в стилях
   vertStepBase: 64,
+  horizStepBase: 64,
+
+  // Базовый шаг сетки на мобилке (<960px). По умолчанию 40 (квадратная ячейка vc(40))
+  mobileStepBase: 40,
+  mobileHorizStepBase: 40,
+  mobileVertStepBase: 40,
 
   // Базовая яркость/прозрачность точек в состоянии покоя (0.0 .. 1.0)
   particleBaseAlpha: 0.30,
@@ -127,12 +133,17 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
 
     const viewW = typeof window !== 'undefined' ? window.innerWidth : 1440;
     const isMobile = viewW < 960;
-    const baseGrid = isMobile ? 52 : 64;
+    const baseHoriz = isMobile
+      ? (config.mobileHorizStepBase ?? config.mobileStepBase ?? 40)
+      : (config.horizStepBase ?? 64);
 
-    // Шаг сетки строго в единицах vc(64) на десктопе и vc(52) на мобиле
-    stepX = calcVc(baseGrid, viewW);
-    const vertBase = isMobile && config.vertStepBase === 64 ? 52 : config.vertStepBase;
-    stepY = calcVc(vertBase, viewW);
+    const baseVert = isMobile
+      ? (config.mobileVertStepBase ?? config.mobileStepBase ?? (config.vertStepBase === 64 ? 40 : config.vertStepBase))
+      : config.vertStepBase;
+
+    // Шаг сетки строго в единицах vc(...)
+    stepX = calcVc(baseHoriz, viewW);
+    stepY = calcVc(baseVert, viewW);
     startCol = isMobile ? 0 : 1;
 
     buildNodes(width, height);

@@ -17,6 +17,10 @@ test('grid animation configuration exports user-approved constants', () => {
   assert.equal(GRID_ANIMATION_CONFIG.trailMaxAlpha, 0.25);
   assert.equal(GRID_ANIMATION_CONFIG.maxTrailLength, 30);
   assert.equal(GRID_ANIMATION_CONFIG.vertStepBase, 64);
+  assert.equal(GRID_ANIMATION_CONFIG.horizStepBase, 64);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileStepBase, 40);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileHorizStepBase, 40);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileVertStepBase, 40);
   assert.equal(GRID_ANIMATION_CONFIG.particleBaseAlpha, 0.30);
   assert.equal(GRID_ANIMATION_CONFIG.particleMaxAlpha, 0.75);
   assert.equal(GRID_ANIMATION_CONFIG.damping, 0.93);
@@ -52,11 +56,13 @@ test('calcVc strictly corresponds to vc(value) in styles', () => {
   assert.equal(calcVc(64, 1920), 64 * (1920 / 1440));
   assert.equal(calcVc(64, 2560), 64 * (1920 / 1440));
 
-  // Mobile at base width 390: vc(52) === 52
+  // Mobile at base width 390: vc(52) === 52, vc(40) === 40
   assert.equal(calcVc(52, 390), 52);
+  assert.equal(calcVc(40, 390), 40);
 
-  // Mobile at scaled width 414: vc(52) === 52 * (414 / 390)
+  // Mobile at scaled width 414: vc(52) === 52 * (414 / 390), vc(40) === 40 * (414 / 390)
   assert.equal(calcVc(52, 414), 52 * (414 / 390));
+  assert.equal(calcVc(40, 414), 40 * (414 / 390));
 });
 
 test('initGridAnimation handles null canvas gracefully', () => {

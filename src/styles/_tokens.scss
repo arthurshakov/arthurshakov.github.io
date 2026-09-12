@@ -7,7 +7,7 @@
   --w-base: 390;          // ширина мобильного макета
   --w-cur: 100vw;         // текущая ширина вьюпорта
   --wm: calc(var(--w-cur) / var(--w-base));
-  --grid: 52;             // шаг фоновой сетки (mobile)
+  --grid: 40;             // шаг фоновой сетки (mobile)
 
   // --- шрифт ---
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;

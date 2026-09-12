@@ -106,7 +106,7 @@ Near-black greens establish depth through tonal separation; the lime accent appe
 
 ## Layout
 
-The page is a single scrolling archive, capped at 1440px and frozen at 1920px. Desktop has a 64px editor rail and a horizontal status bar; mobile uses 20px gutters and a two-line status bar. The static vertical grid uses 64px columns on desktop and 52px on mobile. New controls must obey this rhythm and must not disturb project scanning.
+The page is a single scrolling archive, capped at 1440px and frozen at 1920px. Desktop has a 64px editor rail and a horizontal status bar; mobile uses 20px gutters and a two-line status bar. The static background grid uses 64px step on desktop and 40px on mobile. New controls must obey this rhythm and must not disturb project scanning.
 
 ## Elevation & Depth
 
