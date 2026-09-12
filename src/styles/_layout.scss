@@ -19,13 +19,19 @@
   }
 
   @include desktop {
-    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: vc(64);
     border-right: 1px solid var(--line);
+    pointer-events: none;
   }
 }
 
 .body__main {
   @include desktop {
+    grid-column: 2;
     min-width: 0;
     padding: 0 vc(64) 0 vc(40);
   }

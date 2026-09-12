@@ -4,6 +4,7 @@
 import { createPlaylistPlayer } from './audio-player.js';
 import { bindAudioControls, bindAudioVisualizer } from './audio-controls.js';
 import { createAudioVisualizer } from './audio-visualizer.js';
+import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
 
 (() => {
@@ -247,6 +248,19 @@ import { createPjaxRouter } from './pjax.js';
       requestAnimationFrame(raf);
     };
     requestAnimationFrame(raf);
+  }
+
+  // ------------------------------------------------------------- анимация сетки
+  const gridCanvas = /** @type {HTMLCanvasElement | null} */ (document.getElementById('bg-grid-canvas'));
+  const gridContainer = /** @type {HTMLElement | null} */ (document.querySelector('.bg-grid'));
+  const gridAnim = initGridAnimation(gridCanvas, gridContainer);
+
+  if (lenis && gridAnim && typeof gridAnim.feedVelocity === 'function') {
+    lenis.on('scroll', (/** @type {{ velocity?: number }} */ e) => {
+      if (typeof e.velocity === 'number') {
+        gridAnim.feedVelocity(e.velocity);
+      }
+    });
   }
 
   // ---------------------------------------------------------------- интерактивность страницы

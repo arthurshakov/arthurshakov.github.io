@@ -498,13 +498,12 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
 <noscript><link rel="stylesheet" href="/styles.css"><style>.page{visibility:visible}</style></noscript>
 </head>
 <body>
-<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"><div class="body__rail" aria-hidden="true"></div><canvas class="bg-grid-canvas" id="bg-grid-canvas" aria-hidden="true"></canvas></div>
 ${preloader(t, lang)}
 <div class="page">
 ${SPRITE}
 ${statusBar(t, lang)}
   <div class="body">
-    <div class="body__rail" aria-hidden="true"></div>
     <main class="body__main">
 ${whoami(t)}
 ${works(t, lang)}
