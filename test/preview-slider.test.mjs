@@ -92,3 +92,15 @@ test('app.js integrates Draggable, InertiaPlugin, video swipe, and text scramble
   assert.match(appJs, /ArrowRight/);
 });
 
+test('app.js strip wheel listener reacts only to horizontal scroll and ignores vertical scroll', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+
+  // Must not fall back to deltaY when scrolling
+  assert.doesNotMatch(appJs, /Math\.abs\(e\.deltaX\)\s*>=\s*Math\.abs\(e\.deltaY\)\s*\?\s*e\.deltaX\s*:\s*e\.deltaY/);
+
+  // Must check deltaX and ignore vertical or dominant-vertical scroll
+  assert.match(appJs, /Math\.abs\(e\.deltaX\)\s*<\s*1\s*\|\|\s*Math\.abs\(e\.deltaX\)\s*<=\s*Math\.abs\(e\.deltaY\)/);
+  assert.match(appJs, /const delta\s*=\s*e\.deltaX\s*\*\s*speed/);
+});
+

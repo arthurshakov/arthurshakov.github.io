@@ -694,12 +694,13 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
 
     const onStripWheel = (/** @type {WheelEvent} */ e) => {
       if (stripDraggable && stripDraggable.isDragging) return;
-      const rawDelta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(rawDelta) < 1) return;
+      // Реагируем только на горизонтальный скролл (трекпад горизонтально, колесо наклона или Shift + колесо).
+      // Вертикальный скролл не перехватываем, чтобы страница скроллилась нормально.
+      if (Math.abs(e.deltaX) < 1 || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
       e.preventDefault();
 
       const speed = PREVIEW_SLIDER_CONFIG.stripWheelSpeed ?? 2.0;
-      const delta = rawDelta * speed;
+      const delta = e.deltaX * speed;
 
       if (window.gsap && track) {
         const bounds = getTrackBounds();
