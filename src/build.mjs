@@ -24,26 +24,16 @@ const WEBP_Q = 90;
 const AVIF_Q = 90;
 const JPEG_Q = 82; // растровый фолбэк для древних браузеров
 
-// slug -> имя готового скриншота в screenshots/without-url-bar/.
-const SHOT_SRC = {
-  'glass-decor': 'glass-decor.ru.webp',
-  hill8: 'hill8.webp',
-  krylatskaya33: 'krylatrskaya33.webp',
-  'power-x-time': 'tass-power-x-time.linestest.com.webp',
-  'tass-rzhd-bam': 'tass-rzhd-bam.webp',
-  'vmeste-ai': 'tass.ru_specialprojects_vmeste-ai.webp',
-  'best-cashier': 'best-cashier.food.ru.webp',
-  'klassnie-sbory': 'klassnie-sbory.food.ru.webp',
-  'sl-soft': 'slsoft.ru.webp',
-  'etalon-group': 'etalongroup.com.webp',
-  'career-nornickel': 'career.nornickel.ru.webp',
-  'astra-drive': 'astradrive.net.webp',
-  'rbc-moskvich': 'rbc-moskvich.webp',
-  'rbc-tank': 'rbc-tank.webp',
-  'katty-pro': 'katty-pro.webp',
-  'hals-summer': 'hals-summer.webp',
-  dreamriva: 'dreamriva.webp',
-};
+// Исходники скриншотов ищутся по slug проекта: screenshots/<slug>.(webp|png|jpg|jpeg)
+const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg'];
+
+function findScreenshot(srcDir, slug) {
+  for (const ext of IMAGE_EXTENSIONS) {
+    const file = path.join(srcDir, `${slug}.${ext}`);
+    if (existsSync(file)) return file;
+  }
+  return null;
+}
 
 async function newer(src, dst) {
   if (!existsSync(dst)) return true;
@@ -114,9 +104,9 @@ async function copyStatic() {
 // какой из современных форматов вышел легче и попал в сборку (второй удаляется).
 // Плюс всегда пишется .jpg как растровый фолбэк.
 async function buildImages() {
-  const srcDir = p('screenshots/without-url-bar');
+  const srcDir = p('screenshots');
   if (!existsSync(srcDir)) {
-    console.warn('!  screenshots/without-url-bar/ не найден — пропускаю картинки');
+    console.warn('!  screenshots/ не найден — пропускаю картинки');
     return {};
   }
   const outDir = p('dist/assets/shots');
@@ -155,10 +145,9 @@ async function buildImages() {
   }
 
   for (const { slug } of projects) {
-    const srcName = SHOT_SRC[slug];
-    const src = srcName && path.join(srcDir, srcName);
-    if (!src || !existsSync(src)) {
-      console.warn(`!  нет скриншота для ${slug} (${srcName || '—'})`);
+    const src = findScreenshot(srcDir, slug);
+    if (!src) {
+      console.warn(`!  нет скриншота для ${slug} (${slug}.{${IMAGE_EXTENSIONS.join(',')}})`);
       continue;
     }
     manifest[slug] = {
