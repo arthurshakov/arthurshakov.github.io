@@ -235,28 +235,35 @@ export function createPlaylistPlayer({
     if (destroyed) throw new Error('Playlist player has been destroyed');
     if (playing) return;
 
-    transitionToken += 1;
+    const token = ++transitionToken;
     clearFade();
     stopFadingAudio();
-    currentAudio ??= createAudio(currentIndex);
-    if (currentAudio.paused) currentAudio.volume = 0;
+    const audio = currentAudio ?? createAudio(currentIndex);
+    currentAudio = audio;
+    if (audio.paused) audio.volume = 0;
 
     try {
       await resumeAudioGraph();
-      await currentAudio.play();
+      await audio.play();
     } catch (error) {
-      playing = false;
-      if (persistPreference) persist('off');
-      notify();
+      if (token === transitionToken) {
+        playing = false;
+        if (persistPreference) persist('off');
+        notify();
+      }
       throw error;
     }
 
-    attachEndedListener(currentAudio);
+    if (token !== transitionToken || destroyed) {
+      stopAudio(audio);
+      return;
+    }
+
+    attachEndedListener(audio);
     playing = true;
     if (persistPreference) persist('on');
     notify();
 
-    const audio = currentAudio;
     const startingVolume = audio.volume;
     runFade({
       duration: fadeInMs,
@@ -302,18 +309,24 @@ export function createPlaylistPlayer({
     await start({ persistPreference: false });
   };
 
-  const select = async (index) => {
+  const select = async (index, { play = true } = {}) => {
     const nextIndex = ((index % tracks.length) + tracks.length) % tracks.length;
-    if (nextIndex === currentIndex && (playing ? currentAudio : true)) return;
+    if (!play && nextIndex === currentIndex) return;
+    if (playing && nextIndex === currentIndex && currentAudio) return;
 
     if (!playing) {
-      transitionToken += 1;
-      clearFade();
-      stopFadingAudio();
-      stopAudio(currentAudio);
-      currentAudio = null;
-      currentIndex = nextIndex;
-      notify();
+      if (nextIndex !== currentIndex) {
+        transitionToken += 1;
+        clearFade();
+        stopFadingAudio();
+        stopAudio(currentAudio);
+        currentAudio = null;
+        currentIndex = nextIndex;
+        notify();
+      }
+      if (play) {
+        await start();
+      }
       return;
     }
 
@@ -328,11 +341,11 @@ export function createPlaylistPlayer({
     suspend,
     resume,
     select,
-    next() {
-      return select(currentIndex + 1);
+    next(options) {
+      return select(currentIndex + 1, options);
     },
-    previous() {
-      return select(currentIndex - 1);
+    previous(options) {
+      return select(currentIndex - 1, options);
     },
     async toggle() {
       if (playing) {

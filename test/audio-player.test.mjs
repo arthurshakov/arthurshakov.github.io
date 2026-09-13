@@ -361,3 +361,52 @@ test('switching tracks during crossfade immediately stops the previous fading tr
   const playingAudios = audios.filter((a) => !a.paused);
   assert.equal(playingAudios.length, 1);
 });
+
+test('starts playback and switches to the next track when next is called while stopped', async () => {
+  const { player, audios, storage } = makePlayer({
+    tracks: ['/1.mp3', '/2.mp3', '/3.mp3'],
+  });
+
+  assert.equal(player.getState().playing, false);
+  assert.equal(player.getState().trackIndex, 0);
+
+  await player.next();
+
+  assert.equal(player.getState().playing, true);
+  assert.equal(player.getState().trackIndex, 1);
+  assert.equal(storage.getItem('portfolio:music'), 'on');
+  assert.equal(audios.length, 1);
+  assert.equal(audios[0].paused, false);
+  assert.equal(audios[0].playCalls, 1);
+});
+
+test('starts playback and switches to the previous track when previous is called while stopped', async () => {
+  const { player, audios, storage } = makePlayer({
+    tracks: ['/1.mp3', '/2.mp3', '/3.mp3'],
+  });
+
+  assert.equal(player.getState().playing, false);
+  assert.equal(player.getState().trackIndex, 0);
+
+  await player.previous();
+
+  assert.equal(player.getState().playing, true);
+  assert.equal(player.getState().trackIndex, 2);
+  assert.equal(storage.getItem('portfolio:music'), 'on');
+  assert.equal(audios.length, 1);
+  assert.equal(audios[0].paused, false);
+  assert.equal(audios[0].playCalls, 1);
+});
+
+test('allows selecting track without starting playback when play option is false', async () => {
+  const { player, audios, storage } = makePlayer({
+    tracks: ['/1.mp3', '/2.mp3', '/3.mp3'],
+  });
+
+  await player.select(2, { play: false });
+
+  assert.equal(player.getState().playing, false);
+  assert.equal(player.getState().trackIndex, 2);
+  assert.equal(storage.getItem('portfolio:music'), null);
+  assert.equal(audios.length, 0);
+});
