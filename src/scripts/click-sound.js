@@ -27,6 +27,9 @@ export function setAudioContext(ctx) {
   sharedContext = ctx;
 }
 
+export const DEFAULT_CLICK_VOLUME = 0.35;
+export const DEFAULT_CLICK_PITCH = 1.25;
+
 /**
  * @typedef {Object} PlaySineBlipOptions
  * @property {number} [volume]
@@ -41,19 +44,23 @@ export function setAudioContext(ctx) {
  * @param {number} [pitchArg]
  * @param {AudioContext | null} [contextArg]
  */
-export function playSineBlip(volumeOrOptions = 1.0, pitchArg = 1.25, contextArg = null) {
-  let volume = 1.0;
-  let pitch = 1.25;
+export function playSineBlip(
+  volumeOrOptions = DEFAULT_CLICK_VOLUME,
+  pitchArg = DEFAULT_CLICK_PITCH,
+  contextArg = null
+) {
+  let volume = DEFAULT_CLICK_VOLUME;
+  let pitch = DEFAULT_CLICK_PITCH;
   /** @type {AudioContext | null} */
   let context = null;
 
   if (typeof volumeOrOptions === 'object' && volumeOrOptions !== null) {
-    volume = volumeOrOptions.volume ?? 1.0;
-    pitch = volumeOrOptions.pitch ?? 1.25;
+    volume = volumeOrOptions.volume ?? DEFAULT_CLICK_VOLUME;
+    pitch = volumeOrOptions.pitch ?? DEFAULT_CLICK_PITCH;
     context = volumeOrOptions.context ?? null;
   } else {
-    volume = typeof volumeOrOptions === 'number' ? volumeOrOptions : 1.0;
-    pitch = typeof pitchArg === 'number' ? pitchArg : 1.25;
+    volume = typeof volumeOrOptions === 'number' ? volumeOrOptions : DEFAULT_CLICK_VOLUME;
+    pitch = typeof pitchArg === 'number' ? pitchArg : DEFAULT_CLICK_PITCH;
     context = contextArg;
   }
 
@@ -173,8 +180,8 @@ export function isClickableTarget(target) {
  */
 export function bindClickSound({
   root = typeof window !== 'undefined' ? window : null,
-  volume = 1.0,
-  pitch = 1.25,
+  volume = DEFAULT_CLICK_VOLUME,
+  pitch = DEFAULT_CLICK_PITCH,
   interactiveOnly = true,
   isSoundEnabled = () => true,
   context = null,

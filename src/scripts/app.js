@@ -210,6 +210,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
     bindAudioControls(audioToggles, player, musicTracks.map((track) => track.name));
     bindAudioVisualizer(audioToggles, player, visualizer);
     bindClickSound({
+      volume: 0.35,
       isSoundEnabled: () => player.getState().playing || player.hasStoredEnabledPreference(),
     });
 
@@ -240,6 +241,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
     });
   } else {
     bindClickSound({
+      volume: 0.35,
       isSoundEnabled: () => true,
     });
   }
