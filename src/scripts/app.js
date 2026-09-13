@@ -4,6 +4,7 @@
 import { createPlaylistPlayer } from './audio-player.js';
 import { bindAudioControls, bindAudioVisualizer } from './audio-controls.js';
 import { createAudioVisualizer } from './audio-visualizer.js';
+import { bindClickSound } from './click-sound.js';
 import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
 import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
@@ -208,6 +209,9 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
     });
     bindAudioControls(audioToggles, player, musicTracks.map((track) => track.name));
     bindAudioVisualizer(audioToggles, player, visualizer);
+    bindClickSound({
+      isSoundEnabled: () => player.getState().playing || player.hasStoredEnabledPreference(),
+    });
 
     // Браузеры разрешают звук только после жеста пользователя. Если посетитель
     // ранее включал музыку, возобновляем её при первом клике вне переключателя.
@@ -233,6 +237,10 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
       if (!resumeAfterVisibility) return;
       resumeAfterVisibility = false;
       player.resume().catch(() => { });
+    });
+  } else {
+    bindClickSound({
+      isSoundEnabled: () => true,
     });
   }
 

@@ -26,4 +26,5 @@ test('build copies the selected playlist files into dist assets', async () => {
   }
   await assert.doesNotReject(access(path.join(root, 'dist/audio-controls.js')));
   await assert.doesNotReject(access(path.join(root, 'dist/audio-visualizer.js')));
+  await assert.doesNotReject(access(path.join(root, 'dist/click-sound.js')));
 });
