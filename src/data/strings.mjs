@@ -99,6 +99,8 @@ export const strings = {
     // archiveMobile: { cmd: 'ls _archive/', arrow: '→ 60+', link: '[ показать все ]' },
     // preview
     openSite: 'открыть сайт',
+    prevProject: 'предыдущий проект',
+    nextProject: 'следующий проект',
     stripCaptionD: '// клик по превью — меняет большой кадр',
     stripCaptionM: '// свайп — меняет большой кадр',
     // contact
@@ -200,6 +202,8 @@ export const strings = {
     },
     archiveMobile: { cmd: 'ls _archive/', arrow: '→ 60+', link: '[ show all ]' },
     openSite: 'open site',
+    prevProject: 'previous project',
+    nextProject: 'next project',
     stripCaptionD: '// click a preview to swap the main shot',
     stripCaptionM: '// swipe to swap the main shot',
     contactCmd: 'contact',

@@ -291,46 +291,72 @@ function preview(t, lang, shots = {}) {
     <div class="preview-grid">
       <div class="preview-frame">
         <div class="preview-address">
-          <span class="preview-address__command">$ open</span>
-          <a class="preview-address__url" data-preview-open href="${escAttr(
-            first.url
-          )}" target="_blank" rel="noopener"><span data-preview-site>${esc(
-            first.site
-          )}</span> ${icon('ext', 'icon-size-11')}</a>
+          <div class="preview-address__left">
+            <span class="preview-address__command">$ open</span>
+            <a class="preview-address__url" data-preview-open href="${escAttr(
+              first.url
+            )}" target="_blank" rel="noopener"><span data-preview-site>${esc(
+              first.site
+            )}</span> ${icon('ext', 'icon-size-11')}</a>
+          </div>
+          <div class="preview-controls" data-preview-controls>
+            <span class="preview-stepper-counter" data-preview-counter>[ <span class="preview-stepper-counter__current">01</span> / ${String(projects.length).padStart(2, '0')} ]</span>
+            <button class="v-btn" data-preview-prev type="button" aria-label="${escAttr(t.prevProject)}">&lt;</button>
+            <button class="v-btn" data-preview-next type="button" aria-label="${escAttr(t.nextProject)}">&gt;</button>
+          </div>
         </div>
-        <div class="preview-media">
-          <picture data-preview-picture>
-            <source data-preview-shot-source type="${shotType(shots[first.slug])}" srcset="${escAttr(
-              shotMod(first.slug, shots[first.slug])
-            )}">
-            <img class="preview-screenshot" data-preview-shot-image src="${escAttr(shot(first.slug))}" alt="${escAttr(
-              first.slug
-            )}" width="319" height="180" decoding="async" draggable="false">
-          </picture>
-          <video class="preview-screenshot preview-video" data-preview-video width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
+        <div class="preview-media" data-preview-media-box>
+          <div class="preview-media-layer preview-media-layer--a" data-preview-layer-a>
+            <picture data-preview-picture data-preview-picture-a>
+              <source data-preview-shot-source data-preview-shot-source-a type="${shotType(shots[first.slug])}" srcset="${escAttr(
+                shotMod(first.slug, shots[first.slug])
+              )}">
+              <img class="preview-screenshot" data-preview-shot-image data-preview-shot-image-a src="${escAttr(shot(first.slug))}" alt="${escAttr(
+                first.slug
+              )}" width="319" height="180" decoding="async" draggable="false">
+            </picture>
+            <video class="preview-screenshot preview-video" data-preview-video data-preview-video-a width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+
+          <div class="preview-media-layer preview-media-layer--b" data-preview-layer-b style="clip-path: inset(0 0 0 100%);">
+            <picture data-preview-picture-b>
+              <source data-preview-shot-source-b type="${shotType(shots[first.slug])}" srcset="${escAttr(
+                shotMod(first.slug, shots[first.slug])
+              )}">
+              <img class="preview-screenshot" data-preview-shot-image-b src="${escAttr(shot(first.slug))}" alt="${escAttr(
+                first.slug
+              )}" width="319" height="180" decoding="async" draggable="false">
+            </picture>
+            <video class="preview-screenshot preview-video" data-preview-video-b width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+
+          <div class="scanline-trail" data-scanline-trail aria-hidden="true"></div>
+          <div class="scanline-mask-line" data-scanline-line aria-hidden="true"></div>
         </div>
       </div>
 
-      <div class="preview-info">
+      <div class="preview-info" data-preview-info>
         <div class="preview-name-row">
           <span class="preview-name" data-preview-name>${esc(first.slug)}</span>
           <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
         </div>
-        <div class="preview-subtitle" data-preview-subtitle>${esc(first.client[lang])} · ${first.year}</div>
-        <p class="preview-description" data-preview-description>${esc(first.description[lang])}</p>
-        <div class="preview-tags" data-preview-tags>${tags(first)}</div>
-        <div class="preview-actions">
-          <a class="btn btn--primary" data-preview-call-to-action href="${escAttr(
-            first.url
-          )}" target="_blank" rel="noopener"><span data-preview-call-to-action-label>${esc(
-            t.openSite
-          )}</span> ${icon('ext', 'icon-size-13')}</a>
-        </div>
-        <div class="preview-note" data-preview-note${noteHidden}>
-          <span class="preview-note__slash">// </span><span class="preview-note__text" data-preview-note-text>${noteText}</span>
-        </div>
-        <div class="preview-awards" data-preview-awards${awardsHidden}>
-          <span data-preview-awards-text>${awardsHtml}</span>
+        <div class="preview-meta-body" data-preview-meta-body>
+          <div class="preview-subtitle" data-preview-subtitle>${esc(first.client[lang])} · ${first.year}</div>
+          <p class="preview-description" data-preview-description>${esc(first.description[lang])}</p>
+          <div class="preview-tags" data-preview-tags>${tags(first)}</div>
+          <div class="preview-actions">
+            <a class="btn btn--primary" data-preview-call-to-action href="${escAttr(
+              first.url
+            )}" target="_blank" rel="noopener"><span data-preview-call-to-action-label>${esc(
+              t.openSite
+            )}</span> ${icon('ext', 'icon-size-13')}</a>
+          </div>
+          <div class="preview-note" data-preview-note${noteHidden}>
+            <span class="preview-note__slash">// </span><span class="preview-note__text" data-preview-note-text>${noteText}</span>
+          </div>
+          <div class="preview-awards" data-preview-awards${awardsHidden}>
+            <span data-preview-awards-text>${awardsHtml}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -339,19 +365,21 @@ function preview(t, lang, shots = {}) {
       t.stripCaptionD
     )}</span><span class="mobile-inline-only">${esc(t.stripCaptionM)}</span></div>
     <div class="preview-strip" data-preview-strip role="group" aria-label="${escAttr(t.secPreview)}">
-      ${projects
-        .map(
-          (p, i) => `<button class="preview-thumbnail${
-            i === 0 ? ' is-active' : ''
-          }" type="button" data-slug="${escAttr(p.slug)}" aria-pressed="${
-            i === 0 ? 'true' : 'false'
-          }"><picture><source type="${thumbType(shots[p.slug])}" srcset="${escAttr(
-            thumbMod(p.slug, shots[p.slug])
-          )}"><img src="${escAttr(thumb(p.slug))}" alt="${escAttr(
-            p.slug
-          )}" loading="lazy" decoding="async" width="1000" height="565" draggable="false"></picture></button>`
-        )
-        .join('\n      ')}
+      <div class="preview-strip-track" data-preview-track>
+        ${projects
+          .map(
+            (p, i) => `<button class="preview-thumbnail${
+              i === 0 ? ' is-active' : ''
+            }" type="button" data-slug="${escAttr(p.slug)}" aria-pressed="${
+              i === 0 ? 'true' : 'false'
+            }"><picture><source type="${thumbType(shots[p.slug])}" srcset="${escAttr(
+              thumbMod(p.slug, shots[p.slug])
+            )}"><img src="${escAttr(thumb(p.slug))}" alt="${escAttr(
+              p.slug
+            )}" loading="lazy" decoding="async" width="1000" height="565" draggable="false"></picture></button>`
+          )
+          .join('\n        ')}
+      </div>
     </div>
   </section>`;
 }
@@ -515,6 +543,8 @@ ${contact(t)}
 <script>window.__PORTFOLIO__=${JSON.stringify(bootData(lang, t, shots))};</script>
 <script src="/lenis.min.js"></script>
 <script src="/gsap.min.js"></script>
+<script src="/Draggable.min.js"></script>
+<script src="/InertiaPlugin.min.js"></script>
 <script type="module" src="/app.js"></script>
 </body>
 </html>

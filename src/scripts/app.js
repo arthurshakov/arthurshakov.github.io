@@ -6,6 +6,7 @@ import { bindAudioControls, bindAudioVisualizer } from './audio-controls.js';
 import { createAudioVisualizer } from './audio-visualizer.js';
 import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
+import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
 
 (() => {
   // Данные текущей языковой версии страницы встраиваются в HTML на сборке.
@@ -213,13 +214,13 @@ import { createPjaxRouter } from './pjax.js';
     if (player.hasStoredEnabledPreference()) {
       window.addEventListener('pointerdown', (event) => {
         if (event.target instanceof Element && event.target.closest('[data-audio-toggle]')) return;
-        player.start().catch(() => {});
+        player.start().catch(() => { });
       }, { once: true, passive: true });
     }
 
     // AudioContext тоже может быть заблокирован до жеста или при скрытой вкладке.
     // Здесь отдельно поддерживается визуализатор и сам проигрыватель.
-    const resumeVisualizer = () => visualizer.resumeIfAttached().catch(() => {});
+    const resumeVisualizer = () => visualizer.resumeIfAttached().catch(() => { });
     let resumeAfterVisibility = false;
     window.addEventListener('pointerdown', resumeVisualizer, { passive: true });
     document.addEventListener('visibilitychange', () => {
@@ -231,7 +232,7 @@ import { createPjaxRouter } from './pjax.js';
       resumeVisualizer();
       if (!resumeAfterVisibility) return;
       resumeAfterVisibility = false;
-      player.resume().catch(() => {});
+      player.resume().catch(() => { });
     });
   }
 
@@ -268,8 +269,18 @@ import { createPjaxRouter } from './pjax.js';
   // после PJAX-навигации, когда элементы страницы пересоздаются.
   let currentSlug = pageData.projects[0] ? pageData.projects[0].slug : null;
   let activeFilter = 'all';
-  let disposePreviewMedia = () => {};
+  let disposePreviewMedia = () => { };
   const videoPositions = new Map();
+
+  // Регистрация GSAP плагинов для инерционной ленты миниатюр
+  const win = /** @type {any} */ (window);
+  if (win.gsap && win.Draggable) {
+    if (win.InertiaPlugin) {
+      win.gsap.registerPlugin(win.Draggable, win.InertiaPlugin);
+    } else {
+      win.gsap.registerPlugin(win.Draggable);
+    }
+  }
 
   function bindPageInteractivity(currentPageData) {
     if (!currentPageData) return;
@@ -324,17 +335,17 @@ import { createPjaxRouter } from './pjax.js';
     const preview = {
       slug: query('[data-preview-slug]'),
       site: query('[data-preview-site]'),
-      open: query('[data-preview-open]'),
-      shotSrc: query('[data-preview-shot-source]'),
-      shotImg: query('[data-preview-shot-image]'),
-      picture: query('[data-preview-picture]'),
-      video: query('[data-preview-video]'),
+      open: /** @type {HTMLAnchorElement | null} */ (query('[data-preview-open]')),
+      shotSrc: /** @type {HTMLSourceElement | null} */ (query('[data-preview-shot-source]')),
+      shotImg: /** @type {HTMLImageElement | null} */ (query('[data-preview-shot-image]')),
+      picture: /** @type {HTMLElement | null} */ (query('[data-preview-picture]')),
+      video: /** @type {any} */ (query('[data-preview-video]')),
       name: query('[data-preview-name]'),
       star: query('[data-preview-star]'),
       sub: query('[data-preview-subtitle]'),
       description: query('[data-preview-description]'),
       tags: query('[data-preview-tags]'),
-      cta: query('[data-preview-call-to-action]'),
+      cta: /** @type {HTMLAnchorElement | null} */ (query('[data-preview-call-to-action]')),
       note: query('[data-preview-note]'),
       noteText: query('[data-preview-note-text]'),
       awards: query('[data-preview-awards]'),
@@ -342,6 +353,41 @@ import { createPjaxRouter } from './pjax.js';
     };
     const thumbnails = queryAll('.preview-thumbnail');
     const previewFrame = query('.preview-frame');
+    const infoBox = /** @type {HTMLElement | null} */ (query('[data-preview-info]') || query('.preview-info'));
+    const mediaBox = /** @type {HTMLElement | null} */ (query('[data-preview-media-box]'));
+    const metaBody = /** @type {HTMLElement | null} */ (query('[data-preview-meta-body]'));
+    const counter = query('[data-preview-counter]');
+    const btnPrev = query('[data-preview-prev]');
+    const btnNext = query('[data-preview-next]');
+    const maskLine = /** @type {HTMLElement | null} */ (query('[data-scanline-line]'));
+    const maskTrail = /** @type {HTMLElement | null} */ (query('[data-scanline-trail]'));
+    const strip = /** @type {HTMLElement | null} */ (query('[data-preview-strip]'));
+    const track = /** @type {HTMLElement | null} */ (query('[data-preview-track]'));
+
+    const layerA = /** @type {HTMLElement | null} */ (query('[data-preview-layer-a]'));
+    const layerB = /** @type {HTMLElement | null} */ (query('[data-preview-layer-b]'));
+    const slotA = {
+      layer: layerA,
+      picture: /** @type {HTMLElement | null} */ (query('[data-preview-picture-a]')),
+      src: /** @type {HTMLSourceElement | null} */ (query('[data-preview-shot-source-a]')),
+      img: /** @type {HTMLImageElement | null} */ (query('[data-preview-shot-image-a]')),
+      video: /** @type {any} */ (query('[data-preview-video-a]')),
+    };
+    const slotB = {
+      layer: layerB,
+      picture: /** @type {HTMLElement | null} */ (query('[data-preview-picture-b]')),
+      src: /** @type {HTMLSourceElement | null} */ (query('[data-preview-shot-source-b]')),
+      img: /** @type {HTMLImageElement | null} */ (query('[data-preview-shot-image-b]')),
+      video: /** @type {any} */ (query('[data-preview-video-b]')),
+    };
+
+    let activeIsA = true;
+    let isAnimating = false;
+    preview.video = slotA.video;
+    preview.picture = slotA.picture;
+    preview.shotSrc = slotA.src;
+    preview.shotImg = slotA.img;
+
     // Эти значения описывают жизненный цикл видео, а не данные проекта:
     // видно ли превью, какой ролик загружен и какую позицию уже восстановили.
     let previewVisible = false;
@@ -364,6 +410,7 @@ import { createPjaxRouter } from './pjax.js';
     }
 
     function showImage() {
+      if (isAnimating) return;
       // Скриншот — универсальный фолбэк: для проектов без ролика, reduce-motion,
       // скрытого превью, неактивной вкладки и ошибки загрузки.
       if (preview.video) {
@@ -386,7 +433,7 @@ import { createPjaxRouter } from './pjax.js';
       mp4.src = project.video.mp4;
       mp4.type = 'video/mp4';
       preview.video.append(webm, mp4);
-      preview.video.poster = project.shot;
+      preview.video.removeAttribute('poster');
       loadedVideoSlug = project.slug;
       restoredVideoSlug = null;
       preview.video.load();
@@ -412,6 +459,7 @@ import { createPjaxRouter } from './pjax.js';
     }
 
     function syncPreviewMedia() {
+      if (isAnimating) return;
       const project = projectsBySlug.get(currentSlug);
       // Видео разрешено только у выбранного проекта, в видимом preview и активной
       // вкладке. Во всех остальных состояниях остаётся статичная картинка.
@@ -445,27 +493,31 @@ import { createPjaxRouter } from './pjax.js';
     // После первого декодированного кадра повторно синхронизируем состояние:
     // теперь можно восстановить позицию, показать и запустить видео.
     const onVideoReady = () => {
-      if (loadedVideoSlug !== currentSlug || !preview.video) return;
+      if (isAnimating || loadedVideoSlug !== currentSlug || !preview.video) return;
       syncPreviewMedia();
     };
     const onVideoError = showImage;
     preview.video?.addEventListener('loadeddata', onVideoReady);
     preview.video?.addEventListener('canplay', onVideoReady);
     preview.video?.addEventListener('error', onVideoError);
+    slotB.video?.addEventListener('loadeddata', onVideoReady);
+    slotB.video?.addEventListener('canplay', onVideoReady);
+    slotB.video?.addEventListener('error', onVideoError);
+
     // Основной observer запускает/ставит на паузу ролик, когда в зоне видимости
     // находится не менее 15% блока preview.
     const observer = typeof IntersectionObserver === 'function' && previewFrame
       ? new IntersectionObserver(([entry]) => {
-          previewVisible = entry.isIntersecting;
-          syncPreviewMedia();
-        }, { threshold: 0.15 })
+        previewVisible = entry.isIntersecting;
+        syncPreviewMedia();
+      }, { threshold: 0.15 })
       : null;
     // Второй observer подготавливает файл за один экран до preview, чтобы не
     // показывать долгую загрузку в момент скролла к нему.
     const preloadObserver = typeof IntersectionObserver === 'function' && previewFrame
       ? new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) preloadVideo();
-        }, { rootMargin: '100% 0px' })
+        if (entry.isIntersecting) preloadVideo();
+      }, { rootMargin: '100% 0px' })
       : null;
     // В старом браузере без IntersectionObserver выбираем доступность: видео
     // можно запустить, а изображение всё равно останется фолбэком при ошибке.
@@ -474,45 +526,211 @@ import { createPjaxRouter } from './pjax.js';
     preloadObserver?.observe(previewFrame);
     const onVisibilityChange = () => syncPreviewMedia();
     document.addEventListener('visibilitychange', onVisibilityChange);
-    // Возвращаем функцию очистки наружу, чтобы следующий PJAX-экран не оставил
-    // обработчики и сетевые загрузки у удалённых DOM-элементов.
-    disposePreviewMedia = () => {
-      observer?.disconnect();
-      preloadObserver?.disconnect();
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      preview.video?.removeEventListener('loadeddata', onVideoReady);
-      preview.video?.removeEventListener('canplay', onVideoReady);
-      preview.video?.removeEventListener('error', onVideoError);
-      pauseVideo();
+
+    function scrambleText(element, finalText, durationMs = 200) {
+      if (!element) return;
+      const chars = '01#_$%*/~<>[]';
+      const original = finalText;
+      const start = performance.now();
+      const interval = window.setInterval(() => {
+        const progress = (performance.now() - start) / durationMs;
+        if (progress >= 1) {
+          window.clearInterval(interval);
+          element.textContent = original;
+          return;
+        }
+        let current = '';
+        for (let i = 0; i < original.length; i++) {
+          if (i < original.length * progress) {
+            current += original[i];
+          } else {
+            current += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+        element.textContent = current;
+      }, 25);
+    }
+
+    let measuredMaxHeight = 0;
+
+    function calculateMaxHeight() {
+      if (!infoBox) return;
+      const currentWidth = infoBox.getBoundingClientRect().width;
+      if (currentWidth <= 0) return;
+
+      let clone = /** @type {HTMLElement | null} */ (document.getElementById('preview-measurer-clone'));
+      if (!clone) {
+        clone = document.createElement('div');
+        clone.id = 'preview-measurer-clone';
+        clone.style.cssText = 'position: absolute; left: -9999px; top: 0; visibility: hidden; pointer-events: none;';
+        document.body.appendChild(clone);
+      }
+
+      clone.className = 'preview-info';
+      clone.style.width = currentWidth + 'px';
+      clone.style.minHeight = '0px';
+
+      let maxH = 0;
+
+      currentPageData.projects.forEach((p) => {
+        let awardsHtml = '';
+        const awards = p.awards || (p.awwwards ? [p.awwwards] : []);
+        if (awards.length > 0) {
+          awardsHtml = awards.map((a) => {
+            const lastSpace = a.text.lastIndexOf(' ');
+            const prefix = lastSpace > -1 ? `${a.text.slice(0, lastSpace)} ` : '';
+            const suffix = a.text.slice(lastSpace + 1);
+            return (
+              '<div class="preview-awards__item">' +
+              '<svg class="icon icon-size-12 icon--accent"><use href="#i-star"/></svg>' +
+              (a.url
+                ? '<a class="preview-awards__link">' + prefix + '<span class="preview-awards__suffix">' + suffix + '<svg class="icon icon-size-11"><use href="#i-ext"/></svg></span></a>'
+                : '<span>' + a.text + '</span>'
+              ) +
+              '</div>'
+            );
+          }).join('');
+        }
+
+        const noteHtml = p.note
+          ? '<div class="preview-note"><span class="preview-note__slash">// </span><span class="preview-note__text">' + p.note + '</span></div>'
+          : '';
+        const tagsHtml = (p.tags || []).map((t) => '<span class="tag">' + t + '</span>').join('');
+
+        if (clone) {
+          clone.innerHTML =
+            '<div class="preview-name-row"><span class="preview-name">' + p.slug + '</span></div>' +
+            '<div class="preview-meta-body">' +
+            '<div class="preview-subtitle">' + p.client + ' · ' + p.year + '</div>' +
+            '<p class="preview-description">' + p.description + '</p>' +
+            '<div class="preview-tags">' + tagsHtml + '</div>' +
+            '<div class="preview-actions"><a class="btn btn--primary"><span>' + (currentPageData.t?.openSite || 'OPEN') + '</span></a></div>' +
+            (noteHtml || '') +
+            (awardsHtml ? '<div class="preview-awards"><span data-preview-awards-text>' + awardsHtml + '</span></div>' : '') +
+            '</div>';
+
+          const h = clone.offsetHeight;
+          if (h > maxH) maxH = h;
+        }
+      });
+
+      if (maxH > 0) {
+        measuredMaxHeight = maxH;
+        if (window.innerWidth >= 960) {
+          document.documentElement.style.setProperty('--preview-info-height', measuredMaxHeight + 'px');
+        } else {
+          document.documentElement.style.setProperty('--preview-info-height-mobile', measuredMaxHeight + 'px');
+        }
+        infoBox.style.minHeight = measuredMaxHeight + 'px';
+      }
+    }
+
+    function getTrackBounds() {
+      if (!strip || !track) return { minX: 0, maxX: 0 };
+      const stripW = strip.clientWidth;
+      const trackW = Math.max(track.scrollWidth, track.offsetWidth || 0);
+      const minX = Math.min(0, stripW - trackW);
+      return { minX, maxX: 0 };
+    }
+
+    function smoothScrollThumbnails(activeThumb) {
+      if (!strip || !track || !activeThumb) return;
+      wheelTargetX = null;
+      if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing)) return;
+
+      const stripWidth = strip.clientWidth;
+      const thumbLeft = activeThumb.offsetLeft;
+      const thumbWidth = activeThumb.clientWidth;
+      const targetX = (stripWidth / 2) - (thumbLeft + thumbWidth / 2);
+      const bounds = getTrackBounds();
+      const clampedTargetX = Math.max(bounds.minX, Math.min(bounds.maxX, targetX));
+
+      if (window.gsap) {
+        window.gsap.to(track, {
+          x: clampedTargetX,
+          duration: PREVIEW_SLIDER_CONFIG.stripScrollDurationS,
+          ease: PREVIEW_SLIDER_CONFIG.stripScrollEase,
+          overwrite: 'auto',
+          onUpdate() {
+            if (stripDraggable) stripDraggable.update();
+          },
+        });
+      } else {
+        track.style.transform = 'translate3d(' + clampedTargetX + 'px, 0, 0)';
+      }
+    }
+
+    /** @type {any} */
+    let stripDraggable = null;
+    const DraggableClass = /** @type {any} */ (window).Draggable;
+    if (DraggableClass && track) {
+      const initialBounds = getTrackBounds();
+      stripDraggable = DraggableClass.create(track, {
+        type: 'x',
+        inertia: true,
+        bounds: initialBounds,
+        edgeResistance: PREVIEW_SLIDER_CONFIG.stripEdgeResistance,
+        throwResistance: PREVIEW_SLIDER_CONFIG.stripThrowResistance,
+        cursor: 'grab',
+        activeCursor: 'grabbing',
+        dragClickables: true,
+        onPressInit() {
+          wheelTargetX = null;
+          this.applyBounds(getTrackBounds());
+        },
+        onDragStart() {
+          strip?.classList.add('is-dragging');
+        },
+        onDragEnd() {
+          strip?.classList.remove('is-dragging');
+        },
+        onThrowComplete() {
+          strip?.classList.remove('is-dragging');
+        },
+      })[0];
+    }
+
+    let wheelTargetX = /** @type {number | null} */ (null);
+
+    const onStripWheel = (/** @type {WheelEvent} */ e) => {
+      if (stripDraggable && stripDraggable.isDragging) return;
+      const rawDelta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(rawDelta) < 1) return;
+      e.preventDefault();
+
+      const speed = PREVIEW_SLIDER_CONFIG.stripWheelSpeed ?? 2.0;
+      const delta = rawDelta * speed;
+
+      if (window.gsap && track) {
+        const bounds = getTrackBounds();
+        const currentX = /** @type {number} */ (window.gsap.getProperty(track, 'x')) || 0;
+        const startX = wheelTargetX !== null ? wheelTargetX : currentX;
+        wheelTargetX = Math.max(bounds.minX, Math.min(bounds.maxX, startX - delta));
+
+        window.gsap.to(track, {
+          x: wheelTargetX,
+          duration: PREVIEW_SLIDER_CONFIG.stripWheelDurationS ?? 0.32,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          onUpdate() {
+            if (stripDraggable) stripDraggable.update();
+          },
+          onComplete() {
+            wheelTargetX = null;
+          },
+        });
+      }
     };
+    strip?.addEventListener('wheel', onStripWheel, { passive: false });
 
-    function setActive(slug, { scroll = false } = {}) {
-      // Это единственная точка смены проекта: она обновляет данные, выделение
-      // в списках и состояние медиа одновременно.
-      const project = projectsBySlug.get(slug);
-      if (!project) return;
-      currentSlug = slug;
-
+    function updateTextDetails(project) {
       if (preview.slug) preview.slug.textContent = project.slug;
       if (preview.site) preview.site.textContent = project.site;
       if (preview.open) preview.open.href = project.url;
-      if (preview.shotSrc) {
-        // Единственный современный <source>: и type, и srcset берутся из
-        // манифеста сборки (какой формат — avif/webp — оказался легче).
-        preview.shotSrc.setAttribute('type', project.shotModType);
-        preview.shotSrc.setAttribute('srcset', project.shotMod);
-      }
-      if (preview.shotImg) {
-        preview.shotImg.src = project.shot;
-        preview.shotImg.alt = project.slug;
-      }
-      showImage();
-      if (preview.name) preview.name.textContent = project.slug;
       if (preview.star) preview.star.hidden = !project.star;
       if (preview.sub) preview.sub.textContent = `${project.client} · ${project.year}`;
       if (preview.description) preview.description.textContent = project.description;
       if (preview.tags) {
-        // Теги пересоздаются, потому что их количество и текст меняются у проекта.
         preview.tags.textContent = '';
         project.tags.forEach((tag) => {
           const tagElement = document.createElement('span');
@@ -577,6 +795,21 @@ import { createPjaxRouter } from './pjax.js';
           });
         }
       }
+    }
+
+    /**
+     * @param {string} slug
+     * @param {{ direction?: 'next' | 'prev' | string, scroll?: boolean, animate?: boolean }} [options]
+     */
+    function setActive(slug, { direction, scroll = false, animate = true } = {}) {
+      if (isAnimating) return;
+      const project = projectsBySlug.get(slug);
+      if (!project) return;
+      if (animate && slug === currentSlug) return;
+
+      const currentIndex = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+      const targetIndex = currentPageData.projects.findIndex((p) => p.slug === slug);
+      const dir = direction || (targetIndex >= currentIndex ? 'next' : 'prev');
 
       thumbnails.forEach((thumbnail) => {
         const isActive = thumbnail.dataset.slug === slug;
@@ -587,32 +820,399 @@ import { createPjaxRouter } from './pjax.js';
         projectElement.classList.toggle('is-active', projectElement.dataset.slug === slug)
       );
 
-      // После обновления данных перепроверяем: может понадобиться включить новое
-      // видео или вернуть фолбэк-картинку.
-      syncPreviewMedia();
+      if (counter) {
+        const num = String(targetIndex + 1).padStart(2, '0');
+        const total = String(currentPageData.projects.length).padStart(2, '0');
+        counter.innerHTML = '[ <span class="preview-stepper-counter__current">' + num + '</span> / ' + total + ' ]';
+      }
+
+      if (!stripDraggable || (!stripDraggable.isDragging && !stripDraggable.isThrowing)) {
+        smoothScrollThumbnails(thumbnails[targetIndex]);
+      }
+
+      if (!animate || reduceMotion.matches) {
+        currentSlug = slug;
+        updateTextDetails(project);
+        if (preview.name) preview.name.textContent = project.slug;
+        const curSlot = activeIsA ? slotA : slotB;
+        if (curSlot.src) {
+          curSlot.src.setAttribute('type', project.shotModType);
+          curSlot.src.setAttribute('srcset', project.shotMod);
+        }
+        if (curSlot.img) {
+          curSlot.img.src = project.shot;
+          curSlot.img.alt = project.slug;
+        }
+        showImage();
+        syncPreviewMedia();
+        if (scroll) scrollToPreview();
+        return;
+      }
+
+      currentSlug = slug;
+      isAnimating = true;
+      const activeSlot = activeIsA ? slotA : slotB;
+      const incomingSlot = activeIsA ? slotB : slotA;
+
+      if (incomingSlot.layer) {
+        incomingSlot.layer.style.clipPath = dir === 'next' ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)';
+        incomingSlot.layer.style.zIndex = '2';
+      }
+      if (activeSlot.layer) activeSlot.layer.style.zIndex = '1';
+
+      if (incomingSlot.src) {
+        incomingSlot.src.setAttribute('type', project.shotModType);
+        incomingSlot.src.setAttribute('srcset', project.shotMod);
+      }
+      if (incomingSlot.img) {
+        incomingSlot.img.src = project.shot;
+        incomingSlot.img.alt = project.slug;
+      }
+
+      let prepPromise = Promise.resolve();
+      if (incomingSlot.video && project.video && project.video.webm && previewVisible && !reduceMotion.matches && !document.hidden) {
+        incomingSlot.video.replaceChildren();
+        const webm = document.createElement('source');
+        webm.src = project.video.webm;
+        webm.type = 'video/webm';
+        const mp4 = document.createElement('source');
+        mp4.src = project.video.mp4;
+        mp4.type = 'video/mp4';
+        incomingSlot.video.append(webm, mp4);
+        incomingSlot.video.removeAttribute('poster');
+        incomingSlot.video.load();
+        const savedPos = videoPositions.get(project.slug);
+        prepPromise = new Promise((resolve) => {
+          let resolved = false;
+          const finish = () => {
+            if (resolved) return;
+            resolved = true;
+            if (Number.isFinite(savedPos) && incomingSlot.video) {
+              incomingSlot.video.currentTime = savedPos;
+            }
+            if (incomingSlot.video) {
+              incomingSlot.video.style.transition = 'none';
+              incomingSlot.video.classList.add('is-visible');
+              incomingSlot.video.play().catch(() => { });
+            }
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                resolve();
+              });
+            });
+          };
+          if (incomingSlot.video?.readyState >= 2) {
+            finish();
+          } else {
+            incomingSlot.video?.addEventListener('playing', finish, { once: true });
+            incomingSlot.video?.addEventListener('canplay', finish, { once: true });
+            incomingSlot.video?.addEventListener('loadeddata', finish, { once: true });
+            window.setTimeout(finish, 140);
+          }
+        });
+      } else if (incomingSlot.video) {
+        incomingSlot.video.pause();
+        incomingSlot.video.classList.remove('is-visible');
+        incomingSlot.video.replaceChildren();
+        incomingSlot.video.removeAttribute('poster');
+      }
+
+      prepPromise.then(() => {
+        const offsetPx = calcVc(PREVIEW_SLIDER_CONFIG.descOffsetVc);
+        const startY = (dir === 'next' ? 1 : -1) * offsetPx;
+        if (window.gsap && metaBody) {
+          window.gsap.fromTo(metaBody,
+            { opacity: 0, y: startY },
+            {
+              opacity: 1,
+              y: 0,
+              duration: PREVIEW_SLIDER_CONFIG.descDurationS,
+              ease: PREVIEW_SLIDER_CONFIG.descEase,
+              overwrite: 'auto',
+            }
+          );
+        }
+
+        if (preview.name) {
+          scrambleText(preview.name, project.slug, PREVIEW_SLIDER_CONFIG.scrambleDurationMs);
+        }
+
+        if (maskLine && maskTrail && incomingSlot.layer) {
+          if (window.gsap) window.gsap.killTweensOf([maskLine, maskTrail]);
+          maskTrail.className = 'scanline-trail ' + (dir === 'next' ? 'trail-next' : 'trail-prev');
+          if (dir === 'next') {
+            maskLine.style.left = '100%';
+            maskTrail.style.left = '100%';
+            maskTrail.style.right = 'auto';
+          } else {
+            maskLine.style.left = '0%';
+            maskTrail.style.left = 'calc(0% - var(--mask-trail-width))';
+            maskTrail.style.right = 'auto';
+          }
+          maskLine.style.opacity = '1';
+          maskTrail.style.opacity = '1';
+
+          const sweepDuration = PREVIEW_SLIDER_CONFIG.sweepDurationMs;
+          const startTime = performance.now();
+
+          const animateSweep = (now) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / sweepDuration, 1);
+            const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+            const fadeFactor = progress > 0.65 ? Math.max(0, 1 - (progress - 0.65) / 0.4) : 1;
+            maskTrail.style.opacity = String(fadeFactor);
+
+            if (dir === 'next') {
+              const pctNum = (1 - eased) * 100;
+              const pct = pctNum.toFixed(2);
+              maskLine.style.left = pct + '%';
+              maskTrail.style.left = pct + '%';
+              maskTrail.style.right = 'auto';
+              if (incomingSlot.layer) incomingSlot.layer.style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+            } else {
+              const pctNum = eased * 100;
+              const pct = pctNum.toFixed(2);
+              maskLine.style.left = pct + '%';
+              maskTrail.style.left = 'calc(' + pct + '% - var(--mask-trail-width))';
+              maskTrail.style.right = 'auto';
+              if (incomingSlot.layer) incomingSlot.layer.style.clipPath = 'inset(0 ' + (100 - pctNum).toFixed(2) + '% 0 0)';
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(animateSweep);
+            } else {
+              if (incomingSlot.layer) incomingSlot.layer.style.clipPath = 'none';
+
+              const completeSweep = () => {
+                if (activeSlot.video) {
+                  if (loadedVideoSlug && Number.isFinite(preview.video.currentTime)) {
+                    videoPositions.set(loadedVideoSlug, preview.video.currentTime);
+                  }
+                  activeSlot.video.pause();
+                  activeSlot.video.classList.remove('is-visible');
+                  activeSlot.video.replaceChildren();
+                  activeSlot.video.removeAttribute('poster');
+                }
+                if (activeSlot.layer) activeSlot.layer.style.clipPath = 'inset(0 0 0 100%)';
+                activeIsA = !activeIsA;
+                preview.video = (activeIsA ? slotA : slotB).video;
+                preview.picture = (activeIsA ? slotA : slotB).picture;
+                preview.shotSrc = (activeIsA ? slotA : slotB).src;
+                preview.shotImg = (activeIsA ? slotA : slotB).img;
+                loadedVideoSlug = project.slug;
+                if (incomingSlot.video) {
+                  incomingSlot.video.style.transition = '';
+                }
+                isAnimating = false;
+              };
+
+              if (window.gsap) {
+                window.gsap.to([maskLine, maskTrail], {
+                  opacity: 0,
+                  duration: PREVIEW_SLIDER_CONFIG.trailFadeDurationS,
+                  ease: 'power2.out',
+                  onComplete: completeSweep,
+                });
+              } else {
+                maskLine.style.opacity = '0';
+                maskTrail.style.opacity = '0';
+                completeSweep();
+              }
+            }
+          };
+
+          requestAnimationFrame(animateSweep);
+        }
+
+        window.setTimeout(() => {
+          updateTextDetails(project);
+        }, 40);
+      });
 
       if (scroll) scrollToPreview();
     }
 
-    function scrollToPreview() {
-      // Используем Lenis, если он активен, чтобы клик и колесо имели одинаковую
-      // плавность; иначе оставляем нативное поведение браузера.
-      const previewElement = document.getElementById('preview');
-      if (!previewElement) return;
+    function scrollToPreview(target = (window.innerWidth < 960 ? (previewFrame || document.getElementById('preview')) : (document.getElementById('preview') || previewFrame))) {
+      if (!target) return;
+      const isMobile = window.innerWidth < 960;
+      const statusbar = /** @type {HTMLElement | null} */ (document.querySelector(isMobile ? '.statusbar.mobile-only' : '.statusbar'));
+      const headerHeight = statusbar ? statusbar.getBoundingClientRect().height : 0;
+      const extraOffset = isMobile ? 8 : 16;
+      const offset = -(headerHeight + extraOffset);
+
       if (lenis) {
-        lenis.scrollTo(previewElement, { offset: 0 });
+        lenis.scrollTo(target, {
+          offset,
+          duration: reduceMotion.matches ? 0 : 0.8,
+        });
         return;
       }
-      previewElement.scrollIntoView({
+      const targetY = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0) + offset;
+      window.scrollTo({
+        top: Math.max(0, targetY),
         behavior: reduceMotion.matches ? 'auto' : 'smooth',
-        block: 'start',
       });
     }
 
-    // Миниатюры меняют активный проект, не прокручивая страницу.
+    // Миниатюры меняют активный проект; на мобилке также плавно прокручивают к слайдеру.
     thumbnails.forEach((thumbnail) => {
-      thumbnail.addEventListener('click', () => setActive(thumbnail.dataset.slug));
+      thumbnail.addEventListener('click', (e) => {
+        if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing || stripDraggable.timeSinceDrag() < 0.1)) {
+          e.preventDefault();
+          return;
+        }
+        if (thumbnail.dataset.slug === currentSlug) {
+          e.preventDefault();
+          return;
+        }
+        const shouldScroll = window.innerWidth < 960;
+        setActive(thumbnail.dataset.slug, { scroll: shouldScroll });
+      });
     });
+
+    if (track) {
+      track.addEventListener('click', (e) => {
+        if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing || stripDraggable.timeSinceDrag() < 0.1)) {
+          return;
+        }
+        const btn = /** @type {HTMLElement | null} */ (e.target instanceof Element ? e.target.closest('.preview-thumbnail') : null);
+        if (!btn || !btn.dataset.slug || btn.dataset.slug === currentSlug) return;
+        const shouldScroll = window.innerWidth < 960;
+        setActive(btn.dataset.slug, { scroll: shouldScroll });
+      });
+    }
+
+    const onPrevClick = (/** @type {Event} */ e) => {
+      e.preventDefault();
+      const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+      const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
+      setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+    };
+    const onNextClick = (/** @type {Event} */ e) => {
+      e.preventDefault();
+      const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+      const nextIdx = (idx + 1) % currentPageData.projects.length;
+      setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+    };
+    btnPrev?.addEventListener('click', onPrevClick);
+    btnNext?.addEventListener('click', onNextClick);
+
+    const onKeydown = (/** @type {KeyboardEvent} */ e) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowLeft') {
+        const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+        const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
+        setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+      } else if (e.key === 'ArrowRight') {
+        const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+        const nextIdx = (idx + 1) % currentPageData.projects.length;
+        setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+      }
+    };
+    window.addEventListener('keydown', onKeydown);
+
+    let swipeStartX = 0;
+    let swipeStartY = 0;
+    let isSwiping = false;
+
+    function handleSwipeStart(x, y) {
+      isSwiping = true;
+      swipeStartX = x;
+      swipeStartY = y;
+    }
+
+    function handleSwipeEnd(x, y) {
+      if (!isSwiping) return;
+      isSwiping = false;
+
+      const diffX = x - swipeStartX;
+      const diffY = y - swipeStartY;
+      const threshold = PREVIEW_SLIDER_CONFIG.swipeThresholdPx;
+
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) >= threshold) {
+        const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
+        if (diffX < 0) {
+          const nextIdx = (idx + 1) % currentPageData.projects.length;
+          setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+        } else {
+          const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
+          setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+        }
+      }
+    }
+
+    if (mediaBox) {
+      mediaBox.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        handleSwipeStart(e.clientX, e.clientY);
+        try {
+          mediaBox.setPointerCapture(e.pointerId);
+        } catch (_) { }
+      });
+
+      mediaBox.addEventListener('pointerup', (e) => {
+        try {
+          mediaBox.releasePointerCapture(e.pointerId);
+        } catch (_) { }
+        handleSwipeEnd(e.clientX, e.clientY);
+      });
+
+      mediaBox.addEventListener('pointercancel', (e) => {
+        try {
+          mediaBox.releasePointerCapture(e.pointerId);
+        } catch (_) { }
+        isSwiping = false;
+      });
+
+      mediaBox.addEventListener('dragstart', (e) => e.preventDefault());
+    }
+
+    let resizeTimer;
+    const onWindowResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        calculateMaxHeight();
+        if (stripDraggable) {
+          stripDraggable.applyBounds(getTrackBounds());
+          stripDraggable.update();
+        }
+        const activeThumb = thumbnails.find((t) => t.dataset.slug === currentSlug);
+        if (activeThumb) smoothScrollThumbnails(activeThumb);
+      }, 60);
+    };
+    window.addEventListener('resize', onWindowResize);
+
+    // Возвращаем функцию очистки наружу, чтобы следующий PJAX-экран не оставил
+    // обработчики и сетевые загрузки у удалённых DOM-элементов.
+    disposePreviewMedia = () => {
+      observer?.disconnect();
+      preloadObserver?.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      preview.video?.removeEventListener('loadeddata', onVideoReady);
+      preview.video?.removeEventListener('canplay', onVideoReady);
+      preview.video?.removeEventListener('error', onVideoError);
+      slotA.video?.removeEventListener('loadeddata', onVideoReady);
+      slotA.video?.removeEventListener('canplay', onVideoReady);
+      slotA.video?.removeEventListener('error', onVideoError);
+      slotB.video?.removeEventListener('loadeddata', onVideoReady);
+      slotB.video?.removeEventListener('canplay', onVideoReady);
+      slotB.video?.removeEventListener('error', onVideoError);
+      pauseVideo();
+      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('keydown', onKeydown);
+      strip?.removeEventListener('wheel', onStripWheel);
+      btnPrev?.removeEventListener('click', onPrevClick);
+      btnNext?.removeEventListener('click', onNextClick);
+      const clone = document.getElementById('preview-measurer-clone');
+      if (clone) clone.remove();
+      if (stripDraggable) {
+        stripDraggable.kill();
+        stripDraggable = null;
+      }
+      if (window.gsap) {
+        window.gsap.killTweensOf([maskLine, maskTrail, track, metaBody]);
+      }
+    };
 
     // клик по строке / карточке -> preview (но не по вложенной ссылке "open")
     function wireRow(projectElement) {
@@ -624,15 +1224,25 @@ import { createPjaxRouter } from './pjax.js';
     rows.forEach(wireRow);
     cards.forEach(wireRow);
 
+    calculateMaxHeight();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        calculateMaxHeight();
+      });
+    }
+    requestAnimationFrame(() => {
+      calculateMaxHeight();
+    });
+
     // После PJAX возвращаем выбранный фильтр и проект, если они существуют
     // в текущей языковой версии/на текущей странице.
     if (activeFilter !== 'all') {
       applyFilter(activeFilter);
     }
     if (currentSlug && projectsBySlug.has(currentSlug)) {
-      setActive(currentSlug);
+      setActive(currentSlug, { animate: false });
     } else if (currentPageData.projects[0]) {
-      setActive(currentPageData.projects[0].slug);
+      setActive(currentPageData.projects[0].slug, { animate: false });
     }
 
     // Изменившийся контент влияет на вычисленную длину smooth-scroll.

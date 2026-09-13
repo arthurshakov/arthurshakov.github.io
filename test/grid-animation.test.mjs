@@ -28,8 +28,8 @@ test('grid animation configuration exports user-approved constants', () => {
   assert.equal(GRID_ANIMATION_CONFIG.mobileStepBase, 40);
   assert.equal(GRID_ANIMATION_CONFIG.mobileHorizStepBase, 40);
   assert.equal(GRID_ANIMATION_CONFIG.mobileVertStepBase, 40);
-  assert.equal(GRID_ANIMATION_CONFIG.scrollSensitivity, 1.0);
-  assert.equal(GRID_ANIMATION_CONFIG.mobileScrollSensitivity, 1.0);
+  assert.equal(GRID_ANIMATION_CONFIG.scrollSensitivity, 0.5);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileScrollSensitivity, 0.4);
   assert.equal(GRID_ANIMATION_CONFIG.particleBaseAlpha, 0.30);
   assert.equal(GRID_ANIMATION_CONFIG.particleMaxAlpha, 0.75);
   assert.equal(GRID_ANIMATION_CONFIG.damping, 0.93);

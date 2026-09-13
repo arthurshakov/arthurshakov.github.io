@@ -81,8 +81,11 @@ async function copyStatic() {
   await copyFile(p('src/scripts/audio-controls.js'), p('dist/audio-controls.js'));
   await copyFile(p('src/scripts/audio-visualizer.js'), p('dist/audio-visualizer.js'));
   await copyFile(p('src/scripts/grid-animation.js'), p('dist/grid-animation.js'));
+  await copyFile(p('src/scripts/preview-slider.js'), p('dist/preview-slider.js'));
   await copyFile(p('src/vendor/lenis.min.js'), p('dist/lenis.min.js'));
   await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
+  await copyFile(p('src/vendor/Draggable.min.js'), p('dist/Draggable.min.js'));
+  await copyFile(p('src/vendor/InertiaPlugin.min.js'), p('dist/InertiaPlugin.min.js'));
   const audioDir = p('dist/assets/audio');
   await mkdir(audioDir, { recursive: true });
   await Promise.all(
