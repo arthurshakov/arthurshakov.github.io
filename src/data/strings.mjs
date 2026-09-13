@@ -23,8 +23,8 @@ export const strings = {
       path: '~/portfolio',
       dollar: '$',
     },
-    selected: `${PROJECT_COUNT} selected · 60+ total`,
-    selectedM: `${PROJECT_COUNT} selected · 60+ total`,
+    selected: `показано ${PROJECT_COUNT} работ · 70+ всего`,
+    selectedM: `показано ${PROJECT_COUNT} работ · 70+ всего`,
     langLabel: '--lang=',
     audio: {
       on: 'звук вкл',
@@ -40,8 +40,6 @@ export const strings = {
     secWorks: 'works',
     secPreview: 'preview',
     secContact: 'contact',
-    worksCountD: `${PROJECT_COUNT} отобрано из 60+`,
-    worksCountM: `${PROJECT_COUNT} / 60+`,
     // whoami — labels
     w: {
       name: 'name',
@@ -136,8 +134,8 @@ export const strings = {
       path: '~/portfolio',
       dollar: '$',
     },
-    selected: `${PROJECT_COUNT} selected · 60+ total`,
-    selectedM: `${PROJECT_COUNT} selected · 60+ total`,
+    selected: `showing ${PROJECT_COUNT} works · 70+ total`,
+    selectedM: `showing ${PROJECT_COUNT} works · 70+ total`,
     langLabel: '--lang=',
     audio: {
       on: 'sound on',
@@ -152,8 +150,6 @@ export const strings = {
     secWorks: 'works',
     secPreview: 'preview',
     secContact: 'contact',
-    worksCountD: `${PROJECT_COUNT} selected of 60+`,
-    worksCountM: `${PROJECT_COUNT} / 60+`,
     w: {
       name: 'name',
       role: 'role',

@@ -208,9 +208,6 @@ function works(t, lang) {
   <section class="section section--works" id="works">
     <div class="section-header section-header--works">
       <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secWorks)}</span>
-      <span class="section-header__meta desktop-inline-only">${esc(t.worksCountD)}</span><span class="section-header__meta mobile-inline-only">${esc(
-        t.worksCountM
-      )}</span>
     </div>
 
     <div class="filters desktop-only">

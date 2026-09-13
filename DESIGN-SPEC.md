@@ -62,7 +62,7 @@
 **Раскладка mobile:** `padding: 0 20px`, статус-бар в две строки.
 
 **Компоненты:**
-- **Статус-бар:** `arthur_shakov` (700, bright) `:` (`--text-3`) `~/portfolio` (`--text-2`) `$` (accent) + мигающая каретка (`8×15px` блок accent, `blink 1.1s step-end`). Справа: `17 selected · 60+ total` и `--lang=` [ru][en] (активный — фон accent, текст `--bg`).
+- **Статус-бар:** `arthur_shakov` (700, bright) `:` (`--text-3`) `~/portfolio` (`--text-2`) `$` (accent) + мигающая каретка (`8×15px` блок accent, `blink 1.1s step-end`). Справа: `показано 17 работ · 70+ всего` (RU) / `showing 17 works · 70+ total` (EN) и `--lang=` [ru][en] (активный — фон accent, текст `--bg`).
 - **Заголовок секции:** `// name` — `// ` в `--text-3`, слово в `--text-2`, `12px`, вес 500, снизу граница `1px --line`.
 - **whoami:** grid `132px 1fr`, gap `14px 28px`. Строки: name (24px/700) со статусом доступности рядом (● dot + текст, accent), role, bio (`max-width: 68ch`), stack, awards (★ + текст), clients, languages, location.
 - **works — таблица:** flex-строки, `gap: 20px`, `padding: 13px 0`, граница снизу `1px --line-faint`. Колонки: `year` 52px (`--text-2`) · `project` flex 2 (bright/500, ★ у Awwwards) · `client` 190px (`--text-2`) · `type` flex 3 (`--text-3`) · action 88px (ссылка `open ↗`, видна в ховере). Шапка `11px --text-3`, граница `1px --line-strong`. Ховер строки: фон `rgba(168,224,91,0.09)`, левая граница `1px --accent`. Над таблицей — чипы-фильтры `grep: все (all) / awwwards / промо / игры / корпоративные / недвижимость / бренды / каталоги / авто / таймлайн / видео` (активный — фон accent, на мобиле — инерционная перетаскиваемая лента на Draggable) и `sort: featured`.
