@@ -80,21 +80,25 @@
 .audio-control__track {
   align-self: stretch;
   border-left: 1px solid var(--line-strong);
+  cursor: default;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: vc(116);
   padding: vc(5) vc(10);
+  user-select: none;
 }
 
 .audio-control__track-position {
   color: var(--text-3);
+  cursor: default;
   font-size: vc(10);
   line-height: 1.2;
 }
 
 [data-audio-track-name] {
   color: var(--text-1);
+  cursor: default;
   font-size: vc(11);
   line-height: 1.3;
   overflow: hidden;

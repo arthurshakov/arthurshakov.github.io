@@ -82,6 +82,8 @@
   color: var(--bg);
   font-weight: 700;
   border-color: var(--accent);
+  cursor: default;
+  pointer-events: none;
 }
 
 // ============ таблица (desktop) ============

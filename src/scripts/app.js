@@ -4,7 +4,7 @@
 import { createPlaylistPlayer } from './audio-player.js';
 import { bindAudioControls, bindAudioVisualizer } from './audio-controls.js';
 import { createAudioVisualizer } from './audio-visualizer.js';
-import { bindClickSound } from './click-sound.js';
+import { bindClickSound, confirmClick } from './click-sound.js';
 import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
 import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
@@ -210,7 +210,6 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
     bindAudioControls(audioToggles, player, musicTracks.map((track) => track.name));
     bindAudioVisualizer(audioToggles, player, visualizer);
     bindClickSound({
-      volume: 0.35,
       isSoundEnabled: () => player.getState().playing || player.hasStoredEnabledPreference(),
     });
 
@@ -241,7 +240,6 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
     });
   } else {
     bindClickSound({
-      volume: 0.35,
       isSoundEnabled: () => true,
     });
   }
@@ -416,7 +414,11 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
         ) {
           return;
         }
+        if (chip.dataset.filter === activeFilter) {
+          return;
+        }
         applyFilter(chip.dataset.filter);
+        confirmClick(chip);
         if (chip.closest('.mobile-only')) {
           scrollFilterIntoView(chip);
         }
@@ -900,7 +902,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
       if (!project) return;
       if (animate && slug === currentSlug) {
         if (scroll) scrollToPreview();
-        return;
+        return scroll;
       }
       if (isAnimating) return;
 
@@ -943,11 +945,12 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
         showImage();
         syncPreviewMedia();
         if (scroll) scrollToPreview();
-        return;
+        return true;
       }
 
       currentSlug = slug;
       isAnimating = true;
+      previewFrame?.classList.add('is-animating');
       const activeSlot = activeIsA ? slotA : slotB;
       const incomingSlot = activeIsA ? slotB : slotA;
 
@@ -1101,6 +1104,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
                   incomingSlot.video.style.transition = '';
                 }
                 isAnimating = false;
+                previewFrame?.classList.remove('is-animating');
               };
 
               if (window.gsap) {
@@ -1127,6 +1131,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
       });
 
       if (scroll) scrollToPreview();
+      return true;
     }
 
     function scrollToPreview(target = (window.innerWidth < 960 ? (previewFrame || document.getElementById('preview')) : (document.getElementById('preview') || previewFrame))) {
@@ -1158,38 +1163,30 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
           e.preventDefault();
           return;
         }
-        if (thumbnail.dataset.slug === currentSlug) {
+        if (isAnimating || thumbnail.dataset.slug === currentSlug) {
           e.preventDefault();
           return;
         }
         const shouldScroll = window.innerWidth < 960;
+        const previousSlug = currentSlug;
         setActive(thumbnail.dataset.slug, { scroll: shouldScroll });
+        if (currentSlug !== previousSlug && currentSlug === thumbnail.dataset.slug) {
+          confirmClick(thumbnail);
+        }
       });
     });
-
-    if (track) {
-      track.addEventListener('click', (e) => {
-        if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing || stripDraggable.timeSinceDrag() < 0.1)) {
-          return;
-        }
-        const btn = /** @type {HTMLElement | null} */ (e.target instanceof Element ? e.target.closest('.preview-thumbnail') : null);
-        if (!btn || !btn.dataset.slug || btn.dataset.slug === currentSlug) return;
-        const shouldScroll = window.innerWidth < 960;
-        setActive(btn.dataset.slug, { scroll: shouldScroll });
-      });
-    }
 
     const onPrevClick = (/** @type {Event} */ e) => {
       e.preventDefault();
       const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
       const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
-      setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+      if (setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' })) confirmClick(btnPrev);
     };
     const onNextClick = (/** @type {Event} */ e) => {
       e.preventDefault();
       const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
       const nextIdx = (idx + 1) % currentPageData.projects.length;
-      setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+      if (setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' })) confirmClick(btnNext);
     };
     btnPrev?.addEventListener('click', onPrevClick);
     btnNext?.addEventListener('click', onNextClick);
@@ -1317,13 +1314,14 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
       if (window.gsap) {
         window.gsap.killTweensOf([maskLine, maskTrail, track, metaBody, filtersTrack]);
       }
+      previewFrame?.classList.remove('is-animating');
     };
 
     // клик по строке / карточке -> preview (но не по вложенной ссылке "open")
     function wireRow(projectElement) {
       projectElement.addEventListener('click', (event) => {
         if (event.target.closest('a')) return;
-        setActive(projectElement.dataset.slug, { scroll: true });
+        if (setActive(projectElement.dataset.slug, { scroll: true })) confirmClick(projectElement);
       });
     }
     rows.forEach(wireRow);

@@ -107,6 +107,8 @@ html.preloader-pending .statusbar {
   background: var(--accent);
   color: var(--bg);
   font-weight: 700;
+  cursor: default;
+  pointer-events: none;
 }
 
 .pill--on:hover {

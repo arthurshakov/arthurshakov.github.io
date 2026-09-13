@@ -1,3 +1,5 @@
+import { confirmClick } from './click-sound.js';
+
 // Легковесный PJAX-модуль для бесшовных переходов между страницами.
 // Перехватывает клики по внутренним ссылкам, загружает страницу через fetch,
 // парсит контент и применяет View Transitions без перезагрузки страницы.
@@ -309,6 +311,9 @@ export function createPjaxRouter({
       if (!shouldIntercept(anchor, event)) return;
 
       event.preventDefault();
+      const targetPath = normalizePath(new URL(anchor.href, windowObj.location.href).pathname);
+      if (isNavigating || targetPath === normalizePath(windowObj.location.pathname)) return;
+      confirmClick(anchor);
       navigate(anchor.href);
     });
 
