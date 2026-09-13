@@ -22,13 +22,6 @@
   }
 }
 
-.filters__sort {
-  @include desktop {
-    margin-left: auto;
-    color: var(--text-3);
-  }
-}
-
 .filters.mobile-only {
   @include mobile {
     position: relative;

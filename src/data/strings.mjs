@@ -78,7 +78,6 @@ export const strings = {
     },
     // works
     grep: 'grep:',
-    sort: 'sort: featured',
     filters: [
       { id: 'all', label: 'все' },
       { id: 'awwwards', label: 'awwwards' },
@@ -185,7 +184,6 @@ export const strings = {
       },
     },
     grep: 'grep:',
-    sort: 'sort: featured',
     filters: [
       { id: 'all', label: 'all' },
       { id: 'awwwards', label: 'awwwards' },

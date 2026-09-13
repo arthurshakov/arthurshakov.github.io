@@ -213,7 +213,6 @@ function works(t, lang) {
     <div class="filters desktop-only">
       <span class="filters__label">${esc(t.grep)}</span>
       ${chips(false)}
-      <span class="filters__sort">${esc(t.sort)}</span>
     </div>
     <div class="filters mobile-only" data-filters-strip><div class="filters-track" data-filters-track>${chips(true)}</div></div>
 
