@@ -104,3 +104,18 @@ test('app.js strip wheel listener reacts only to horizontal scroll and ignores v
   assert.match(appJs, /const delta\s*=\s*e\.deltaX\s*\*\s*speed/);
 });
 
+test('app.js scrolls to preview slider when clicking active project in list', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+
+  // Clicking a row or card requests scrolling: setActive(slug, { scroll: true })
+  assert.match(appJs, /setActive\(projectElement\.dataset\.slug,\s*\{\s*scroll:\s*true\s*\}\)/);
+
+  // When clicking the already active slug, must still call scrollToPreview before returning
+  assert.match(
+    appJs,
+    /if\s*\(\s*animate\s*&&\s*slug\s*===\s*currentSlug\s*\)\s*\{\s*if\s*\(\s*scroll\s*\)\s*scrollToPreview\(\s*\);/
+  );
+});
+
+

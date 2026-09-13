@@ -886,10 +886,13 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
      * @param {{ direction?: 'next' | 'prev' | string, scroll?: boolean, animate?: boolean }} [options]
      */
     function setActive(slug, { direction, scroll = false, animate = true } = {}) {
-      if (isAnimating) return;
       const project = projectsBySlug.get(slug);
       if (!project) return;
-      if (animate && slug === currentSlug) return;
+      if (animate && slug === currentSlug) {
+        if (scroll) scrollToPreview();
+        return;
+      }
+      if (isAnimating) return;
 
       const currentIndex = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
       const targetIndex = currentPageData.projects.findIndex((p) => p.slug === slug);
