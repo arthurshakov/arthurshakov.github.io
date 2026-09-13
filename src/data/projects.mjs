@@ -380,10 +380,10 @@ export const projects = [
       ru: 'ТАСС / РЖД (веб-студия Ninelines)',
       en: 'TASS / Russian Railways (Ninelines web-studio)',
     },
-    type: { ru: 'спецпроект «БАМ 50 лет»', en: 'BAM 50th anniversary campaign' },
+    type: { ru: 'интерактивный таймлайн', en: 'interactive timeline' },
     url: 'https://tass-rzhd-bam.linestest.com/',
     site: 'tass-rzhd-bam.linestest.com',
-    categories: ['promo'],
+    categories: ['promo', 'timeline'],
     note: {
       ru: 'ссылка ведёт на тестовый стенд',
       en: 'link points to staging environment',
