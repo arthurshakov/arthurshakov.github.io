@@ -275,7 +275,7 @@ export const projects = [
     type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
     url: 'https://rbc-tank.linestest.com/',
     site: 'rbc-tank.linestest.com',
-    categories: ['promo', 'automobiles'],
+    categories: ['promo', 'auto'],
     note: {
       ru: 'ссылка ведёт на тестовый стенд',
       en: 'link points to staging environment',
@@ -437,7 +437,7 @@ export const projects = [
     type: { ru: 'автомобильный спецпроект', en: 'automotive campaign' },
     url: 'https://rbc-moskvich.linestest.com/',
     site: 'rbc-moskvich.linestest.com',
-    categories: ['promo', 'automobiles'],
+    categories: ['promo', 'auto'],
     note: {
       ru: 'ссылка ведёт на тестовый стенд',
       en: 'link points to staging environment',

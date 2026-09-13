@@ -19,8 +19,12 @@ export const PREVIEW_SLIDER_CONFIG = {
   swipeThresholdPx: 35,
 
   // Инерция ленты миниатюр (Draggable + InertiaPlugin)
-  stripThrowResistance: 1200, // Сопротивление броску ленты (меньше = дольше скользит)
-  stripEdgeResistance: 0.85,  // Упругость у границ ленты
+  stripThrowResistance: 1200, // Сопротивление броску ленты миниатюр (меньше = дольше скользит)
+  stripEdgeResistance: 0.97,  // Упругость у границ ленты миниатюр (0..1, 1 = жесткая стена, 0.85 = эластичная оттяжка)
+
+  // Инерция мобильной ленты кнопок-фильтров
+  filtersThrowResistance: 1200, // Сопротивление броску ленты фильтров
+  filtersEdgeResistance: 0.97,  // Упругость у границ ленты фильтров
 
   // Скорость движения горизонтальной шторки в миллисекундах
   sweepDurationMs: 320,

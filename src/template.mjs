@@ -218,7 +218,7 @@ function works(t, lang) {
       ${chips(false)}
       <span class="filters__sort">${esc(t.sort)}</span>
     </div>
-    <div class="filters mobile-only">${chips(true)}</div>
+    <div class="filters mobile-only" data-filters-strip><div class="filters-track" data-filters-track>${chips(true)}</div></div>
 
     <div class="works-table desktop-only">
       <div class="works-table__header">

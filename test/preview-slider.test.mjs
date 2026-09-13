@@ -9,8 +9,8 @@ test('preview slider configuration exports user-approved constants', () => {
   assert.equal(PREVIEW_SLIDER_CONFIG.trailOpacity, 0.68);
   assert.equal(PREVIEW_SLIDER_CONFIG.descOffsetVc, 4);
   assert.equal(PREVIEW_SLIDER_CONFIG.swipeThresholdPx, 35);
-  assert.equal(PREVIEW_SLIDER_CONFIG.stripThrowResistance, 1200);
-  assert.equal(PREVIEW_SLIDER_CONFIG.stripEdgeResistance, 0.85);
+  assert.equal(PREVIEW_SLIDER_CONFIG.stripEdgeResistance, 0.97);
+  assert.equal(PREVIEW_SLIDER_CONFIG.filtersEdgeResistance, 0.97);
   assert.equal(PREVIEW_SLIDER_CONFIG.sweepDurationMs, 320);
   assert.equal(PREVIEW_SLIDER_CONFIG.descDurationS, 0.55);
   assert.equal(PREVIEW_SLIDER_CONFIG.descEase, 'power2.out');

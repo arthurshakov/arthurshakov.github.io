@@ -31,13 +31,40 @@
 
 .filters.mobile-only {
   @include mobile {
-    display: flex;
-    gap: vc(8);
+    position: relative;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
     padding-bottom: vc(8);
     margin-bottom: vc(14);
+    margin-left: vc(-20);
+    margin-right: vc(-20);
+    width: calc(100% + vc(40));
+
+    &.filters--draggable {
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      touch-action: pan-y;
+
+      &.is-dragging {
+        cursor: grabbing;
+      }
+    }
+  }
+}
+
+.filters-track {
+  @include mobile {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: vc(8);
+    width: max-content;
+    align-items: center;
+    padding-left: vc(20);
+    padding-right: vc(20);
+    will-change: transform;
   }
 }
 
