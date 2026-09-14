@@ -30,6 +30,10 @@
 }
 
 .body__main {
+  &:focus {
+    outline: none;
+  }
+
   @include desktop {
     grid-column: 2;
     min-width: 0;

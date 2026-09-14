@@ -186,6 +186,20 @@
   }
 }
 
+.works-row__btn {
+  @include desktop {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 .works-row__client {
   @include desktop {
     color: var(--text-2);
@@ -231,10 +245,18 @@
 .works-card {
   @include mobile {
     padding: vc(14) 0;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+    }
   }
 }
 
-.works-card.is-active {
+.works-card.is-active,
+.works-card:hover,
+.works-card:focus-visible {
   @include mobile {
     background: var(--row-hover);
     border-left: 1px solid var(--accent);

@@ -58,16 +58,16 @@ function statusBar(t, lang) {
   const result = '<span class="statusbar-preloader__result" data-preloader-result hidden>✓ ready</span>';
   const metaText = (text) => `<span>${esc(text)}</span>`;
   const pills = (mobile) => {
-    const ru = `<a class="pill ${lang === 'ru' ? 'pill--on' : 'pill--off'}" href="/ru/"${
+    const ru = `<a class="pill ${lang === 'ru' ? 'pill--on' : 'pill--off'}" href="/ru/" hreflang="ru" lang="ru"${
       lang === 'ru' ? ' aria-current="page"' : ''
     }>ru</a>`;
-    const en = `<a class="pill ${lang === 'en' ? 'pill--on' : 'pill--off'}" href="/"${
+    const en = `<a class="pill ${lang === 'en' ? 'pill--on' : 'pill--off'}" href="/" hreflang="en" lang="en"${
       lang === 'en' ? ' aria-current="page"' : ''
     }>en</a>`;
     const label = mobile
       ? ''
-      : `<span class="statusbar-language__label">${esc(t.langLabel)}</span>`;
-    return `<span class="statusbar-language">${label}${ru}${en}</span>`;
+      : `<span class="statusbar-language__label" aria-hidden="true">${esc(t.langLabel)}</span>`;
+    return `<nav class="statusbar-language" aria-label="${escAttr(t.langNavLabel)}">${label}${ru}${en}</nav>`;
   };
   const p = t.prompt;
   const promptD =
@@ -171,17 +171,19 @@ function works(t, lang) {
   const rows = projects
     .map((p, i) => {
       const last = i === projects.length - 1 ? ' works-row--last' : '';
-      const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
+      const star = p.star
+        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(t.featured)})</span>`
+        : '';
       return `<div class="works-row${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
         p.slug
-      )}" data-categories="${escAttr((p.categories || []).join(' '))}">
+      )}" data-categories="${escAttr((p.categories || []).join(' '))}" aria-pressed="${i === 0 ? 'true' : 'false'}">
           <span class="works-row__year works-column--year">${p.year}</span>
-          <span class="works-row__project works-column--project">${esc(p.slug)}${star}</span>
+          <span class="works-row__project works-column--project"><button class="works-row__btn" type="button" aria-label="${escAttr(t.selectProject)}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(p.slug)}</button>${star}</span>
           <span class="works-row__client works-column--client">${esc(p.client[lang])}</span>
           <span class="works-row__type works-column--type">${esc(p.type[lang])}</span>
           <span class="works-row__action works-column--action"><a href="${escAttr(
             p.url
-          )}" target="_blank" rel="noopener">${esc(t.rowOpen)} ${icon('ext', 'icon-size-12')}</a></span>
+          )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(t.rowOpen)} ${escAttr(p.slug)} (${escAttr(t.newTab)})">${esc(t.rowOpen)} ${icon('ext', 'icon-size-12')}</a></span>
         </div>`;
     })
     .join('\n        ');
@@ -189,10 +191,12 @@ function works(t, lang) {
   const cards = projects
     .map((p, i) => {
       const last = i === projects.length - 1 ? ' works-card--last' : '';
-      const star = p.star ? ` ${icon('star', 'icon-size-12', true)}` : '';
-      return `<div class="works-card${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
+      const star = p.star
+        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(t.featured)})</span>`
+        : '';
+      return `<div class="works-card${last}${i === 0 ? ' is-active' : ''}" role="button" tabindex="0" data-slug="${escAttr(
         p.slug
-      )}" data-categories="${escAttr((p.categories || []).join(' '))}">
+      )}" data-categories="${escAttr((p.categories || []).join(' '))}" aria-label="${escAttr(t.selectProject)}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">
           <div class="works-card__top"><span class="works-card__year">${p.year}</span><span class="works-card__name">${esc(
             p.slug
           )}</span>${star}</div>
@@ -268,7 +272,7 @@ function preview(t, lang, shots = {}) {
     const prefix = lastSpace > -1 ? `${esc(award.text.slice(0, lastSpace))} ` : '';
     const suffix = esc(award.text.slice(lastSpace + 1));
     const content = award.url
-      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener">${prefix}<span class="preview-awards__suffix">${suffix}${icon(
+      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(award.text)} (${escAttr(t.newTab)})">${prefix}<span class="preview-awards__suffix">${suffix}${icon(
           'ext',
           'icon-size-11'
         )}</span></a>`
@@ -291,7 +295,7 @@ function preview(t, lang, shots = {}) {
             <span class="preview-address__command">$ open</span>
             <a class="preview-address__url" data-preview-open href="${escAttr(
               first.url
-            )}" target="_blank" rel="noopener"><span data-preview-site>${esc(
+            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(first.site)} (${escAttr(t.newTab)})"><span data-preview-site>${esc(
               first.site
             )}</span> ${icon('ext', 'icon-size-11')}</a>
           </div>
@@ -334,7 +338,7 @@ function preview(t, lang, shots = {}) {
       <div class="preview-info" data-preview-info>
         <div class="preview-name-row">
           <h3 class="preview-name" data-preview-name>${esc(first.slug)}</h3>
-          <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
+          <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}<span class="sr-only"> (${esc(t.featured)})</span></span>
         </div>
         <div class="preview-meta-body" data-preview-meta-body>
           <div class="preview-subtitle" data-preview-subtitle>${esc(first.client[lang])} · ${first.year}</div>
@@ -343,7 +347,7 @@ function preview(t, lang, shots = {}) {
           <div class="preview-actions">
             <a class="btn btn--primary" data-preview-call-to-action href="${escAttr(
               first.url
-            )}" target="_blank" rel="noopener"><span data-preview-call-to-action-label>${esc(
+            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(t.openSite)} (${escAttr(t.newTab)})"><span data-preview-call-to-action-label>${esc(
               t.openSite
             )}</span> ${icon('ext', 'icon-size-13')}</a>
           </div>
@@ -386,7 +390,7 @@ function contact(t) {
   const cf = t.contactFlags;
   const a = (key, ext = true) =>
     `<a href="${escAttr(contactHref[key])}"${
-      ext ? ' target="_blank" rel="noopener"' : ''
+      ext ? ` target="_blank" rel="noopener noreferrer" aria-label="${escAttr(cv[key])} (${escAttr(t.newTab)})"` : ''
     }>${esc(cv[key])}</a>`;
 
   const lineD =
@@ -447,7 +451,11 @@ function bootData(lang, t, shots = {}) {
   });
   return {
     lang,
-    t: { openSite: t.openSite },
+    t: {
+      openSite: t.openSite,
+      newTab: t.newTab,
+      selectProject: t.selectProject,
+    },
     audioTracks,
     projects: list,
   };
@@ -522,13 +530,14 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
 <noscript><link rel="stylesheet" href="/styles.css"><style>.page{visibility:visible}</style></noscript>
 </head>
 <body>
+<a class="skip-link" href="#main">${esc(t.skipToContent)}</a>
 <div class="bg-grid" aria-hidden="true"><div class="body__rail" aria-hidden="true"></div><canvas class="bg-grid-canvas" id="bg-grid-canvas" aria-hidden="true"></canvas></div>
 ${preloader(t, lang)}
 <div class="page">
 ${SPRITE}
 ${statusBar(t, lang)}
   <div class="body">
-    <main class="body__main" id="main">
+    <main class="body__main" id="main" tabindex="-1">
       <h1 class="sr-only">${esc(t.whoami.name)} — ${esc(t.whoami.role)}</h1>
 ${whoami(t)}
 ${works(t, lang)}

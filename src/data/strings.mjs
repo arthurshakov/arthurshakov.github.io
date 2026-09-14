@@ -25,7 +25,9 @@ export const strings = {
     },
     selected: `показано ${PROJECT_COUNT} работ · 70+ всего`,
     selectedM: `показано ${PROJECT_COUNT} работ · 70+ всего`,
+    skipToContent: 'перейти к основному контенту',
     langLabel: '--lang=',
+    langNavLabel: 'выбор языка',
     audio: {
       on: 'звук вкл',
       off: 'звук выкл',
@@ -92,6 +94,9 @@ export const strings = {
     ],
     thead: { year: 'year', project: 'project', client: 'client', type: 'type' },
     rowOpen: 'open',
+    newTab: 'в новой вкладке',
+    selectProject: 'выбрать проект',
+    featured: 'избранный проект',
     // archiveDesktop: {
     //   cmd: 'ls works/_archive/ | wc -l',
     //   arrow: '→ 60+',
@@ -135,7 +140,9 @@ export const strings = {
     },
     selected: `showing ${PROJECT_COUNT} works · 70+ total`,
     selectedM: `showing ${PROJECT_COUNT} works · 70+ total`,
+    skipToContent: 'skip to main content',
     langLabel: '--lang=',
+    langNavLabel: 'language selection',
     audio: {
       on: 'sound on',
       off: 'sound off',
@@ -198,6 +205,9 @@ export const strings = {
     ],
     thead: { year: 'year', project: 'project', client: 'client', type: 'type' },
     rowOpen: 'open',
+    newTab: 'opens in new tab',
+    selectProject: 'select project',
+    featured: 'featured project',
     archiveDesktop: {
       cmd: 'ls works/_archive/ | wc -l',
       arrow: '→ 60+',

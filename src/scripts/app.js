@@ -827,7 +827,13 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
     function updateTextDetails(project) {
       if (preview.slug) preview.slug.textContent = project.slug;
       if (preview.site) preview.site.textContent = project.site;
-      if (preview.open) preview.open.href = project.url;
+      if (preview.open) {
+        preview.open.href = project.url;
+        preview.open.rel = 'noopener noreferrer';
+        if (currentPageData.t?.newTab) {
+          preview.open.setAttribute('aria-label', `${project.site} (${currentPageData.t.newTab})`);
+        }
+      }
       if (preview.star) preview.star.hidden = !project.star;
       if (preview.sub) preview.sub.textContent = `${project.client} · ${project.year}`;
       if (preview.description) preview.description.textContent = project.description;
@@ -840,7 +846,13 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
           preview.tags.appendChild(tagElement);
         });
       }
-      if (preview.cta) preview.cta.href = project.url;
+      if (preview.cta) {
+        preview.cta.href = project.url;
+        preview.cta.rel = 'noopener noreferrer';
+        if (currentPageData.t?.newTab && currentPageData.t?.openSite) {
+          preview.cta.setAttribute('aria-label', `${currentPageData.t.openSite}: ${project.slug} (${currentPageData.t.newTab})`);
+        }
+      }
       if (preview.note) {
         preview.note.hidden = !project.note;
         if (preview.noteText) {
@@ -870,7 +882,10 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
               awardLink.className = 'preview-awards__link';
               awardLink.href = award.url;
               awardLink.target = '_blank';
-              awardLink.rel = 'noopener';
+              awardLink.rel = 'noopener noreferrer';
+              if (currentPageData.t?.newTab) {
+                awardLink.setAttribute('aria-label', `${award.text} (${currentPageData.t.newTab})`);
+              }
               const lastSpace = award.text.lastIndexOf(' ');
               if (lastSpace > -1) awardLink.append(`${award.text.slice(0, lastSpace)} `);
               const awardSuffix = document.createElement('span');
@@ -920,9 +935,16 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
         thumbnail.classList.toggle('is-active', isActive);
         thumbnail.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
-      [...rows, ...cards].forEach((projectElement) =>
-        projectElement.classList.toggle('is-active', projectElement.dataset.slug === slug)
-      );
+      [...rows, ...cards].forEach((projectElement) => {
+        const isActive = projectElement.dataset.slug === slug;
+        projectElement.classList.toggle('is-active', isActive);
+        projectElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      document.querySelectorAll('.works-row__btn').forEach((btn) => {
+        const row = btn.closest('.works-row');
+        const isActive = row instanceof HTMLElement && row.dataset.slug === slug;
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
 
       if (counter) {
         const num = String(targetIndex + 1).padStart(2, '0');
@@ -1324,10 +1346,16 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
 
     // клик по строке / карточке -> preview (но не по вложенной ссылке "open")
     function wireRow(projectElement) {
-      projectElement.addEventListener('click', (event) => {
-        if (event.target.closest('a')) return;
+      const handleSelect = (event) => {
+        if (event.target?.closest?.('a')) return;
+        if (event.type === 'keydown') {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault?.();
+        }
         if (setActive(projectElement.dataset.slug, { scroll: true })) confirmClick(projectElement);
-      });
+      };
+      projectElement.addEventListener('click', handleSelect);
+      projectElement.addEventListener('keydown', handleSelect);
     }
     rows.forEach(wireRow);
     cards.forEach(wireRow);

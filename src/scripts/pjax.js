@@ -77,9 +77,9 @@ export function parsePage(html, { parser = null } = {}) {
   const descMatch = html.match(/<meta[^>]*\bname=["']description["'][^>]*\bcontent=["']([^"']*)["']/i);
   const mainMatch = html.match(/<main[^>]*class=["'][^"']*body__main[^"']*["'][^>]*>([\s\S]*?)<\/main>/i);
   const bootMatch = html.match(/window\.__PORTFOLIO__\s*=\s*(\{[\s\S]*?\});/);
-  const langPillMatches = [...html.matchAll(/<span class="statusbar-language">([\s\S]*?)<\/span>/g)].map(
-    (m) => m[1]
-  );
+  const langPillMatches = [
+    ...html.matchAll(/<(?:span|nav)[^>]*class=["'][^"']*statusbar-language[^"']*["'][^>]*>([\s\S]*?)<\/(?:span|nav)>/g),
+  ].map((m) => m[1]);
   const audioToggleMatch = html.match(/<button[^>]*data-audio-toggle[^>]*>/i);
   /** @type {{ on: string, off: string, start: string, stop: string } | null} */
   let audioLabels = null;

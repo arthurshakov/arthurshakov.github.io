@@ -12,8 +12,44 @@ test('renders a single h1 heading within main for both languages', () => {
 
     assert.match(
       html,
-      /<main class="body__main" id="main">\s*<h1 class="sr-only">[\s\S]*?<\/h1>/,
+      /<main class="body__main" id="main"[^>]*>\s*<h1 class="sr-only">[\s\S]*?<\/h1>/,
       `Expected <h1> to be directly inside <main id="main"> in ${lang}`
+    );
+  }
+});
+
+test('renders accessible skip-link and language navigation', () => {
+  for (const lang of ['ru', 'en']) {
+    const html = renderPage(lang);
+
+    assert.match(
+      html,
+      /<a class="skip-link" href="#main">[^<]+<\/a>/,
+      `Expected skip-link at top of body in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<main class="body__main" id="main" tabindex="-1">/,
+      `Expected main to have tabindex="-1" for skip-link focus targeting in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<nav class="statusbar-language" aria-label="[^"]+">/,
+      `Expected statusbar-language to be a <nav> with aria-label in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /href="\/ru\/" hreflang="ru" lang="ru"/,
+      `Expected RU link to have hreflang and lang in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /href="\/" hreflang="en" lang="en"/,
+      `Expected EN link to have hreflang and lang in ${lang}`
     );
   }
 });
@@ -48,6 +84,36 @@ test('renders preview project name as h3', () => {
       html,
       /<h3 class="preview-name" data-preview-name>/,
       `Expected preview project name to be <h3> in ${lang}`
+    );
+  }
+});
+
+test('renders accessible project selection buttons and mobile cards', () => {
+  for (const lang of ['ru', 'en']) {
+    const html = renderPage(lang);
+
+    assert.match(
+      html,
+      /<button class="works-row__btn" type="button" aria-label="[^"]+power-x-time[^"]*" aria-pressed="true">power-x-time<\/button>/,
+      `Expected works-row button with aria-label in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<div class="works-card[^"]*" role="button" tabindex="0" data-slug="power-x-time"[^>]*aria-label="[^"]+power-x-time[^"]*" aria-pressed="true">/,
+      `Expected works-card with role="button" and tabindex="0" in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<a href="[^"]+" target="_blank" rel="noopener noreferrer" aria-label="open power-x-time/i,
+      `Expected external open link to have rel and aria-label in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<span class="sr-only"> \((избранный проект|featured project)\)<\/span>/,
+      `Expected featured star to have sr-only text in ${lang}`
     );
   }
 });
