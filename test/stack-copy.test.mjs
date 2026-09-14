@@ -7,6 +7,6 @@ test('presents React in the stack in both language versions', () => {
   for (const lang of ['ru', 'en']) {
     const html = renderPage(lang);
 
-    assert.match(html, /JavaScript \/ TypeScript · React · Vue \/ Nuxt/);
+    assert.match(html, /JavaScript \/ TypeScript · Vue \/ Nuxt · React \/ Next/);
   }
 });

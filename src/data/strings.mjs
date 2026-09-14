@@ -5,45 +5,74 @@ import { projects } from './projects.mjs';
 
 const PROJECT_COUNT = projects.length;
 
-const STACK_STRING = 'JavaScript / TypeScript · React · Vue / Nuxt · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma';
-
+/**
+ * Исходный словарь строк интерфейса.
+ * Локализуемые свойства задаются объектом { ru, en }.
+ * Общие свойства (не зависящие от языка) задаются строками или объектами.
+ */
 export const strings = {
-  ru: {
-    htmlLang: 'ru',
-    dir: 'ltr',
-    title: 'Артур Шаков — веб-разработчик: frontend, AI-assisted backend, спецпроекты',
-    description:
-      'Портфолио Артура Шакова: frontend, AI-assisted backend и интерактивные спецпроекты. Vue/Nuxt, GSAP, THREE.js. 2× Awwwards Honorable Mention.',
-    // status bar
-    prompt: {
-      user: 'arthur_shakov',
-      at: '@',
-      host: 'web-developer',
-      sep: ':',
-      path: '~/portfolio',
-      dollar: '$',
-    },
-    selected: `показано ${PROJECT_COUNT} работ · 70+ всего`,
-    selectedM: `показано ${PROJECT_COUNT} работ · 70+ всего`,
-    skipToContent: 'перейти к основному контенту',
-    langLabel: '--lang=',
-    langNavLabel: 'выбор языка',
-    audio: {
-      on: 'звук вкл',
-      off: 'звук выкл',
-      start: 'включить фоновую музыку',
-      stop: 'выключить фоновую музыку',
-      previous: 'предыдущий трек',
-      next: 'следующий трек',
-      track: 'трек',
-    },
-    // section headers
-    secWhoami: 'whoami',
-    secWorks: 'works',
-    secPreview: 'preview',
-    secContact: 'contact',
-    // whoami — labels
-    w: {
+  htmlLang: {
+    ru: 'ru',
+    en: 'en',
+  },
+
+  dir: 'ltr',
+
+  title: {
+    ru: 'Артур Шаков\u00A0— веб‑разработчик: frontend, AI‑assisted backend, спецпроекты',
+    en: 'Arthur Shakov\u00A0— web\u00A0developer: frontend, AI‑assisted backend & interactive projects',
+  },
+
+  description: {
+    ru: 'Портфолио Артура Шакова: frontend, AI‑assisted backend и\u00A0интерактивные спецпроекты. Vue/Nuxt, GSAP, THREE.js. 2×\u00A0Awwwards Honorable Mention.',
+    en: 'Portfolio of\u00A0Arthur Shakov: frontend, AI‑assisted backend &\u00A0interactive projects. GSAP, THREE.js, Vue/Nuxt. 2×\u00A0Awwwards Honorable Mention.',
+  },
+
+  // status bar
+  prompt: {
+    user: 'arthur_shakov',
+    at: '@',
+    host: 'web-developer',
+    sep: ':',
+    path: '~/portfolio',
+    dollar: '$',
+  },
+
+  selected: {
+    ru: `показано ${PROJECT_COUNT} работ · 70+ всего`,
+    en: `showing ${PROJECT_COUNT} works · 70+ total`,
+  },
+
+  skipToContent: {
+    ru: 'перейти к\u00A0основному контенту',
+    en: 'skip to\u00A0main content',
+  },
+
+  langLabel: '--lang=',
+
+  langNavLabel: {
+    ru: 'выбор языка',
+    en: 'language selection',
+  },
+
+  audio: {
+    on: { ru: 'звук вкл', en: 'sound on' },
+    off: { ru: 'звук выкл', en: 'sound off' },
+    start: { ru: 'включить фоновую музыку', en: 'turn on background music' },
+    stop: { ru: 'выключить фоновую музыку', en: 'turn off background music' },
+    previous: { ru: 'предыдущий трек', en: 'previous track' },
+    next: { ru: 'следующий трек', en: 'next track' },
+    track: { ru: 'трек', en: 'track' },
+  },
+
+  // section headers
+  secWhoami: 'whoami',
+  secWorks: 'works',
+  secPreview: 'preview',
+  secContact: 'contact',
+
+  whoami: {
+    labels: {
       name: 'name',
       role: 'role',
       bio: 'bio',
@@ -55,193 +84,159 @@ export const strings = {
       status: 'status',
       location: 'location',
     },
-    whoami: {
-      name: 'Артур Шаков',
-      role: 'веб-разработчик — frontend, AI-assisted backend и интерактивные спецпроекты',
-      awardsText: '2× Awwwards Honorable Mention',
-      awardsNote: '[+ Mobile Excellence]',
-      awardsExtra: '· 2× CSSDA Special Kudos',
-      languages: 'RU native · EN C1',
-      desktop: {
-        bio: 'Собираю спецпроекты с 2017 года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, SPA, интеграция с бэкендом, выкат в прод. Работаю spec-first: подробное ТЗ, затем реализация в паре с AI (Claude Code, Antigravity, Codex). Начинал в Whitemark — награды Awwwards и CSS Design Awards; сейчас — в агентстве «Девять Линий».',
-        stack: STACK_STRING,
-        clients: 'РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon Group',
-        workflow: 'Claude Code · Antigravity · Codex (spec-first — сначала спецификация, затем код)',
-        status: 'доступен для проектов',
-        location: 'UTC+3 · удалёнка/гибрид · готов рассмотреть переезд',
-      },
-      mobile: {
-        // bio и stack берутся с десктопа автоматически
-        clients: 'РБК · ТАСС · X5 · food.ru · Норникель · Сбер · Росатом · Etalon Group',
-        workflow: 'Claude Code · Antigravity · Codex (spec-first)',
-        // на мобиле status и location объединены в одну строку
-        statusCombined: 'доступен для проектов · UTC+3 · готов рассмотреть переезд',
-      },
+
+    name: {
+      ru: 'Артур Шаков',
+      en: 'Arthur Shakov',
     },
-    // works
-    grep: 'grep:',
-    filters: [
-      { id: 'all', label: 'все' },
-      { id: 'awwwards', label: 'awwwards' },
-      { id: 'promo', label: 'промо' },
-      { id: 'games', label: 'игры' },
-      { id: 'corporate', label: 'корпоративные' },
-      { id: 'real-estate', label: 'недвижимость' },
-      { id: 'brand', label: 'бренды / каталоги' },
-      { id: 'auto', label: 'авто' },
-      { id: 'timeline', label: 'таймлайн' },
-      { id: 'video', label: 'видео' },
-    ],
-    thead: { year: 'year', project: 'project', client: 'client', type: 'type' },
-    rowOpen: 'open',
-    newTab: 'в новой вкладке',
-    selectProject: 'выбрать проект',
-    featured: 'избранный проект',
-    filterAnnounce: 'показано проектов: {count} из {total}',
-    previewAnnounce: 'выбран проект {slug}, {index} из {total}',
-    // archiveDesktop: {
-    //   cmd: 'ls works/_archive/ | wc -l',
-    //   arrow: '→ 60+',
-    //   tail: '— промо, игры, конфигураторы, лендинги для food.ru, РБК, ТАСС, Норникеля',
-    //   link: '[ показать все ]',
-    // },
-    // archiveMobile: { cmd: 'ls _archive/', arrow: '→ 60+', link: '[ показать все ]' },
-    // preview
-    openSite: 'открыть сайт',
-    prevProject: 'предыдущий проект',
-    nextProject: 'следующий проект',
-    stripCaptionD: '// клик по превью — меняет большой кадр',
-    stripCaptionM: '// свайп — меняет большой кадр',
-    // contact
-    contactCmd: 'contact',
-    contactFlags: { email: '--email', github: '--github', tg: '--tg', cv: '--cv' },
-    contactValues: {
-      email: 'arthurshakov@gmail.com',
-      github: 'github.com/arthurshakov',
-      tg: '@arthur_shakov',
-      cv: 'resume.pdf',
+
+    role: {
+      ru: 'веб‑разработчик\u00A0— frontend, AI‑assisted backend и\u00A0интерактивные спецпроекты',
+      en: 'web\u00A0developer\u00A0— frontend, AI‑assisted backend &\u00A0interactive projects',
     },
-    contactNote: '// открыт к интересным спецпроектам и продуктовым командам',
-    colophonD: 'сделано на vanilla JS + Lenis + GSAP · без фреймворков · © 2026',
-    colophonM: 'сделано на vanilla JS + Lenis + GSAP · без фреймворков · © 2026',
+
+    awardsText:
+      '2×\u00A0Awwwards Honorable Mention [+ Mobile Excellence] · 2×\u00A0CSSDA Special Kudos',
+
+    languages: 'RU\u00A0native · EN\u00A0C1',
+
+    bio: {
+      ru: 'Собираю спецпроекты с\u00A02017\u00A0года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, React/Next, интеграция с\u00A0бэкендом, выкат в\u00A0прод. Работаю spec‑first: подробное\u00A0ТЗ, затем реализация в\u00A0паре с\u00A0AI (Codex, Claude\u00A0Code, Antigravity). Начинал в\u00A0Whitemark\u00A0— награды Awwwards и\u00A0CSS Design Awards; сейчас\u00A0— в\u00A0агентстве «Девять\u00A0Линий».',
+
+      en: 'Building campaign projects since\u00A02017: concept, semantic BEM\u00A0markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, React/Next, backend integration, shipping to\u00A0production. Work spec‑first: a\u00A0detailed spec, then implementation paired with AI\u00A0agents (Codex, Claude\u00A0Code, Antigravity). Started at\u00A0Whitemark\u00A0— Awwwards &\u00A0CSS Design Awards; now at\u00A0Nine\u00A0Lines agency.',
+    },
+
+    stack: 'JavaScript / TypeScript · Vue / Nuxt · React / Next · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma',
+
+    clients: {
+      ru: 'РБК · ТАСС · X5 (Пятёрочка, Перекрёсток, Чижик) · food.ru · Норникель · Сбер · Росатом · Etalon\u00A0Group · Praxis',
+      en: 'RBC · TASS · X5 (Pyaterochka, Perekrestok, Chizhik) · food.ru · Nornickel · Sber · Rosatom · Etalon\u00A0Group · Praxis',
+    },
+
+    workflow: {
+      ru: 'Codex · Claude\u00A0Code · Antigravity (spec‑first\u00A0— сначала спецификация, затем\u00A0код)',
+      en: 'Codex · Claude\u00A0Code · Antigravity (spec‑first\u00A0— a\u00A0written spec before\u00A0code)',
+    },
+
+    status: {
+      ru: 'доступен для\u00A0проектов',
+      en: 'available for\u00A0work',
+    },
+
+    location: {
+      ru: 'UTC+3 · удалёнка/гибрид · готов рассмотреть переезд',
+      en: 'UTC+3 · remote/hybrid · open to\u00A0relocation',
+    },
   },
 
-  en: {
-    htmlLang: 'en',
-    dir: 'ltr',
-    title: 'Arthur Shakov — web developer: frontend, AI-assisted backend & interactive projects',
-    description:
-      'Portfolio of Arthur Shakov: frontend, AI-assisted backend & interactive projects. GSAP, THREE.js, Vue/Nuxt. 2× Awwwards Honorable Mention.',
-    prompt: {
-      user: 'arthur_shakov',
-      at: '@',
-      host: 'web-developer',
-      sep: ':',
-      path: '~/portfolio',
-      dollar: '$',
-    },
-    selected: `showing ${PROJECT_COUNT} works · 70+ total`,
-    selectedM: `showing ${PROJECT_COUNT} works · 70+ total`,
-    skipToContent: 'skip to main content',
-    langLabel: '--lang=',
-    langNavLabel: 'language selection',
-    audio: {
-      on: 'sound on',
-      off: 'sound off',
-      start: 'turn on background music',
-      stop: 'turn off background music',
-      previous: 'previous track',
-      next: 'next track',
-      track: 'track',
-    },
-    secWhoami: 'whoami',
-    secWorks: 'works',
-    secPreview: 'preview',
-    secContact: 'contact',
-    w: {
-      name: 'name',
-      role: 'role',
-      bio: 'bio',
-      stack: 'stack',
-      awards: 'awards',
-      clients: 'clients',
-      workflow: 'workflow',
-      languages: 'languages',
-      status: 'status',
-      location: 'location',
-    },
-    whoami: {
-      name: 'Arthur Shakov',
-      role: 'web developer — frontend, AI-assisted backend & interactive projects',
-      awardsText: '2× Awwwards Honorable Mention',
-      awardsNote: '[+ Mobile Excellence]',
-      awardsExtra: '· 2× CSSDA Special Kudos',
-      languages: 'RU native · EN C1',
-      desktop: {
-        bio: 'Building campaign projects since 2017: concept, semantic BEM markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, SPA, backend integration, shipping to production. Work spec-first: a detailed spec, then implementation paired with AI agents (Claude Code, Antigravity, Codex). Started at Whitemark — Awwwards & CSS Design Awards; now at Nine Lines agency.',
-        stack: STACK_STRING,
-        clients: 'RBC · TASS · X5 (Pyaterochka, Perekrestok, Chizhik) · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
-        workflow: 'Claude Code · Antigravity · Codex (spec-first — a written spec before code)',
-        status: 'available for work',
-        location: 'UTC+3 · remote/hybrid · open to relocation',
+  // works
+  grep: 'grep:',
+
+  filters: [
+    { id: 'all', label: { ru: 'все', en: 'all' } },
+    { id: 'awwwards', label: { ru: 'awwwards', en: 'awwwards' } },
+    { id: 'promo', label: { ru: 'промо', en: 'promo' } },
+    { id: 'games', label: { ru: 'игры', en: 'games' } },
+    { id: 'corporate', label: { ru: 'корпоративные', en: 'corporate' } },
+    { id: 'real-estate', label: { ru: 'недвижимость', en: 'real estate' } },
+    { id: 'brand', label: { ru: 'бренды / каталоги', en: 'brand / catalogue' } },
+    { id: 'auto', label: { ru: 'авто', en: 'auto' } },
+    { id: 'timeline', label: { ru: 'таймлайн', en: 'timeline' } },
+    { id: 'video', label: { ru: 'видео', en: 'video' } },
+  ],
+
+  thead: { year: 'year', project: 'project', client: 'client', type: 'type' },
+
+  rowOpen: 'open',
+
+  newTab: {
+    ru: 'в\u00A0новой вкладке',
+    en: 'opens in\u00A0new tab',
+  },
+
+  selectProject: {
+    ru: 'выбрать проект',
+    en: 'select project',
+  },
+
+  featured: {
+    ru: 'избранный проект',
+    en: 'featured project',
+  },
+
+  filterAnnounce: {
+    ru: 'показано проектов: {count} из {total}',
+    en: 'showing {count} of {total} projects',
+  },
+
+  previewAnnounce: {
+    ru: 'выбран проект {slug}, {index} из {total}',
+    en: 'selected project {slug}, {index} of {total}',
+  },
+
+  // preview
+  openSite: {
+    ru: 'открыть сайт',
+    en: 'open site',
+  },
+
+  prevProject: {
+    ru: 'предыдущий проект',
+    en: 'previous project',
+  },
+
+  nextProject: {
+    ru: 'следующий проект',
+    en: 'next project',
+  },
+
+  stripCaption: {
+    ru: '// клик по\u00A0превью\u00A0— меняет большой кадр',
+    en: '// click a\u00A0preview to\u00A0swap the\u00A0main\u00A0shot',
+  },
+
+  // contacts
+  contacts: {
+    cmd: 'contact',
+    items: [
+      {
+        key: 'email',
+        flag: '--email',
+        label: 'arthurshakov@gmail.com',
+        href: 'mailto:arthurshakov@gmail.com',
+        ext: false,
       },
-      mobile: {
-        // bio and stack fall back to desktop automatically
-        clients: 'RBC · TASS · X5 · food.ru · Nornickel · Sber · Rosatom · Etalon Group',
-        workflow: 'Claude Code · Antigravity · Codex (spec-first)',
-        statusCombined: 'available for work · Chegem · relocation ok',
+      {
+        key: 'github',
+        flag: '--github',
+        label: 'github.com/arthurshakov',
+        href: 'https://github.com/arthurshakov',
+        ext: true,
       },
-    },
-    grep: 'grep:',
-    filters: [
-      { id: 'all', label: 'all' },
-      { id: 'awwwards', label: 'awwwards' },
-      { id: 'promo', label: 'promo' },
-      { id: 'games', label: 'games' },
-      { id: 'corporate', label: 'corporate' },
-      { id: 'real-estate', label: 'real estate' },
-      { id: 'brand', label: 'brand / catalogue' },
-      { id: 'auto', label: 'auto' },
-      { id: 'timeline', label: 'timeline' },
-      { id: 'video', label: 'video' },
+      {
+        key: 'tg',
+        flag: '--tg',
+        label: '@arthur_shakov',
+        href: 'https://t.me/arthur_shakov',
+        ext: true,
+      },
+      {
+        key: 'cv',
+        flag: '--cv',
+        label: 'resume.pdf',
+        href: '/assets/arthur-shakov-resume.pdf',
+        ext: true,
+      },
     ],
-    thead: { year: 'year', project: 'project', client: 'client', type: 'type' },
-    rowOpen: 'open',
-    newTab: 'opens in new tab',
-    selectProject: 'select project',
-    featured: 'featured project',
-    filterAnnounce: 'showing {count} of {total} projects',
-    previewAnnounce: 'selected project {slug}, {index} of {total}',
-    archiveDesktop: {
-      cmd: 'ls works/_archive/ | wc -l',
-      arrow: '→ 60+',
-      tail: '— promo, games, configurators and landing pages for food.ru, RBC, TASS, Nornickel',
-      link: '[ show all ]',
+    note: {
+      ru: '// открыт к\u00A0интересным спецпроектам и\u00A0продуктовым командам',
+      en: '// open to\u00A0interesting campaign work and\u00A0product teams',
     },
-    archiveMobile: { cmd: 'ls _archive/', arrow: '→ 60+', link: '[ show all ]' },
-    openSite: 'open site',
-    prevProject: 'previous project',
-    nextProject: 'next project',
-    stripCaptionD: '// click a preview to swap the main shot',
-    stripCaptionM: '// swipe to swap the main shot',
-    contactCmd: 'contact',
-    contactFlags: { email: '--email', github: '--github', tg: '--tg', cv: '--cv' },
-    contactValues: {
-      email: 'arthurshakov@gmail.com',
-      github: 'github.com/arthurshakov',
-      tg: '@arthur_shakov',
-      cv: 'resume.pdf',
-    },
-    contactNote: '// open to interesting campaign work and product teams',
-    colophonD: 'built with vanilla JS + Lenis + GSAP · no framework · © 2026',
-    colophonM: 'built with vanilla JS + Lenis + GSAP · no framework · © 2026',
+  },
+
+  colophon: {
+    ru: 'сделано на\u00A0vanilla\u00A0JS + Lenis + GSAP · без\u00A0фреймворков · ©\u00A02026',
+    en: 'built with\u00A0vanilla\u00A0JS + Lenis + GSAP · no\u00A0frameworks · ©\u00A02026',
   },
 };
 
-// Реальные href для контактов (значения-подписи — в contactValues).
-export const contactHref = {
-  email: 'mailto:arthurshakov@gmail.com',
-  github: 'https://github.com/arthurshakov',
-  tg: 'https://t.me/arthur_shakov',
-  cv: '/assets/arthur-shakov-resume.pdf',
-};

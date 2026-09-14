@@ -6,26 +6,26 @@ import { renderPage } from '../src/template.mjs';
 
 test('presents web development with frontend and AI-assisted backend focus in both languages', () => {
   assert.equal(
-    strings.ru.whoami.role,
-    'веб-разработчик — frontend, AI-assisted backend и интерактивные спецпроекты'
+    strings.whoami.role.ru,
+    'веб‑разработчик\u00A0— frontend, AI‑assisted backend и\u00A0интерактивные спецпроекты'
   );
-  assert.match(strings.ru.title, /веб-разработчик/);
-  assert.match(strings.ru.description, /AI-assisted backend/);
-  assert.equal(strings.ru.prompt.host, 'web-developer');
+  assert.match(strings.title.ru, /веб[‑-]разработчик/);
+  assert.match(strings.description.ru, /AI[‑-]assisted backend/);
+  assert.equal(strings.prompt.host, 'web-developer');
 
   assert.equal(
-    strings.en.whoami.role,
-    'web developer — frontend, AI-assisted backend & interactive projects'
+    strings.whoami.role.en,
+    'web\u00A0developer\u00A0— frontend, AI‑assisted backend &\u00A0interactive projects'
   );
-  assert.match(strings.en.title, /web developer/);
-  assert.match(strings.en.description, /AI-assisted backend/);
-  assert.equal(strings.en.prompt.host, 'web-developer');
+  assert.match(strings.title.en, /web[\s\u00A0]+developer/);
+  assert.match(strings.description.en, /AI[‑-]assisted backend/);
+  assert.equal(strings.prompt.host, 'web-developer');
 });
 
 test('places availability beside the name instead of in a separate status row', () => {
   for (const [lang, status] of [
-    ['ru', 'доступен для проектов'],
-    ['en', 'available for work'],
+    ['ru', 'доступен для\u00A0проектов'],
+    ['en', 'available for\u00A0work'],
   ]) {
     const html = renderPage(lang);
 
@@ -35,6 +35,6 @@ test('places availability beside the name instead of in a separate status row', 
     );
     assert.doesNotMatch(html, /whoami-label">status<\//);
     assert.equal(html.match(new RegExp(status, 'g')).length, 2);
-    assert.doesNotMatch(strings[lang].whoami.desktop.bio, new RegExp(status, 'i'));
+    assert.doesNotMatch(strings.whoami.bio[lang], new RegExp(status, 'i'));
   }
 });

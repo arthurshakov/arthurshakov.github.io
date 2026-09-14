@@ -8,13 +8,13 @@ test('renders the visible note for initial project power-x-time in both language
   const htmlRu = renderPage('ru');
   assert.match(
     htmlRu,
-    /<div class="preview-note" data-preview-note>\s*<span class="preview-note__slash">\/\/\s*<\/span><span class="preview-note__text" data-preview-note-text>кампания завершена · боевой сайт отключён · ссылка ведёт на тестовый стенд<\/span>\s*<\/div>/
+    /<div class="preview-note" data-preview-note>\s*<span class="preview-note__slash">\/\/\s*<\/span><span class="preview-note__text" data-preview-note-text>кампания завершена · боевой сайт отключён · ссылка ведёт на[\s\u00A0]тестовый стенд<\/span>\s*<\/div>/
   );
 
   const htmlEn = renderPage('en');
   assert.match(
     htmlEn,
-    /<div class="preview-note" data-preview-note>\s*<span class="preview-note__slash">\/\/\s*<\/span><span class="preview-note__text" data-preview-note-text>campaign ended · live site offline · link points to staging environment<\/span>\s*<\/div>/
+    /<div class="preview-note" data-preview-note>\s*<span class="preview-note__slash">\/\/\s*<\/span><span class="preview-note__text" data-preview-note-text>campaign ended · live site offline · link points to[\s\u00A0]staging environment<\/span>\s*<\/div>/
   );
 });
 
@@ -26,7 +26,7 @@ test('includes the localized note in boot data for power-x-time and null for pro
 
   assert.equal(
     powerXRu.note,
-    'кампания завершена · боевой сайт отключён · ссылка ведёт на тестовый стенд'
+    'кампания завершена · боевой сайт отключён · ссылка ведёт на\u00A0тестовый стенд'
   );
   assert.equal(glassDecorRu.note, null);
 
@@ -36,7 +36,7 @@ test('includes the localized note in boot data for power-x-time and null for pro
 
   assert.equal(
     powerXEn.note,
-    'campaign ended · live site offline · link points to staging environment'
+    'campaign ended · live site offline · link points to\u00A0staging environment'
   );
 });
 

@@ -3,7 +3,7 @@
 // Разметка works / preview / filmstrip пре-рендерится здесь (сайт работает без JS);
 // app.js только усиливает (фильтры, смена кадра, клик по строке).
 
-import { strings, contactHref } from './data/strings.mjs';
+import { strings } from './data/strings.mjs';
 import { audioTracks } from './data/audio.mjs';
 import { projects } from './data/projects.mjs';
 
@@ -31,25 +31,25 @@ const SPRITE = `
 const icon = (id, sizeClass, accent = false) =>
   `<svg class="icon ${sizeClass}${accent ? ' icon--accent' : ''}" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
 
-function preloader(t, lang) {
+function preloader(lang) {
   return '<div class="preloader" data-preloader aria-live="polite" aria-atomic="true"></div>';
 }
 
-function audioControl(t, variant = '') {
+function audioControl(lang, variant = '') {
   const bars = Array.from(
     { length: 5 },
     () => '<span class="audio-control__bar"></span>'
   ).join('');
 
   return `<div class="audio-control ${variant}" data-audio-control><button class="audio-control__toggle" type="button" data-audio-toggle aria-pressed="false" data-audio-state="off" data-audio-label-on="${escAttr(
-    t.audio.on
-  )}" data-audio-label-off="${escAttr(t.audio.off)}" data-audio-start="${escAttr(
-    t.audio.start
-  )}" data-audio-stop="${escAttr(t.audio.stop)}" aria-label="${escAttr(t.audio.start)}"><span class="audio-control__bars" data-audio-bars aria-hidden="true">${bars}</span><span class="audio-control__label" data-audio-label>${esc(t.audio.off)}</span></button><button class="audio-control__skip" type="button" data-audio-previous aria-label="${escAttr(t.audio.previous)}">←</button><span class="audio-control__track" data-audio-track><span class="audio-control__track-position"><span data-audio-track-current>01</span><span aria-hidden="true"> / </span><span data-audio-track-total>03</span></span><span data-audio-track-name>${esc(t.audio.track)}</span></span><button class="audio-control__skip" type="button" data-audio-next aria-label="${escAttr(t.audio.next)}">→</button></div>`;
+    strings.audio.on[lang]
+  )}" data-audio-label-off="${escAttr(strings.audio.off[lang])}" data-audio-start="${escAttr(
+    strings.audio.start[lang]
+  )}" data-audio-stop="${escAttr(strings.audio.stop[lang])}" aria-label="${escAttr(strings.audio.start[lang])}"><span class="audio-control__bars" data-audio-bars aria-hidden="true">${bars}</span><span class="audio-control__label" data-audio-label>${esc(strings.audio.off[lang])}</span></button><button class="audio-control__skip" type="button" data-audio-previous aria-label="${escAttr(strings.audio.previous[lang])}">←</button><span class="audio-control__track" data-audio-track><span class="audio-control__track-position"><span data-audio-track-current>01</span><span aria-hidden="true"> / </span><span data-audio-track-total>03</span></span><span data-audio-track-name>${esc(strings.audio.track[lang])}</span></span><button class="audio-control__skip" type="button" data-audio-next aria-label="${escAttr(strings.audio.next[lang])}">→</button></div>`;
 }
 
 // ---------- status bar ----------
-function statusBar(t, lang) {
+function statusBar(lang) {
   const command = `./render --locale=${lang}`;
   const commandSlot =
     `<span class="statusbar-preloader__command" data-preloader-command data-command="${escAttr(
@@ -66,10 +66,10 @@ function statusBar(t, lang) {
     }>en</a>`;
     const label = mobile
       ? ''
-      : `<span class="statusbar-language__label" aria-hidden="true">${esc(t.langLabel)}</span>`;
-    return `<nav class="statusbar-language" aria-label="${escAttr(t.langNavLabel)}">${label}${ru}${en}</nav>`;
+      : `<span class="statusbar-language__label" aria-hidden="true">${esc(strings.langLabel)}</span>`;
+    return `<nav class="statusbar-language" aria-label="${escAttr(strings.langNavLabel[lang])}">${label}${ru}${en}</nav>`;
   };
-  const p = t.prompt;
+  const p = strings.prompt;
   const promptD =
     `<span class="statusbar-prompt__user">${esc(p.user)}</span>` +
     `<span class="statusbar-prompt__at">${esc(p.at)}</span>` +
@@ -90,66 +90,62 @@ function statusBar(t, lang) {
   <header class="statusbar desktop-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptD}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selected)}${audioControl(t, 'audio-control--tuner')}${pills(false)}</span>
+      <span class="statusbar-meta__content">${metaText(strings.selected[lang])}${audioControl(lang, 'audio-control--tuner')}${pills(false)}</span>
     </div>
     ${result}
   </header>
   <header class="statusbar mobile-only">
     <div class="statusbar-prompt" data-preloader-prompt>${promptM}</div>
     <div class="statusbar-meta">
-      <span class="statusbar-meta__content">${metaText(t.selectedM)}${audioControl(t, 'audio-control--tuner')}${pills(true)}</span>
+      <span class="statusbar-meta__content">${metaText(strings.selected[lang])}${audioControl(lang, 'audio-control--tuner')}${pills(true)}</span>
     </div>
     ${result}
   </header>`;
 }
 
 // ---------- whoami ----------
-function whoami(t) {
-  const w = t.whoami;
-  const awards = `${icon('star', 'icon-size-13', true)} <span>${esc(w.awardsText)}${
-    w.awardsNote ? ` <span class="whoami-note">${esc(w.awardsNote)}</span>` : ''
-  }${w.awardsExtra ? ` ${esc(w.awardsExtra)}` : ''}</span>`;
+function whoami(lang) {
+  const w = strings.whoami;
+  const labels = w.labels;
+  const awardsContent = esc(w.awardsText || '').replace(
+    /(\[.*?\])/g,
+    '<span class="whoami-note">$1</span>'
+  );
+  const awards = `${icon('star', 'icon-size-13', true)} <span>${awardsContent}</span>`;
   const status = `${icon('dot', 'icon-size-9', true)} `;
-
-  const desk = w.desktop || {};
-  const mob = w.mobile || {};
 
   const grid = `
     <div class="whoami desktop-only">
       <div class="whoami-grid">
-        <span class="whoami-label">${esc(t.w.name)}</span><span class="whoami-value whoami-value--name"><span>${esc(w.name)}</span><span class="whoami-status">${status}${esc(desk.status)}</span></span>
-        <span class="whoami-label">${esc(t.w.role)}</span><span class="whoami-value">${esc(w.role)}</span>
-        <span class="whoami-label">${esc(t.w.bio)}</span><span class="whoami-value whoami-value--bio">${esc(desk.bio)}</span>
-        <span class="whoami-label">${esc(t.w.stack)}</span><span class="whoami-value">${esc(desk.stack)}</span>
-        <span class="whoami-label">${esc(t.w.awards)}</span><span class="whoami-value whoami-value--awards">${awards}</span>
-        <span class="whoami-label">${esc(t.w.clients)}</span><span class="whoami-value">${esc(desk.clients)}</span>
-        <span class="whoami-label">${esc(t.w.workflow)}</span><span class="whoami-value">${esc(desk.workflow)}</span>
-        <span class="whoami-label">${esc(t.w.languages)}</span><span class="whoami-value">${esc(w.languages)}</span>
-        <span class="whoami-label">${esc(t.w.location)}</span><span class="whoami-value whoami-value--location">${esc(desk.location)}</span>
+        <span class="whoami-label">${esc(labels.name)}</span><span class="whoami-value whoami-value--name"><span>${esc(w.name[lang])}</span><span class="whoami-status">${status}${esc(w.status[lang])}</span></span>
+        <span class="whoami-label">${esc(labels.role)}</span><span class="whoami-value">${esc(w.role[lang])}</span>
+        <span class="whoami-label">${esc(labels.bio)}</span><span class="whoami-value whoami-value--bio">${esc(w.bio[lang])}</span>
+        <span class="whoami-label">${esc(labels.stack)}</span><span class="whoami-value">${esc(w.stack)}</span>
+        <span class="whoami-label">${esc(labels.awards)}</span><span class="whoami-value whoami-value--awards">${awards}</span>
+        <span class="whoami-label">${esc(labels.clients)}</span><span class="whoami-value">${esc(w.clients[lang])}</span>
+        <span class="whoami-label">${esc(labels.workflow)}</span><span class="whoami-value">${esc(w.workflow[lang])}</span>
+        <span class="whoami-label">${esc(labels.languages)}</span><span class="whoami-value">${esc(w.languages)}</span>
+        <span class="whoami-label">${esc(labels.location)}</span><span class="whoami-value whoami-value--location">${esc(w.location[lang])}</span>
       </div>
     </div>`;
 
-  const mBio = mob.bio ?? desk.bio ?? '';
-  const mStack = mob.stack ?? desk.stack ?? '';
-  const mClients = mob.clients ?? desk.clients ?? '';
-  const mWorkflow = mob.workflow ?? desk.workflow ?? '';
   const stack = `
     <div class="whoami mobile-only">
-      <div class="whoami-label">${esc(t.w.name)}</div><div class="whoami-value whoami-value--name"><span>${esc(w.name)}</span><span class="whoami-status">${status}${esc(desk.status)}</span></div>
-      <div class="whoami-label">${esc(t.w.role)}</div><div class="whoami-value">${esc(w.role)}</div>
-      <div class="whoami-label">${esc(t.w.bio)}</div><div class="whoami-value whoami-value--bio">${esc(mBio)}</div>
-      <div class="whoami-label">${esc(t.w.stack)}</div><div class="whoami-value">${esc(mStack)}</div>
-      <div class="whoami-label">${esc(t.w.awards)}</div><div class="whoami-value whoami-value--awards">${awards}</div>
-      <div class="whoami-label">${esc(t.w.clients)}</div><div class="whoami-value">${esc(mClients)}</div>
-      <div class="whoami-label">${esc(t.w.workflow)}</div><div class="whoami-value">${esc(mWorkflow)}</div>
-      <div class="whoami-label">${esc(t.w.languages)}</div><div class="whoami-value">${esc(w.languages)}</div>
-      <div class="whoami-label">${esc(t.w.location)}</div><div class="whoami-value whoami-value--location">${esc(desk.location)}</div>
+      <div class="whoami-label">${esc(labels.name)}</div><div class="whoami-value whoami-value--name"><span>${esc(w.name[lang])}</span><span class="whoami-status">${status}${esc(w.status[lang])}</span></div>
+      <div class="whoami-label">${esc(labels.role)}</div><div class="whoami-value">${esc(w.role[lang])}</div>
+      <div class="whoami-label">${esc(labels.bio)}</div><div class="whoami-value whoami-value--bio">${esc(w.bio[lang])}</div>
+      <div class="whoami-label">${esc(labels.stack)}</div><div class="whoami-value">${esc(w.stack)}</div>
+      <div class="whoami-label">${esc(labels.awards)}</div><div class="whoami-value whoami-value--awards">${awards}</div>
+      <div class="whoami-label">${esc(labels.clients)}</div><div class="whoami-value">${esc(w.clients[lang])}</div>
+      <div class="whoami-label">${esc(labels.workflow)}</div><div class="whoami-value">${esc(w.workflow[lang])}</div>
+      <div class="whoami-label">${esc(labels.languages)}</div><div class="whoami-value">${esc(w.languages)}</div>
+      <div class="whoami-label">${esc(labels.location)}</div><div class="whoami-value whoami-value--location">${esc(w.location[lang])}</div>
     </div>`;
 
   return `
   <section class="section section--whoami" id="whoami" aria-labelledby="heading-whoami">
     <div class="section-header section-header--whoami">
-      <h2 class="section-header__title" id="heading-whoami"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secWhoami)}</h2>
+      <h2 class="section-header__title" id="heading-whoami"><span class="section-header__slash" aria-hidden="true">// </span>${esc(strings.secWhoami)}</h2>
     </div>
     ${grid}
     ${stack}
@@ -157,14 +153,14 @@ function whoami(t) {
 }
 
 // ---------- works ----------
-function works(t, lang) {
+function works(lang) {
   const chips = (mobile) =>
-    t.filters
+    strings.filters
       .map(
         (f, i) =>
           `<button class="chip${i === 0 ? ' chip--on' : ''}" type="button" data-filter="${escAttr(
             f.id
-          )}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(f.label)}</button>`
+          )}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(f.label[lang])}</button>`
       )
       .join(mobile ? '' : '\n        ');
 
@@ -172,18 +168,18 @@ function works(t, lang) {
     .map((p, i) => {
       const last = i === projects.length - 1 ? ' works-row--last' : '';
       const star = p.star
-        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(t.featured)})</span>`
+        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(strings.featured[lang])})</span>`
         : '';
       return `<div class="works-row${last}${i === 0 ? ' is-active' : ''}" data-slug="${escAttr(
         p.slug
       )}" data-categories="${escAttr((p.categories || []).join(' '))}" aria-pressed="${i === 0 ? 'true' : 'false'}">
           <span class="works-row__year works-column--year">${p.year}</span>
-          <span class="works-row__project works-column--project"><button class="works-row__btn" type="button" aria-label="${escAttr(t.selectProject)}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(p.slug)}</button>${star}</span>
+          <span class="works-row__project works-column--project"><button class="works-row__btn" type="button" aria-label="${escAttr(strings.selectProject[lang])}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">${esc(p.slug)}</button>${star}</span>
           <span class="works-row__client works-column--client">${esc(p.client[lang])}</span>
           <span class="works-row__type works-column--type">${esc(p.type[lang])}</span>
           <span class="works-row__action works-column--action"><a href="${escAttr(
             p.url
-          )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(t.rowOpen)} ${escAttr(p.slug)} (${escAttr(t.newTab)})">${esc(t.rowOpen)} ${icon('ext', 'icon-size-12')}</a></span>
+          )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(strings.rowOpen)} ${escAttr(p.slug)} (${escAttr(strings.newTab[lang])})">${esc(strings.rowOpen)} ${icon('ext', 'icon-size-12')}</a></span>
         </div>`;
     })
     .join('\n        ');
@@ -192,11 +188,11 @@ function works(t, lang) {
     .map((p, i) => {
       const last = i === projects.length - 1 ? ' works-card--last' : '';
       const star = p.star
-        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(t.featured)})</span>`
+        ? ` ${icon('star', 'icon-size-12', true)}<span class="sr-only"> (${esc(strings.featured[lang])})</span>`
         : '';
       return `<div class="works-card${last}${i === 0 ? ' is-active' : ''}" role="button" tabindex="0" data-slug="${escAttr(
         p.slug
-      )}" data-categories="${escAttr((p.categories || []).join(' '))}" aria-label="${escAttr(t.selectProject)}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">
+      )}" data-categories="${escAttr((p.categories || []).join(' '))}" aria-label="${escAttr(strings.selectProject[lang])}: ${escAttr(p.slug)}" aria-pressed="${i === 0 ? 'true' : 'false'}">
           <div class="works-card__top"><span class="works-card__year">${p.year}</span><span class="works-card__name">${esc(
             p.slug
           )}</span>${star}</div>
@@ -205,27 +201,24 @@ function works(t, lang) {
     })
     .join('\n        ');
 
-  const archiveDesktop = t.archiveDesktop;
-  const archiveMobile = t.archiveMobile;
-
   return `
   <section class="section section--works" id="works" aria-labelledby="heading-works">
     <div class="section-header section-header--works">
-      <h2 class="section-header__title" id="heading-works"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secWorks)}</h2>
+      <h2 class="section-header__title" id="heading-works"><span class="section-header__slash" aria-hidden="true">// </span>${esc(strings.secWorks)}</h2>
     </div>
 
     <div class="filters desktop-only">
-      <span class="filters__label">${esc(t.grep)}</span>
+      <span class="filters__label">${esc(strings.grep)}</span>
       <div class="filters__chips">${chips(false)}</div>
     </div>
     <div class="filters mobile-only" data-filters-strip><div class="filters-track" data-filters-track>${chips(true)}</div></div>
 
     <div class="works-table desktop-only">
       <div class="works-table__header">
-        <span class="works-column--year">${esc(t.thead.year)}</span>
-        <span class="works-column--project">${esc(t.thead.project)}</span>
-        <span class="works-column--client">${esc(t.thead.client)}</span>
-        <span class="works-column--type">${esc(t.thead.type)}</span>
+        <span class="works-column--year">${esc(strings.thead.year)}</span>
+        <span class="works-column--project">${esc(strings.thead.project)}</span>
+        <span class="works-column--client">${esc(strings.thead.client)}</span>
+        <span class="works-column--type">${esc(strings.thead.type)}</span>
         <span class="works-column--action"></span>
       </div>
       <div class="works-rows" data-rows>
@@ -239,23 +232,10 @@ function works(t, lang) {
     <p class="sr-only" aria-live="polite" aria-atomic="true" data-works-announcer></p>
   </section>
   `;
-
-  /*
-  <div class="archive desktop-only">
-      <span class="dollar">$</span> ${esc(archiveDesktop.cmd)} &nbsp;<span class="archive__arrow">${esc(
-        archiveDesktop.arrow
-      )}</span>&nbsp; ${esc(archiveDesktop.tail)} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveDesktop.link)}</span>
-    </div>
-    <div class="archive mobile-only">
-      <span class="dollar">$</span> ${esc(archiveMobile.cmd)} ${esc(
-        archiveMobile.arrow
-      )} &nbsp;<span class="archive__link" title="полный список — по запросу">${esc(archiveMobile.link)}</span>
-    </div>
-  */
 }
 
 // ---------- preview ----------
-function preview(t, lang, shots = {}) {
+function preview(lang, shots = {}) {
   const first = projects[0];
   const tags = (p) =>
     (p.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('');
@@ -273,7 +253,7 @@ function preview(t, lang, shots = {}) {
     const prefix = lastSpace > -1 ? `${esc(award.text.slice(0, lastSpace))} ` : '';
     const suffix = esc(award.text.slice(lastSpace + 1));
     const content = award.url
-      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(award.text)} (${escAttr(t.newTab)})">${prefix}<span class="preview-awards__suffix">${suffix}${icon(
+      ? `<a class="preview-awards__link" href="${escAttr(award.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(award.text)} (${escAttr(strings.newTab[lang])})">${prefix}<span class="preview-awards__suffix">${suffix}${icon(
           'ext',
           'icon-size-11'
         )}</span></a>`
@@ -285,7 +265,7 @@ function preview(t, lang, shots = {}) {
   return `
   <section class="section section--preview" id="preview" aria-labelledby="heading-preview">
     <div class="section-header section-header--preview">
-      <h2 class="section-header__title" id="heading-preview"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secPreview)}</h2>
+      <h2 class="section-header__title" id="heading-preview"><span class="section-header__slash" aria-hidden="true">// </span>${esc(strings.secPreview)}</h2>
       <span class="section-header__meta" data-preview-slug>${esc(first.slug)}</span>
     </div>
 
@@ -296,14 +276,14 @@ function preview(t, lang, shots = {}) {
             <span class="preview-address__command">$ open</span>
             <a class="preview-address__url" data-preview-open href="${escAttr(
               first.url
-            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(first.site)} (${escAttr(t.newTab)})"><span data-preview-site>${esc(
+            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(first.site)} (${escAttr(strings.newTab[lang])})"><span data-preview-site>${esc(
               first.site
             )}</span> ${icon('ext', 'icon-size-11')}</a>
           </div>
           <div class="preview-controls" data-preview-controls>
             <span class="preview-stepper-counter" data-preview-counter>[ <span class="preview-stepper-counter__current">01</span> / ${String(projects.length).padStart(2, '0')} ]</span>
-            <button class="v-btn" data-preview-prev type="button" aria-label="${escAttr(t.prevProject)}">&lt;</button>
-            <button class="v-btn" data-preview-next type="button" aria-label="${escAttr(t.nextProject)}">&gt;</button>
+            <button class="v-btn" data-preview-prev type="button" aria-label="${escAttr(strings.prevProject[lang])}">&lt;</button>
+            <button class="v-btn" data-preview-next type="button" aria-label="${escAttr(strings.nextProject[lang])}">&gt;</button>
           </div>
         </div>
         <div class="preview-media" data-preview-media-box>
@@ -339,7 +319,7 @@ function preview(t, lang, shots = {}) {
       <div class="preview-info" data-preview-info>
         <div class="preview-name-row">
           <h3 class="preview-name" data-preview-name>${esc(first.slug)}</h3>
-          <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}<span class="sr-only"> (${esc(t.featured)})</span></span>
+          <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}<span class="sr-only"> (${esc(strings.featured[lang])})</span></span>
         </div>
         <div class="preview-meta-body" data-preview-meta-body>
           <div class="preview-subtitle" data-preview-subtitle>${esc(first.client[lang])} · ${first.year}</div>
@@ -348,8 +328,8 @@ function preview(t, lang, shots = {}) {
           <div class="preview-actions">
             <a class="btn btn--primary" data-preview-call-to-action href="${escAttr(
               first.url
-            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(t.openSite)} (${escAttr(t.newTab)})"><span data-preview-call-to-action-label>${esc(
-              t.openSite
+            )}" target="_blank" rel="noopener noreferrer" aria-label="${escAttr(strings.openSite[lang])} (${escAttr(strings.newTab[lang])})"><span data-preview-call-to-action-label>${esc(
+              strings.openSite[lang]
             )}</span> ${icon('ext', 'icon-size-13')}</a>
           </div>
           <div class="preview-note" data-preview-note${noteHidden}>
@@ -362,10 +342,8 @@ function preview(t, lang, shots = {}) {
       </div>
     </div>
 
-    <div class="preview-strip-caption"><span class="desktop-inline-only">${esc(
-      t.stripCaptionD
-    )}</span><span class="mobile-inline-only">${esc(t.stripCaptionM)}</span></div>
-    <div class="preview-strip" data-preview-strip role="group" aria-label="${escAttr(t.secPreview)}">
+    <div class="preview-strip-caption">${esc(strings.stripCaption[lang])}</div>
+    <div class="preview-strip" data-preview-strip role="group" aria-label="${escAttr(strings.secPreview)}">
       <div class="preview-strip-track" data-preview-track>
         ${projects
           .map(
@@ -387,44 +365,36 @@ function preview(t, lang, shots = {}) {
 }
 
 // ---------- contact ----------
-function contact(t) {
-  const cv = t.contactValues;
-  const cf = t.contactFlags;
-  const a = (key, ext = true) =>
-    `<a href="${escAttr(contactHref[key])}"${
-      ext ? ` target="_blank" rel="noopener noreferrer" aria-label="${escAttr(cv[key])} (${escAttr(t.newTab)})"` : ''
-    }>${esc(cv[key])}</a>`;
+function contact(lang) {
+  const c = strings.contacts;
+  const renderItem = (item) => {
+    const ext = item.ext !== false;
+    const attrs = ext
+      ? ` target="_blank" rel="noopener noreferrer" aria-label="${escAttr(item.label)} (${escAttr(strings.newTab[lang])})"`
+      : '';
+    return `<span class="flag">${esc(item.flag)}</span> <a href="${escAttr(item.href)}"${attrs}>${esc(item.label)}</a>`;
+  };
 
-  const lineD =
-    `<span class="dollar">$</span> ${esc(t.contactCmd)} ` +
-    `<span class="flag">${esc(cf.email)}</span> ${a('email', false)} ` +
-    `<span class="flag">${esc(cf.github)}</span> ${a('github')} ` +
-    `<span class="flag">${esc(cf.tg)}</span> ${a('tg')} ` +
-    `<span class="flag">${esc(cf.cv)}</span> ${a('cv')}`;
+  const renderedItems = c.items.map(renderItem);
+  const prompt = `<span class="dollar">$</span> ${esc(c.cmd)}`;
 
-  const lineM =
-    `<span class="dollar">$</span> ${esc(t.contactCmd)}<br>` +
-    `<span class="flag">${esc(cf.email)}</span> ${a('email', false)}<br>` +
-    `<span class="flag">${esc(cf.github)}</span> ${a('github')}<br>` +
-    `<span class="flag">${esc(cf.tg)}</span> ${a('tg')}<br>` +
-    `<span class="flag">${esc(cf.cv)}</span> ${a('cv')}`;
+  const lineD = `${prompt} ${renderedItems.join(' ')}`;
+  const lineM = [prompt, ...renderedItems].join('<br>');
 
   return `
   <section class="section section--contact" id="contact" aria-labelledby="heading-contact">
     <div class="section-header section-header--contact">
-      <h2 class="section-header__title" id="heading-contact"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secContact)}</h2>
+      <h2 class="section-header__title" id="heading-contact"><span class="section-header__slash" aria-hidden="true">// </span>${esc(strings.secContact)}</h2>
     </div>
     <div class="contact-line desktop-only">${lineD}</div>
-    <div class="contact-note desktop-only">${esc(t.contactNote)}</div>
-    <div class="colophon desktop-only">${esc(t.colophonD)}</div>
-
+    <div class="contact-note desktop-only">${esc(c.note[lang])}</div>
     <div class="contact-line mobile-only">${lineM}</div>
-    <div class="colophon mobile-only">${esc(t.colophonM)}</div>
+    <div class="colophon">${esc(strings.colophon[lang])}</div>
   </section>`;
 }
 
 // ---------- данные для app.js (уже локализованные) ----------
-function bootData(lang, t, shots = {}) {
+function bootData(lang, shots = {}) {
   const list = projects.map((p) => {
     const awards = p.awards
       ? p.awards.map((a) => ({ text: a[lang], url: a.url || null }))
@@ -454,11 +424,11 @@ function bootData(lang, t, shots = {}) {
   return {
     lang,
     t: {
-      openSite: t.openSite,
-      newTab: t.newTab,
-      selectProject: t.selectProject,
-      filterAnnounce: t.filterAnnounce,
-      previewAnnounce: t.previewAnnounce,
+      openSite: strings.openSite[lang],
+      newTab: strings.newTab[lang],
+      selectProject: strings.selectProject[lang],
+      filterAnnounce: strings.filterAnnounce[lang],
+      previewAnnounce: strings.previewAnnounce[lang],
     },
     audioTracks,
     projects: list,
@@ -467,7 +437,6 @@ function bootData(lang, t, shots = {}) {
 
 // ---------- страница ----------
 export function renderPage(lang, shots = {}, criticalCss = '') {
-  const t = strings[lang];
   const altEn = '/';
   const altRu = '/ru/';
   const canonical = lang === 'ru' ? altRu : altEn;
@@ -475,12 +444,12 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0C0A'/%3E%3Cpath d='M7 9l6 7-6 7' fill='none' stroke='%23A8E05B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='17' y='21' width='8' height='3' fill='%23A8E05B'/%3E%3C/svg%3E";
 
   return `<!doctype html>
-<html lang="${t.htmlLang}" dir="${t.dir}">
+<html lang="${strings.htmlLang[lang]}" dir="${strings.dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(t.title)}</title>
-<meta name="description" content="${escAttr(t.description)}">
+<title>${esc(strings.title[lang])}</title>
+<meta name="description" content="${escAttr(strings.description[lang])}">
 <link rel="canonical" href="${canonical}">
 <link rel="alternate" hreflang="en" href="${altEn}">
 <link rel="alternate" hreflang="ru" href="${altRu}">
@@ -488,8 +457,8 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
 <link rel="icon" href="${favicon}">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
-<meta property="og:title" content="${escAttr(t.title)}">
-<meta property="og:description" content="${escAttr(t.description)}">
+<meta property="og:title" content="${escAttr(strings.title[lang])}">
+<meta property="og:description" content="${escAttr(strings.description[lang])}">
 <style>${criticalCss}</style>
 <script>
   (() => {
@@ -534,23 +503,23 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
 <noscript><link rel="stylesheet" href="/styles.css"><style>.page{visibility:visible}</style></noscript>
 </head>
 <body>
-<a class="skip-link" href="#main">${esc(t.skipToContent)}</a>
+<a class="skip-link" href="#main">${esc(strings.skipToContent[lang])}</a>
 <div class="bg-grid" aria-hidden="true"><div class="body__rail" aria-hidden="true"></div><canvas class="bg-grid-canvas" id="bg-grid-canvas" aria-hidden="true"></canvas></div>
-${preloader(t, lang)}
+${preloader(lang)}
 <div class="page">
 ${SPRITE}
-${statusBar(t, lang)}
+${statusBar(lang)}
   <div class="body">
     <main class="body__main" id="main" tabindex="-1">
-      <h1 class="sr-only">${esc(t.whoami.name)} — ${esc(t.whoami.role)}</h1>
-${whoami(t)}
-${works(t, lang)}
-${preview(t, lang, shots)}
-${contact(t)}
+      <h1 class="sr-only">${esc(strings.whoami.name[lang])} — ${esc(strings.whoami.role[lang])}</h1>
+${whoami(lang)}
+${works(lang)}
+${preview(lang, shots)}
+${contact(lang)}
     </main>
   </div>
 </div>
-<script>window.__PORTFOLIO__=${JSON.stringify(bootData(lang, t, shots))};</script>
+<script>window.__PORTFOLIO__=${JSON.stringify(bootData(lang, shots))};</script>
 <script src="/lenis.min.js"></script>
 <script src="/gsap.min.js"></script>
 <script src="/Draggable.min.js"></script>
@@ -560,3 +529,4 @@ ${contact(t)}
 </html>
 `;
 }
+

@@ -7,24 +7,23 @@ import { strings } from '../src/data/strings.mjs';
 import { renderPage } from '../src/template.mjs';
 
 test('works filters are defined bilingually with matching IDs and localized labels', () => {
-  const ruIds = strings.ru.filters.map((f) => f.id);
-  const enIds = strings.en.filters.map((f) => f.id);
+  const ids = strings.filters.map((f) => f.id);
 
-  assert.deepEqual(ruIds, enIds);
-  assert.equal(ruIds[0], 'all');
-  assert.equal(strings.ru.filters[0].label, 'все');
-  assert.equal(strings.en.filters[0].label, 'all');
+  assert.equal(ids[0], 'all');
+  assert.equal(strings.filters[0].label.ru, 'все');
+  assert.equal(strings.filters[0].label.en, 'all');
 
-  assert.ok(ruIds.includes('auto'), 'Should include auto filter');
+  assert.ok(ids.includes('auto'), 'Should include auto filter');
 
-  for (const filter of [...strings.ru.filters, ...strings.en.filters]) {
+  for (const filter of strings.filters) {
     assert.ok(filter.id, 'Filter must have an id');
-    assert.ok(filter.label, 'Filter must have a label');
+    assert.ok(filter.label.ru, 'Filter must have a ru label');
+    assert.ok(filter.label.en, 'Filter must have an en label');
   }
 });
 
 test('every filter targets at least one project and every project has a matching filter', () => {
-  const filterIds = strings.ru.filters.map((f) => f.id).filter((id) => id !== 'all');
+  const filterIds = strings.filters.map((f) => f.id).filter((id) => id !== 'all');
 
   function projectMatchesFilter(project, filterId) {
     const cats = project.categories || [];
@@ -59,7 +58,7 @@ test('every filter targets at least one project and every project has a matching
 test('rendered HTML includes all filter chips with correct data-filter attributes in both languages', () => {
   for (const lang of ['ru', 'en']) {
     const html = renderPage(lang);
-    for (const filter of strings[lang].filters) {
+    for (const filter of strings.filters) {
       assert.match(
         html,
         new RegExp(`data-filter="${filter.id}"`),
@@ -67,8 +66,8 @@ test('rendered HTML includes all filter chips with correct data-filter attribute
       );
       assert.match(
         html,
-        new RegExp(`>${filter.label}</button>`),
-        `Missing label "${filter.label}" in ${lang} HTML`
+        new RegExp(`>${filter.label[lang]}</button>`),
+        `Missing label "${filter.label[lang]}" in ${lang} HTML`
       );
     }
   }
