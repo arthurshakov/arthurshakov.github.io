@@ -440,6 +440,7 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
   const altEn = '/';
   const altRu = '/ru/';
   const canonical = lang === 'ru' ? altRu : altEn;
+  const shareImage = strings.shareImage || '/assets/images/share.jpg';
   const favicon =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0C0A'/%3E%3Cpath d='M7 9l6 7-6 7' fill='none' stroke='%23A8E05B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='17' y='21' width='8' height='3' fill='%23A8E05B'/%3E%3C/svg%3E";
 
@@ -459,6 +460,19 @@ export function renderPage(lang, shots = {}, criticalCss = '') {
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escAttr(strings.title[lang])}">
 <meta property="og:description" content="${escAttr(strings.description[lang])}">
+<meta property="og:url" content="${canonical}">
+<meta property="og:image" content="${shareImage}">
+<meta property="og:image:width" content="1730">
+<meta property="og:image:height" content="909">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="${escAttr(strings.title[lang])}">
+<meta property="og:locale" content="${lang === 'ru' ? 'ru_RU' : 'en_US'}">
+<meta property="og:locale:alternate" content="${lang === 'ru' ? 'en_US' : 'ru_RU'}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escAttr(strings.title[lang])}">
+<meta name="twitter:description" content="${escAttr(strings.description[lang])}">
+<meta name="twitter:image" content="${shareImage}">
+<meta name="twitter:image:alt" content="${escAttr(strings.title[lang])}">
 <style>${criticalCss}</style>
 <script>
   (() => {

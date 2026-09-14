@@ -28,6 +28,8 @@ export const strings = {
     en: 'Portfolio of\u00A0Arthur Shakov: frontend, AI‑assisted backend &\u00A0interactive projects. GSAP, THREE.js, Vue/Nuxt. 2×\u00A0Awwwards Honorable Mention.',
   },
 
+  shareImage: '/assets/images/share.jpg',
+
   // status bar
   prompt: {
     user: 'arthur_shakov',

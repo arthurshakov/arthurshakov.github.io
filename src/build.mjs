@@ -93,6 +93,17 @@ async function copyStatic() {
       videoFiles.map((file) => copyFile(path.join(sourceVideoDir, file), path.join(videoDir, file)))
     );
   }
+  const sourceImagesDir = p('src/assets/images');
+  if (existsSync(sourceImagesDir)) {
+    const imagesDir = p('dist/assets/images');
+    const imageFiles = (await readdir(sourceImagesDir)).filter((file) =>
+      /\.(jpe?g|png|webp|avif|svg)$/i.test(file)
+    );
+    await mkdir(imagesDir, { recursive: true });
+    await Promise.all(
+      imageFiles.map((file) => copyFile(path.join(sourceImagesDir, file), path.join(imagesDir, file)))
+    );
+  }
   const resume = p('arthur-shakov-resume.pdf');
   if (existsSync(resume)) {
     await copyFile(resume, p('dist/assets/arthur-shakov-resume.pdf'));
