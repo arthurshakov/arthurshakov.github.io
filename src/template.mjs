@@ -147,9 +147,9 @@ function whoami(t) {
     </div>`;
 
   return `
-  <section class="section section--whoami">
+  <section class="section section--whoami" id="whoami" aria-labelledby="heading-whoami">
     <div class="section-header section-header--whoami">
-      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secWhoami)}</span>
+      <h2 class="section-header__title" id="heading-whoami"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secWhoami)}</h2>
     </div>
     ${grid}
     ${stack}
@@ -205,9 +205,9 @@ function works(t, lang) {
   const archiveMobile = t.archiveMobile;
 
   return `
-  <section class="section section--works" id="works">
+  <section class="section section--works" id="works" aria-labelledby="heading-works">
     <div class="section-header section-header--works">
-      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secWorks)}</span>
+      <h2 class="section-header__title" id="heading-works"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secWorks)}</h2>
     </div>
 
     <div class="filters desktop-only">
@@ -278,9 +278,9 @@ function preview(t, lang, shots = {}) {
   const awardsHtml = firstAwards.map(renderAwardItem).join('');
 
   return `
-  <section class="section section--preview" id="preview">
+  <section class="section section--preview" id="preview" aria-labelledby="heading-preview">
     <div class="section-header section-header--preview">
-      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secPreview)}</span>
+      <h2 class="section-header__title" id="heading-preview"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secPreview)}</h2>
       <span class="section-header__meta" data-preview-slug>${esc(first.slug)}</span>
     </div>
 
@@ -333,7 +333,7 @@ function preview(t, lang, shots = {}) {
 
       <div class="preview-info" data-preview-info>
         <div class="preview-name-row">
-          <span class="preview-name" data-preview-name>${esc(first.slug)}</span>
+          <h3 class="preview-name" data-preview-name>${esc(first.slug)}</h3>
           <span data-preview-star${first.star ? '' : ' hidden'}>${icon('star', 'icon-size-14', true)}</span>
         </div>
         <div class="preview-meta-body" data-preview-meta-body>
@@ -404,9 +404,9 @@ function contact(t) {
     `<span class="flag">${esc(cf.cv)}</span> ${a('cv')}`;
 
   return `
-  <section class="section section--contact" id="contact">
+  <section class="section section--contact" id="contact" aria-labelledby="heading-contact">
     <div class="section-header section-header--contact">
-      <span class="section-header__title"><span class="section-header__slash">// </span>${esc(t.secContact)}</span>
+      <h2 class="section-header__title" id="heading-contact"><span class="section-header__slash" aria-hidden="true">// </span>${esc(t.secContact)}</h2>
     </div>
     <div class="contact-line desktop-only">${lineD}</div>
     <div class="contact-note desktop-only">${esc(t.contactNote)}</div>
@@ -528,7 +528,8 @@ ${preloader(t, lang)}
 ${SPRITE}
 ${statusBar(t, lang)}
   <div class="body">
-    <main class="body__main">
+    <main class="body__main" id="main">
+      <h1 class="sr-only">${esc(t.whoami.name)} — ${esc(t.whoami.role)}</h1>
 ${whoami(t)}
 ${works(t, lang)}
 ${preview(t, lang, shots)}

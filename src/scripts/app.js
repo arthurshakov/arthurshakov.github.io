@@ -696,7 +696,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
 
         if (clone) {
           clone.innerHTML =
-            '<div class="preview-name-row"><span class="preview-name">' + p.slug + '</span></div>' +
+            '<div class="preview-name-row"><h3 class="preview-name">' + p.slug + '</h3></div>' +
             '<div class="preview-meta-body">' +
             '<div class="preview-subtitle">' + p.client + ' · ' + p.year + '</div>' +
             '<p class="preview-description">' + p.description + '</p>' +
