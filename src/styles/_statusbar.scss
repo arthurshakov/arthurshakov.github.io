@@ -104,8 +104,15 @@ html.preloader-pending .statusbar {
 }
 
 .pill {
+  position: relative;
   display: inline-block;
   padding: vc(3) vc(7);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: vc(-8) vc(-6);
+  }
 
   &:focus-visible {
     outline: 2px solid var(--accent);

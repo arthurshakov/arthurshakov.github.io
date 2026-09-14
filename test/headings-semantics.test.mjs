@@ -135,3 +135,10 @@ test('renders polite live announcers for works filtering and preview selection',
     );
   }
 });
+
+test('defines WCAG AA compliant text-dim contrast token', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const tokens = await readFile(new URL('../src/styles/_tokens.scss', import.meta.url), 'utf8');
+
+  assert.match(tokens, /--text-dim:\s*#748271;/, 'Expected --text-dim to be #748271 (>= 4.5:1 contrast)');
+});

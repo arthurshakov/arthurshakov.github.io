@@ -1237,6 +1237,11 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
 
     const onKeydown = (/** @type {KeyboardEvent} */ e) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const target = e.target instanceof Element ? e.target : null;
+      const isRelevant = !target || target === document.body || Boolean(target.closest('#preview, #works, [data-preview-strip]'));
+      if (!isRelevant) return;
+
       if (e.key === 'ArrowLeft') {
         const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
         const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;

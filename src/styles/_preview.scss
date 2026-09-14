@@ -113,6 +113,7 @@
 }
 
 .v-btn {
+  position: relative;
   background: var(--bg);
   border: 1px solid var(--line-strong);
   color: var(--text-2);
@@ -129,10 +130,21 @@
   padding: 0;
   transition: all 0.12s ease;
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -8px -6px;
+  }
+
   &:hover {
     background: var(--accent);
     color: var(--bg);
     border-color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
