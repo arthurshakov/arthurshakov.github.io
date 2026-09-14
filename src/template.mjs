@@ -369,10 +369,12 @@ function contact(lang) {
   const c = strings.contacts;
   const renderItem = (item) => {
     const ext = item.ext !== false;
+    const label = typeof item.label === 'object' && item.label !== null ? item.label[lang] : item.label;
+    const href = typeof item.href === 'object' && item.href !== null ? item.href[lang] : item.href;
     const attrs = ext
-      ? ` target="_blank" rel="noopener noreferrer" aria-label="${escAttr(item.label)} (${escAttr(strings.newTab[lang])})"`
+      ? ` target="_blank" rel="noopener noreferrer" aria-label="${escAttr(label)} (${escAttr(strings.newTab[lang])})"`
       : '';
-    return `<span class="flag">${esc(item.flag)}</span> <a href="${escAttr(item.href)}"${attrs}>${esc(item.label)}</a>`;
+    return `<span class="flag">${esc(item.flag)}</span> <a href="${escAttr(href)}"${attrs}>${esc(label)}</a>`;
   };
 
   const renderedItems = c.items.map(renderItem);

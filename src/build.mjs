@@ -24,7 +24,7 @@ const WEBP_Q = 90;
 const AVIF_Q = 90;
 const JPEG_Q = 82; // растровый фолбэк для древних браузеров
 
-// Исходники скриншотов ищутся по slug проекта: screenshots/<slug>.(webp|png|jpg|jpeg)
+// Исходники скриншотов ищутся по slug проекта: src/assets/images/screenshots/<slug>.(webp|png|jpg|jpeg)
 const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg'];
 
 function findScreenshot(srcDir, slug) {
@@ -77,13 +77,18 @@ async function copyStatic() {
   await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
   await copyFile(p('src/vendor/Draggable.min.js'), p('dist/Draggable.min.js'));
   await copyFile(p('src/vendor/InertiaPlugin.min.js'), p('dist/InertiaPlugin.min.js'));
-  const audioDir = p('dist/assets/audio');
-  await mkdir(audioDir, { recursive: true });
-  await Promise.all(
-    audioTracks.map(({ file }) =>
-      copyFile(p('audio', file), path.join(audioDir, file))
-    )
-  );
+  const sourceAudioDir = existsSync(p('src/assets/audio'))
+    ? p('src/assets/audio')
+    : p('audio');
+  if (existsSync(sourceAudioDir)) {
+    const audioDir = p('dist/assets/audio');
+    await mkdir(audioDir, { recursive: true });
+    await Promise.all(
+      audioTracks.map(({ file }) =>
+        copyFile(path.join(sourceAudioDir, file), path.join(audioDir, file))
+      )
+    );
+  }
   const sourceVideoDir = p('src/assets/video');
   if (existsSync(sourceVideoDir)) {
     const videoDir = p('dist/assets/video');
@@ -96,19 +101,34 @@ async function copyStatic() {
   const sourceImagesDir = p('src/assets/images');
   if (existsSync(sourceImagesDir)) {
     const imagesDir = p('dist/assets/images');
-    const imageFiles = (await readdir(sourceImagesDir)).filter((file) =>
-      /\.(jpe?g|png|webp|avif|svg)$/i.test(file)
-    );
+    const entries = await readdir(sourceImagesDir, { withFileTypes: true });
+    const imageFiles = entries
+      .filter((entry) => entry.isFile() && /\.(jpe?g|png|webp|avif|svg)$/i.test(entry.name))
+      .map((entry) => entry.name);
     await mkdir(imagesDir, { recursive: true });
     await Promise.all(
       imageFiles.map((file) => copyFile(path.join(sourceImagesDir, file), path.join(imagesDir, file)))
     );
   }
-  const resume = p('arthur-shakov-resume.pdf');
-  if (existsSync(resume)) {
-    await copyFile(resume, p('dist/assets/arthur-shakov-resume.pdf'));
-  } else {
-    console.warn('!  arthur-shakov-resume.pdf не найден — пропускаю');
+  const resumes = [
+    { src: 'src/assets/docs/arthur-shakov-resume-en.pdf', dest: 'dist/assets/arthur-shakov-resume-en.pdf' },
+    { src: 'src/assets/docs/arthur-shakov-resume-ru.pdf', dest: 'dist/assets/arthur-shakov-resume-ru.pdf' },
+  ];
+  for (const { src, dest } of resumes) {
+    const srcPath = existsSync(p(src)) ? p(src) : p(path.basename(src));
+    if (existsSync(srcPath)) {
+      await copyFile(srcPath, p(dest));
+    } else {
+      console.warn(`!  ${src} не найден — пропускаю`);
+    }
+  }
+  const fallbackEn = existsSync(p('src/assets/docs/arthur-shakov-resume-en.pdf'))
+    ? p('src/assets/docs/arthur-shakov-resume-en.pdf')
+    : p('arthur-shakov-resume-en.pdf');
+  if (existsSync(p('arthur-shakov-resume.pdf'))) {
+    await copyFile(p('arthur-shakov-resume.pdf'), p('dist/assets/arthur-shakov-resume.pdf'));
+  } else if (existsSync(fallbackEn)) {
+    await copyFile(fallbackEn, p('dist/assets/arthur-shakov-resume.pdf'));
   }
 }
 
@@ -116,9 +136,11 @@ async function copyStatic() {
 // какой из современных форматов вышел легче и попал в сборку (второй удаляется).
 // Плюс всегда пишется .jpg как растровый фолбэк.
 async function buildImages() {
-  const srcDir = p('screenshots');
+  const srcDir = existsSync(p('src/assets/images/screenshots'))
+    ? p('src/assets/images/screenshots')
+    : p('screenshots');
   if (!existsSync(srcDir)) {
-    console.warn('!  screenshots/ не найден — пропускаю картинки');
+    console.warn('!  src/assets/images/screenshots/ не найден — пропускаю картинки');
     return {};
   }
   const outDir = p('dist/assets/shots');

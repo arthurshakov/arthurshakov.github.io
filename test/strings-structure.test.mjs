@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { strings } from '../src/data/strings.mjs';
+import { renderPage } from '../src/template.mjs';
 
 test('strings stores ru and en side-by-side on individual properties', () => {
   assert.equal(strings.whoami.name.ru, 'Артур Шаков');
@@ -37,6 +38,27 @@ test('strings contains unified non-duplicated properties and contacts', () => {
   const email = strings.contacts.items.find((i) => i.key === 'email');
   assert.equal(email?.href, 'mailto:arthurshakov@gmail.com');
   assert.equal(email?.ext, false);
+
+  const cv = strings.contacts.items.find((i) => i.key === 'cv');
+  assert.equal(cv?.flag, '--cv');
+  assert.equal(cv?.label, 'resume.pdf');
+  assert.equal(cv?.href.ru, '/assets/arthur-shakov-resume-ru.pdf');
+  assert.equal(cv?.href.en, '/assets/arthur-shakov-resume-en.pdf');
+  assert.equal(cv?.ext, true);
+});
+
+test('renders localized resume links on English and Russian pages', () => {
+  const enHtml = renderPage('en');
+  const ruHtml = renderPage('ru');
+
+  assert.ok(
+    enHtml.includes('href="/assets/arthur-shakov-resume-en.pdf"'),
+    'English page should link to en resume'
+  );
+  assert.ok(
+    ruHtml.includes('href="/assets/arthur-shakov-resume-ru.pdf"'),
+    'Russian page should link to ru resume'
+  );
 });
 
 

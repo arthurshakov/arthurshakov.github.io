@@ -19,7 +19,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "screenshots",
+    "src/assets",
     "src/vendor",
     "test"
   ]

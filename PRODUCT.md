@@ -36,8 +36,8 @@ Visitors typically scan the portfolio, filter work, inspect project previews, an
 
 ## Evidence on Hand
 
-- Curated project metadata and screenshots in `src/data/` and `screenshots/`.
-- Audio tracks: `audio/Filtered_Aperture.mp3` and `audio/Through_the_Glass.mp3`.
+- Curated project metadata and screenshots in `src/data/` and `src/assets/images/screenshots/`.
+- Audio tracks: `src/assets/audio/`.
 
 ## Product Principles
 

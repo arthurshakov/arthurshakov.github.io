@@ -67,9 +67,9 @@ dist/                  результат сборки (деплой в коре
 
 ## Скриншоты
 
-Исходники — готовые скриншоты без адресной строки в `screenshots/`.
+Исходники — готовые скриншоты без адресной строки в `src/assets/images/screenshots/`.
 Сборка не снимает сайты и не обрезает интерфейс браузера. Имена файлов
-соответствуют slug проектов: `screenshots/<slug>.(webp|png|jpg)`.
+соответствуют slug проектов: `src/assets/images/screenshots/<slug>.(webp|png|jpg)`.
 
 При `npm run build` функция `buildImages()` обрабатывает их через Sharp:
 

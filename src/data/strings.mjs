@@ -226,7 +226,10 @@ export const strings = {
         key: 'cv',
         flag: '--cv',
         label: 'resume.pdf',
-        href: '/assets/arthur-shakov-resume.pdf',
+        href: {
+          ru: '/assets/arthur-shakov-resume-ru.pdf',
+          en: '/assets/arthur-shakov-resume-en.pdf',
+        },
         ext: true,
       },
     ],

@@ -8,7 +8,7 @@ This is a static, bilingual portfolio site built with Node.js, SCSS, and vanilla
 - `template.mjs` renders both language variants; UI copy is in `data/strings.mjs` and portfolio entries are in `data/projects.mjs`.
 - `styles/` contains Sass partials such as `_layout.scss` and `_preview.scss`; `main.scss` is the entry point.
 - `scripts/app.js` contains progressive-enhancement behavior. Keep the rendered page usable without it.
-- `vendor/` holds third-party browser assets. Source screenshots are under `screenshots/`.
+- `vendor/` holds third-party browser assets. Source screenshots are under `src/assets/images/screenshots/`.
 
 Automated tests live in `test/` and are executed via Node's native runner (`node --test`). Utility scripts (such as `scripts/prepare-videos.mjs`) live in `scripts/`.
 
@@ -34,7 +34,7 @@ Use two-space indentation and ES modules (`.mjs`) for build and template code. P
 
 ## Assets and Build Behavior
 
-Add a project screenshot using `<slug>.(webp|png|jpg)` in `screenshots/`; the build generates full and thumbnail AVIF/WebP/JPEG assets. Do not hand-edit `dist/assets/shots/`, which is a build cache. Avoid changing the responsive `vc()` token system without verifying the 390px, 960px, and 1920px layout behavior.
+Add a project screenshot using `<slug>.(webp|png|jpg)` in `src/assets/images/screenshots/`; the build generates full and thumbnail AVIF/WebP/JPEG assets. Do not hand-edit `dist/assets/shots/`, which is a build cache. Avoid changing the responsive `vc()` token system without verifying the 390px, 960px, and 1920px layout behavior.
 
 ## Commit & Pull Request Guidelines
 
