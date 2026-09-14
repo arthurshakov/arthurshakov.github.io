@@ -20,15 +20,19 @@
   flex-direction: column;
 
   @include desktop {
-    min-height: var(--preview-info-height, vc(460));
+    min-height: var(--preview-info-height, calc(var(--preview-info-height-vc, 460) * var(--wm)));
   }
 
   @include mobile {
-    min-height: var(--preview-info-height-mobile, vc(480));
+    min-height: var(--preview-info-height-mobile, calc(var(--preview-info-height-mobile-vc, 480) * var(--wm)));
   }
 }
 
 :root {
+  --preview-info-height-vc: 460;
+  --preview-info-height-mobile-vc: 480;
+  --preview-info-height: calc(var(--preview-info-height-vc, 460) * var(--wm));
+  --preview-info-height-mobile: calc(var(--preview-info-height-mobile-vc, 480) * var(--wm));
   --mask-line-vc: 4;
   --mask-trail-vc: 140;
   --mask-trail-opacity: 0.68;

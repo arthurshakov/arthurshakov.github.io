@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PREVIEW_SLIDER_CONFIG, calcVc } from '../src/scripts/preview-slider.js';
+import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc, getWm } from '../src/scripts/preview-slider.js';
 
 test('preview slider configuration exports user-approved constants', () => {
   assert.equal(typeof PREVIEW_SLIDER_CONFIG, 'object');
+  assert.equal(PREVIEW_SLIDER_CONFIG.minHeightVc, 460);
+  assert.equal(PREVIEW_SLIDER_CONFIG.minHeightMobileVc, 480);
   assert.equal(PREVIEW_SLIDER_CONFIG.lineThicknessVc, 4);
   assert.equal(PREVIEW_SLIDER_CONFIG.trailLengthVc, 140);
   assert.equal(PREVIEW_SLIDER_CONFIG.trailOpacity, 0.68);
@@ -33,6 +35,27 @@ test('calcVc scales description offset and line parameters across viewports', ()
 
   // Mobile 390px: 1:1 scale relative to mobile base 390
   assert.equal(calcVc(PREVIEW_SLIDER_CONFIG.descOffsetVc, 390), 4);
+});
+
+test('pxToVc converts measured pixel height back to layout vc units across viewports', () => {
+  // Desktop 1440px (1:1 scale): 460px -> 460vc
+  assert.equal(pxToVc(460, 1440), 460);
+
+  // Compact desktop 1040px (1:1 scale against base 1040): 460px -> 460vc
+  assert.equal(pxToVc(460, 1040), 460);
+
+  // Mobile 390px (1:1 scale against base 390): 480px -> 480vc
+  assert.equal(pxToVc(480, 390), 480);
+
+  // Desktop wide 1920px: scaled by 1920 / 1440 -> returns original vc
+  const scaledPx1920 = 460 * (1920 / 1440);
+  assert.equal(Math.round(pxToVc(scaledPx1920, 1920)), 460);
+
+  // getWm follows _tokens.scss base values
+  assert.equal(getWm(1440), 1);
+  assert.equal(getWm(1040), 1);
+  assert.equal(getWm(390), 1);
+  assert.equal(getWm(1920), 1920 / 1440);
 });
 
 test('preview slider markup renders dual layers, controls, trail, and track in both languages', async () => {
@@ -65,6 +88,10 @@ test('preview slider styles define accent line, glowing trail, and inert draggab
   const { readFile } = await import('node:fs/promises');
   const styles = await readFile(new URL('../src/styles/_preview.scss', import.meta.url), 'utf8');
 
+  assert.match(styles, /--preview-info-height-vc:\s*460/);
+  assert.match(styles, /--preview-info-height-mobile-vc:\s*480/);
+  assert.match(styles, /--preview-info-height:\s*calc\(var\(--preview-info-height-vc,\s*460\)\s*\*\s*var\(--wm\)\)/);
+  assert.match(styles, /--preview-info-height-mobile:\s*calc\(var\(--preview-info-height-mobile-vc,\s*480\)\s*\*\s*var\(--wm\)\)/);
   assert.match(styles, /--mask-line-width/);
   assert.match(styles, /--mask-trail-width/);
   assert.match(styles, /--mask-trail-opacity/);
@@ -116,6 +143,27 @@ test('app.js scrolls to preview slider when clicking active project in list', as
     appJs,
     /if\s*\(\s*animate\s*&&\s*slug\s*===\s*currentSlug\s*\)\s*\{\s*if\s*\(\s*scroll\s*\)\s*scrollToPreview\(\s*\);/
   );
+});
+
+test('app.js calculates and assigns slider min-height in vc units instead of fixed pixels', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+
+  // Must import pxToVc from preview-slider.js
+  assert.match(appJs, /import\s*\{[^}]*pxToVc[^}]*\}\s*from\s*['"]\.\/preview-slider\.js['"]/);
+
+  // Must convert measured pixel height to vc units
+  assert.match(appJs, /const maxHVc\s*=\s*Math\.ceil\(\s*pxToVc\(\s*maxH\s*\)\s*\)/);
+
+  // Must set custom property and minHeight using calc(... * var(--wm))
+  assert.match(appJs, /const heightVal\s*=\s*`calc\(\$\{maxHVc\}\s*\*\s*var\(--wm\)\)`/);
+  assert.match(appJs, /document\.documentElement\.style\.setProperty\(\s*['"]--preview-info-height['"]\s*,\s*heightVal\s*\)/);
+  assert.match(appJs, /document\.documentElement\.style\.setProperty\(\s*['"]--preview-info-height-mobile['"]\s*,\s*heightVal\s*\)/);
+  assert.match(appJs, /infoBox\.style\.minHeight\s*=\s*heightVal/);
+
+  // Must NOT assign raw pixels to infoBox.style.minHeight or CSS variables
+  assert.doesNotMatch(appJs, /infoBox\.style\.minHeight\s*=\s*measuredMaxHeight\s*\+\s*['"]px['"]/);
+  assert.doesNotMatch(appJs, /--preview-info-height['"]\s*,\s*measuredMaxHeight\s*\+\s*['"]px['"]/);
 });
 
 

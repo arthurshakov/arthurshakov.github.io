@@ -7,7 +7,7 @@ import { createAudioVisualizer } from './audio-visualizer.js';
 import { bindClickSound, confirmClick } from './click-sound.js';
 import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
-import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
+import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
 
 (() => {
   // Данные текущей языковой версии страницы встраиваются в HTML на сборке.
@@ -713,12 +713,16 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
 
       if (maxH > 0) {
         measuredMaxHeight = maxH;
+        const maxHVc = Math.ceil(pxToVc(maxH));
+        const heightVal = `calc(${maxHVc} * var(--wm))`;
         if (window.innerWidth >= 960) {
-          document.documentElement.style.setProperty('--preview-info-height', measuredMaxHeight + 'px');
+          document.documentElement.style.setProperty('--preview-info-height-vc', String(maxHVc));
+          document.documentElement.style.setProperty('--preview-info-height', heightVal);
         } else {
-          document.documentElement.style.setProperty('--preview-info-height-mobile', measuredMaxHeight + 'px');
+          document.documentElement.style.setProperty('--preview-info-height-mobile-vc', String(maxHVc));
+          document.documentElement.style.setProperty('--preview-info-height-mobile', heightVal);
         }
-        infoBox.style.minHeight = measuredMaxHeight + 'px';
+        infoBox.style.minHeight = heightVal;
       }
     }
 
