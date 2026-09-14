@@ -305,6 +305,8 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
     const chips = queryAll('.chip');
     const filtersStrip = /** @type {HTMLElement | null} */ (query('[data-filters-strip]'));
     const filtersTrack = /** @type {HTMLElement | null} */ (query('[data-filters-track]'));
+    const worksAnnouncer = query('[data-works-announcer]');
+    const previewAnnouncer = query('[data-preview-announcer]');
 
     function matches(projectElement, filter) {
       // Кнопка all не фильтрует; остальные сравниваются с категориями из data-атрибута.
@@ -404,6 +406,14 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
       cards.forEach((projectElement) => projectElement.classList.toggle('is-hidden', !matches(projectElement, filter)));
       markLastVisibleElement(rows, 'is-hidden', 'works-row--last');
       markLastVisibleElement(cards, 'is-hidden', 'works-card--last');
+
+      if (worksAnnouncer && currentPageData.t?.filterAnnounce) {
+        const visibleCount = rows.filter((r) => !r.classList.contains('is-hidden')).length;
+        const totalCount = rows.length;
+        worksAnnouncer.textContent = currentPageData.t.filterAnnounce
+          .replace('{count}', String(visibleCount))
+          .replace('{total}', String(totalCount));
+      }
     }
 
     chips.forEach((chip) => {
@@ -950,6 +960,13 @@ import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
         const num = String(targetIndex + 1).padStart(2, '0');
         const total = String(currentPageData.projects.length).padStart(2, '0');
         counter.innerHTML = '[ <span class="preview-stepper-counter__current">' + num + '</span> / ' + total + ' ]';
+      }
+
+      if (previewAnnouncer && currentPageData.t?.previewAnnounce) {
+        previewAnnouncer.textContent = currentPageData.t.previewAnnounce
+          .replace('{slug}', project.slug)
+          .replace('{index}', String(targetIndex + 1))
+          .replace('{total}', String(currentPageData.projects.length));
       }
 
       if (!stripDraggable || (!stripDraggable.isDragging && !stripDraggable.isThrowing)) {

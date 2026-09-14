@@ -117,3 +117,21 @@ test('renders accessible project selection buttons and mobile cards', () => {
     );
   }
 });
+
+test('renders polite live announcers for works filtering and preview selection', () => {
+  for (const lang of ['ru', 'en']) {
+    const html = renderPage(lang);
+
+    assert.match(
+      html,
+      /<p class="sr-only" aria-live="polite" aria-atomic="true" data-works-announcer><\/p>/,
+      `Expected works live announcer in ${lang}`
+    );
+
+    assert.match(
+      html,
+      /<p class="sr-only" aria-live="polite" aria-atomic="true" data-preview-announcer><\/p>/,
+      `Expected preview live announcer in ${lang}`
+    );
+  }
+});

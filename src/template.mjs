@@ -236,6 +236,7 @@ function works(t, lang) {
     <div class="works-cards mobile-only" data-cards>
         ${cards}
     </div>
+    <p class="sr-only" aria-live="polite" aria-atomic="true" data-works-announcer></p>
   </section>
   `;
 
@@ -381,6 +382,7 @@ function preview(t, lang, shots = {}) {
           .join('\n        ')}
       </div>
     </div>
+    <p class="sr-only" aria-live="polite" aria-atomic="true" data-preview-announcer></p>
   </section>`;
 }
 
@@ -455,6 +457,8 @@ function bootData(lang, t, shots = {}) {
       openSite: t.openSite,
       newTab: t.newTab,
       selectProject: t.selectProject,
+      filterAnnounce: t.filterAnnounce,
+      previewAnnounce: t.previewAnnounce,
     },
     audioTracks,
     projects: list,

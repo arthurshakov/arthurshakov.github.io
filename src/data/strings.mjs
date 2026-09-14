@@ -97,6 +97,8 @@ export const strings = {
     newTab: 'в новой вкладке',
     selectProject: 'выбрать проект',
     featured: 'избранный проект',
+    filterAnnounce: 'показано проектов: {count} из {total}',
+    previewAnnounce: 'выбран проект {slug}, {index} из {total}',
     // archiveDesktop: {
     //   cmd: 'ls works/_archive/ | wc -l',
     //   arrow: '→ 60+',
@@ -208,6 +210,8 @@ export const strings = {
     newTab: 'opens in new tab',
     selectProject: 'select project',
     featured: 'featured project',
+    filterAnnounce: 'showing {count} of {total} projects',
+    previewAnnounce: 'selected project {slug}, {index} of {total}',
     archiveDesktop: {
       cmd: 'ls works/_archive/ | wc -l',
       arrow: '→ 60+',
