@@ -106,13 +106,14 @@ test('preview slider styles define accent line, glowing trail, and inert draggab
 
 test('app.js integrates Draggable, InertiaPlugin, video swipe, and text scramble', async () => {
   const { readFile } = await import('node:fs/promises');
-  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const appJs = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
-  assert.match(appJs, /win\.gsap\.registerPlugin\(win\.Draggable/);
+  const entry = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  assert.match(entry, /win\.gsap\.registerPlugin\(win\.Draggable/);
   assert.match(appJs, /DraggableClass\.create\(track/);
   assert.match(appJs, /edgeResistance:\s*PREVIEW_SLIDER_CONFIG\.stripEdgeResistance/);
   assert.match(appJs, /throwResistance:\s*PREVIEW_SLIDER_CONFIG\.stripThrowResistance/);
-  assert.match(appJs, /function scrambleText/);
+  assert.match(appJs, /scrambleText\(preview\.name/);
   assert.match(appJs, /swipeThresholdPx/);
   assert.match(appJs, /pointerdown/);
   assert.match(appJs, /pointerup/);
@@ -122,7 +123,7 @@ test('app.js integrates Draggable, InertiaPlugin, video swipe, and text scramble
 
 test('app.js strip wheel listener reacts only to horizontal scroll and ignores vertical scroll', async () => {
   const { readFile } = await import('node:fs/promises');
-  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const appJs = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
   // Must not fall back to deltaY when scrolling
   assert.doesNotMatch(appJs, /Math\.abs\(e\.deltaX\)\s*>=\s*Math\.abs\(e\.deltaY\)\s*\?\s*e\.deltaX\s*:\s*e\.deltaY/);
@@ -134,7 +135,7 @@ test('app.js strip wheel listener reacts only to horizontal scroll and ignores v
 
 test('app.js scrolls to preview slider when clicking active project in list', async () => {
   const { readFile } = await import('node:fs/promises');
-  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const appJs = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
   // Clicking a row or card requests scrolling: setActive(slug, { scroll: true })
   assert.match(appJs, /setActive\(projectElement\.dataset\.slug,\s*\{\s*scroll:\s*true\s*\}\)/);
@@ -148,7 +149,7 @@ test('app.js scrolls to preview slider when clicking active project in list', as
 
 test('app.js calculates and assigns slider min-height in vc units instead of fixed pixels', async () => {
   const { readFile } = await import('node:fs/promises');
-  const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const appJs = await readFile(new URL('../src/scripts/preview-details.js', import.meta.url), 'utf8');
 
   // Must import pxToVc from the shared viewport-scale module
   assert.match(appJs, /import\s*\{[^}]*pxToVc[^}]*\}\s*from\s*['"]\.\/viewport-scale\.js['"]/);

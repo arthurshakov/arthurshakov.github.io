@@ -44,13 +44,13 @@ test('preview media uses the video display ratio for both its fallback and loop'
 });
 
 test('returning to an already loaded video reveals it before playback resumes', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
   assert.match(source, /if \(preview\.video\?\.readyState < 2\) return;[\s\S]*revealVideo\(\);[\s\S]*preview\.video\.play\(\)/);
 });
 
 test('first visible preview waits for a decoded frame before starting playback', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
   assert.match(source, /if \(preview\.video\?\.readyState < 2\) return;/);
   assert.match(source, /addEventListener\('canplay', onVideoReady\)/);
@@ -58,7 +58,7 @@ test('first visible preview waits for a decoded frame before starting playback',
 });
 
 test('preview video warms one viewport before it enters view and fades over its poster', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
   const styles = await readFile(new URL('../src/styles/_preview.scss', import.meta.url), 'utf8');
   const html = renderPage('en');
 
@@ -73,15 +73,15 @@ test('preview video warms one viewport before it enters view and fades over its 
 });
 
 test('preview video stores and restores playback positions by project slug', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
-  assert.match(source, /const videoPositions = new Map\(\);/);
+  assert.match(source, /videoPositions = new Map\(\)/);
   assert.match(source, /videoPositions\.set\(loadedVideoSlug, preview\.video\.currentTime\);/);
   assert.match(source, /preview\.video\.currentTime = position;/);
 });
 
 test('project categories and descriptions use descriptive names throughout the rendered page', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/works-filters.js', import.meta.url), 'utf8');
   const html = renderPage('en');
 
   assert.match(html, /data-categories="[^"]*\bawwwards\b[^"]*"/);

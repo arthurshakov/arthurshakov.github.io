@@ -20,7 +20,7 @@ test('uses the real status bar as the preloader surface in both languages', () =
 
 test('locks scrolling while the preloader is active, reserving the scrollbar gutter', async () => {
   const criticalStyles = await readSrc('styles/_critical.scss');
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   assert.match(criticalStyles, /html\.preloader-pending\s*\{[\s\S]*?overflow: hidden/);
   assert.match(criticalStyles, /html\.preloader-pending\s*\{[\s\S]*?scrollbar-gutter: stable/);
@@ -31,7 +31,7 @@ test('locks scrolling while the preloader is active, reserving the scrollbar gut
   assert.match(appJs, /lenis\?\.stop\(\)/);
   assert.match(appJs, /lenis\?\.start\(\)/);
   assert.ok(
-    appJs.indexOf('let lenis = null;') < appJs.indexOf('lenis?.stop()'),
+    appJs.indexOf('const lenis = getLenis();') < appJs.indexOf('lenis?.stop()'),
     'lenis handle must be declared before the preloader uses it'
   );
 });
@@ -58,7 +58,7 @@ test('runs the preloader once per session, deciding before the first paint', () 
 });
 
 test('holds off the hard fallback once the preloader animation actually starts', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
   const html = renderPage('en');
 
   assert.match(html, /window\.__holdPreloaderFallback = \(\) => \{[\s\S]*?timeout = window\.setTimeout\(hardFinish, 4000\)/);
@@ -82,7 +82,7 @@ test('inlines critical CSS in <head> and defers the main stylesheet until it loa
 });
 
 test('gates the preloader/typewriter start on fonts and main styles being ready', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   assert.match(appJs, /getElementById\('main-styles'\)/);
   assert.match(appJs, /document\.fonts\?\.ready/);
@@ -91,7 +91,7 @@ test('gates the preloader/typewriter start on fonts and main styles being ready'
 
 test('shows the whole right side of the header from the start, together with the left one', async () => {
   const statusbarStyles = await readSrc('styles/_statusbar.scss');
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   // Ни правый блок целиком, ни пилюли больше не прячутся на время прелоадера.
   assert.doesNotMatch(statusbarStyles, /data-preloader-meta/);
@@ -134,7 +134,7 @@ test('renders the ready blip under the header, not inside the prompt line', asyn
 });
 
 test('waits a tunable exec delay before showing ready, then clears it with the command', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   const execDelayDecl = appJs.match(/const EXEC_DELAY = ([\d.]+);/);
   assert.ok(execDelayDecl, 'EXEC_DELAY must be declared as a single tunable constant');
@@ -150,7 +150,7 @@ test('waits a tunable exec delay before showing ready, then clears it with the c
 });
 
 test('clears the command line and ready in step with the content reveal', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   // Обе анимации ставятся на одну и ту же метку таймлайна.
   assert.match(appJs, /const revealAt = timeline\.duration\(\);\s*fadeOutPrompt\(timeline, revealAt\);\s*revealContent\(timeline, revealAt\);/);
@@ -164,7 +164,7 @@ test('clears the command line and ready in step with the content reveal', async 
 });
 
 test('unlocks scrolling only after the content is fully revealed', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   // Разблокировка — в onComplete всего таймлайна, то есть после раскрытия,
   // а не в момент снятия оверлея.
@@ -178,7 +178,7 @@ test('unlocks scrolling only after the content is fully revealed', async () => {
 });
 
 test('reveals the content with a top-to-bottom mask once the preloader is done', async () => {
-  const appJs = await readSrc('scripts/app.js');
+  const appJs = await readSrc('scripts/preloader.js');
 
   // Маска живёт на .body, а не на оверлее: раскрывается сам контент.
   assert.match(appJs, /const content = document\.querySelector\('\.body'\)/);
