@@ -1,6 +1,7 @@
 // Брейкпоинты — единый источник для адаптивных миксинов и размеров контейнера.
 $breakpoint-desktop: 960px;
 $breakpoint-mobile-max: 959.98px;
+$breakpoint-desktop-full: 1440px;
 $breakpoint-desktop-wide: 1920px;
 
 @mixin mobile {
@@ -23,7 +24,7 @@ $breakpoint-desktop-wide: 1920px;
 
 // vc() — «viewport calc», как в соседнем проекте (food-chizhik-back-to-school).
 // Значение из макета умножается на множитель --wm = --w-cur / --w-base.
-// При ширине, равной базовой (390 / 1440), vc(N) == N-пикселям макета.
+// При ширине, равной базовой (390 / 1040 / 1440), vc(N) == N-пикселям макета.
 @function vc($v) {
   @return calc(#{$v} * var(--wm));
 }

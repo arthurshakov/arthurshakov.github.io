@@ -8,9 +8,8 @@
 .filters.desktop-only {
   @include desktop {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: vc(8);
-    flex-wrap: wrap;
     margin-bottom: vc(20);
   }
 }
@@ -18,8 +17,17 @@
 .filters__label {
   @include desktop {
     color: var(--text-3);
+    flex: none;
+    padding-top: calc(vc(4) + 1px);
     margin-right: vc(4);
   }
+}
+
+.filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vc(8);
+  min-width: 0;
 }
 
 .filters.mobile-only {

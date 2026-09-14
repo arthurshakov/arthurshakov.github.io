@@ -659,7 +659,8 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
         clone = document.createElement('div');
         clone.id = 'preview-measurer-clone';
         clone.style.cssText = 'position: absolute; left: -9999px; top: 0; visibility: hidden; pointer-events: none;';
-        document.body.appendChild(clone);
+        // Замер должен наследовать тот же vc-шрифт и line-height, что и слайд.
+        infoBox.insertAdjacentElement('afterend', clone);
       }
 
       clone.className = 'preview-info';
@@ -705,7 +706,7 @@ import { PREVIEW_SLIDER_CONFIG, calcVc } from './preview-slider.js';
             (awardsHtml ? '<div class="preview-awards"><span data-preview-awards-text>' + awardsHtml + '</span></div>' : '') +
             '</div>';
 
-          const h = clone.offsetHeight;
+          const h = Math.ceil(clone.getBoundingClientRect().height);
           if (h > maxH) maxH = h;
         }
       });

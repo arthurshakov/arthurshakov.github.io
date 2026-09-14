@@ -212,7 +212,7 @@ function works(t, lang) {
 
     <div class="filters desktop-only">
       <span class="filters__label">${esc(t.grep)}</span>
-      ${chips(false)}
+      <div class="filters__chips">${chips(false)}</div>
     </div>
     <div class="filters mobile-only" data-filters-strip><div class="filters-track" data-filters-track>${chips(true)}</div></div>
 
