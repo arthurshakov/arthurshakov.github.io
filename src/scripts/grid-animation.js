@@ -1,3 +1,5 @@
+import { calcVc } from './viewport-scale.js';
+
 /**
  * Настройки анимации фоновой сетки (Lattice Sparks & Relays)
  * Значения вынесены в константы для удобного редактирования.
@@ -57,28 +59,6 @@ export const GRID_ANIMATION_CONFIG = {
   // Цвет акцента (Signal Lime #A8E05B) в формате RGB
   accentRgb: '168, 224, 91',
 };
-
-/**
- * Вычисляет точное значение vc(value) в пикселях строго по правилам _functions.scss / _tokens.scss:
- * vc(v) = calc(v * var(--wm)), где:
- * - на mobile (<960px): --w-base = 390
- * - на desktop (>=960px): --w-base = 1440
- * - при ширине >=1920px: ширина замораживается на 1920px
- *
- * @param {number} value Значение в единицах макета (например, 64)
- * @param {number} [customViewW] Опциональная ширина вьюпорта для тестов
- * @returns {number}
- */
-export function calcVc(value, customViewW) {
-  const viewW = typeof customViewW === 'number'
-    ? customViewW
-    : (typeof window !== 'undefined' ? window.innerWidth : 1440);
-  const isMobile = viewW < 960;
-  const baseW = isMobile ? 390 : 1440;
-  const curW = Math.min(viewW, 1920);
-  const wm = curW / baseW;
-  return value * wm;
-}
 
 /**
  * @typedef {Object} GridNode

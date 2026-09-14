@@ -7,7 +7,8 @@ import { createAudioVisualizer } from './audio-visualizer.js';
 import { bindClickSound, confirmClick } from './click-sound.js';
 import { initGridAnimation } from './grid-animation.js';
 import { createPjaxRouter } from './pjax.js';
-import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc } from './preview-slider.js';
+import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
+import { calcVc, pxToVc } from './viewport-scale.js';
 
 (() => {
   // Данные текущей языковой версии страницы встраиваются в HTML на сборке.

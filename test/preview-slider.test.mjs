@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PREVIEW_SLIDER_CONFIG, calcVc, pxToVc, getWm } from '../src/scripts/preview-slider.js';
+import { PREVIEW_SLIDER_CONFIG } from '../src/scripts/preview-slider.js';
+import { calcVc, pxToVc, getWm } from '../src/scripts/viewport-scale.js';
 
 test('preview slider configuration exports user-approved constants', () => {
   assert.equal(typeof PREVIEW_SLIDER_CONFIG, 'object');
@@ -149,8 +150,8 @@ test('app.js calculates and assigns slider min-height in vc units instead of fix
   const { readFile } = await import('node:fs/promises');
   const appJs = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
 
-  // Must import pxToVc from preview-slider.js
-  assert.match(appJs, /import\s*\{[^}]*pxToVc[^}]*\}\s*from\s*['"]\.\/preview-slider\.js['"]/);
+  // Must import pxToVc from the shared viewport-scale module
+  assert.match(appJs, /import\s*\{[^}]*pxToVc[^}]*\}\s*from\s*['"]\.\/viewport-scale\.js['"]/);
 
   // Must convert measured pixel height to vc units
   assert.match(appJs, /const maxHVc\s*=\s*Math\.ceil\(\s*pxToVc\(\s*maxH\s*\)\s*\)/);
