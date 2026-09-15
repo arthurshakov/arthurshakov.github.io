@@ -1,8 +1,10 @@
+import { createPageLifetime } from './page-lifetime.js';
 import { query, queryAll } from './dom.js';
 import { confirmClick } from './click-sound.js';
 import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
 
 export function createWorksFilters(currentPageData, { activeFilter = 'all', onChange = (filter) => {} } = {}) {
+  const lifetime = createPageLifetime();
   const DraggableClass = /** @type {any} */ (window).Draggable;
   const rows = queryAll('[data-rows] .works-row');
   const cards = queryAll('[data-cards] .works-card');
@@ -121,7 +123,7 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
   }
 
   chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
+    lifetime.listen(chip, 'click', () => {
       if (
         filtersDraggable &&
         (filtersDraggable.isDragging || filtersDraggable.isThrowing || filtersDraggable.timeSinceDrag() < 0.1)
@@ -148,12 +150,12 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
       filtersDraggable?.update();
     }, 60);
   };
-  window.addEventListener('resize', onResize);
+  lifetime.listen(window, 'resize', onResize);
   if (activeFilter !== 'all') applyFilter(activeFilter);
   return {
     destroy() {
+      lifetime.destroy();
       window.clearTimeout(resizeTimer);
-      window.removeEventListener('resize', onResize);
       filtersDraggable?.kill();
       window.gsap?.killTweensOf(filtersTrack);
     },

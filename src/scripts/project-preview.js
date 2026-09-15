@@ -1,3 +1,4 @@
+import { createPageLifetime } from './page-lifetime.js';
 import { query, queryAll } from './dom.js';
 import { confirmClick } from './click-sound.js';
 import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
@@ -15,6 +16,9 @@ export function createProjectPreview(currentPageData, {
   videoPositions = new Map(),
   reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)'),
 } = {}) {
+  const lifetime = createPageLifetime();
+  let incomingVideoSlug = null;
+  let incomingVideoPrepared = false;
   const projectsBySlug = new Map(currentPageData.projects.map((project) => [project.slug, project]));
   const DraggableClass = /** @type {any} */ (window).Draggable;
   const rows = queryAll('[data-rows] .works-row');
@@ -101,6 +105,7 @@ export function createProjectPreview(currentPageData, {
   }
 
   function showImage() {
+    if (lifetime.disposed) return;
     if (isAnimating) return;
     // Скриншот — универсальный фолбэк: для проектов без ролика, reduce-motion,
     // скрытого превью, неактивной вкладки и ошибки загрузки.
@@ -135,7 +140,7 @@ export function createProjectPreview(currentPageData, {
     // requestAnimationFrame отделяет смену класса от загрузки кадра, поэтому
     // CSS-переход opacity успевает анимироваться.
     const request = ++revealRequest;
-    requestAnimationFrame(() => {
+    lifetime.frame(() => {
       if (request === revealRequest) preview.video?.classList.add('is-visible');
     });
   }
@@ -150,6 +155,7 @@ export function createProjectPreview(currentPageData, {
   }
 
   function syncPreviewMedia() {
+    if (lifetime.disposed) return;
     if (isAnimating) return;
     const project = projectsBySlug.get(currentSlug);
     // Видео разрешено только у выбранного проекта, в видимом preview и активной
@@ -175,6 +181,7 @@ export function createProjectPreview(currentPageData, {
   }
 
   function preloadVideo() {
+    if (lifetime.disposed) return;
     // Начинаем подгрузку заранее, но не запускаем ролик, пока preview не видно.
     const project = projectsBySlug.get(currentSlug);
     if (!project || !project.video || reduceMotion.matches) return;
@@ -188,12 +195,12 @@ export function createProjectPreview(currentPageData, {
     syncPreviewMedia();
   };
   const onVideoError = showImage;
-  preview.video?.addEventListener('loadeddata', onVideoReady);
-  preview.video?.addEventListener('canplay', onVideoReady);
-  preview.video?.addEventListener('error', onVideoError);
-  slotB.video?.addEventListener('loadeddata', onVideoReady);
-  slotB.video?.addEventListener('canplay', onVideoReady);
-  slotB.video?.addEventListener('error', onVideoError);
+  lifetime.listen(preview.video, 'loadeddata', onVideoReady);
+  lifetime.listen(preview.video, 'canplay', onVideoReady);
+  lifetime.listen(preview.video, 'error', onVideoError);
+  lifetime.listen(slotB.video, 'loadeddata', onVideoReady);
+  lifetime.listen(slotB.video, 'canplay', onVideoReady);
+  lifetime.listen(slotB.video, 'error', onVideoError);
 
   // Основной observer запускает/ставит на паузу ролик, когда в зоне видимости
   // находится не менее 15% блока preview.
@@ -216,7 +223,7 @@ export function createProjectPreview(currentPageData, {
   observer?.observe(previewFrame);
   preloadObserver?.observe(previewFrame);
   const onVisibilityChange = () => syncPreviewMedia();
-  document.addEventListener('visibilitychange', onVisibilityChange);
+  lifetime.listen(document, 'visibilitychange', onVisibilityChange);
 
   const details = createPreviewDetails(currentPageData, preview, infoBox);
   const { scrambleText, calculateMaxHeight, updateTextDetails } = details;
@@ -317,13 +324,14 @@ export function createProjectPreview(currentPageData, {
       });
     }
   };
-  strip?.addEventListener('wheel', onStripWheel, { passive: false });
+  lifetime.listen(strip, 'wheel', onStripWheel, { passive: false });
 
   /**
    * @param {string} slug
    * @param {{ direction?: 'next' | 'prev' | string, scroll?: boolean, animate?: boolean }} [options]
    */
   function setActive(slug, { direction, scroll = false, animate = true } = {}) {
+    if (lifetime.disposed) return false;
     const project = projectsBySlug.get(slug);
     if (!project) return;
     if (animate && slug === currentSlug) {
@@ -411,8 +419,11 @@ export function createProjectPreview(currentPageData, {
       incomingSlot.img.alt = project.slug;
     }
 
+    incomingVideoSlug = null;
+    incomingVideoPrepared = false;
     let prepPromise = Promise.resolve();
     if (incomingSlot.video && project.video && project.video.webm && previewVisible && !reduceMotion.matches && !document.hidden) {
+      incomingVideoSlug = project.slug;
       incomingSlot.video.replaceChildren();
       const webm = document.createElement('source');
       webm.src = project.video.webm;
@@ -426,19 +437,24 @@ export function createProjectPreview(currentPageData, {
       const savedPos = videoPositions.get(project.slug);
       prepPromise = new Promise((resolve) => {
         let resolved = false;
+        const removeReadyListeners = [];
+        let preparationTimer;
         const finish = () => {
-          if (resolved) return;
+          if (resolved || lifetime.disposed) return;
           resolved = true;
+          lifetime.clearTimeout(preparationTimer);
+          removeReadyListeners.forEach(remove => remove());
           if (Number.isFinite(savedPos) && incomingSlot.video) {
             incomingSlot.video.currentTime = savedPos;
           }
+          incomingVideoPrepared = true;
           if (incomingSlot.video) {
             incomingSlot.video.style.transition = 'none';
             incomingSlot.video.classList.add('is-visible');
             incomingSlot.video.play().catch(() => { });
           }
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
+          lifetime.frame(() => {
+            lifetime.frame(() => {
               resolve();
             });
           });
@@ -446,10 +462,10 @@ export function createProjectPreview(currentPageData, {
         if (incomingSlot.video?.readyState >= 2) {
           finish();
         } else {
-          incomingSlot.video?.addEventListener('playing', finish, { once: true });
-          incomingSlot.video?.addEventListener('canplay', finish, { once: true });
-          incomingSlot.video?.addEventListener('loadeddata', finish, { once: true });
-          window.setTimeout(finish, 140);
+          removeReadyListeners.push(lifetime.listen(incomingSlot.video, 'playing', finish, { once: true }));
+          removeReadyListeners.push(lifetime.listen(incomingSlot.video, 'canplay', finish, { once: true }));
+          removeReadyListeners.push(lifetime.listen(incomingSlot.video, 'loadeddata', finish, { once: true }));
+          preparationTimer = lifetime.timeout(finish, 140);
         }
       });
     } else if (incomingSlot.video) {
@@ -460,6 +476,7 @@ export function createProjectPreview(currentPageData, {
     }
 
     prepPromise.then(() => {
+      if (lifetime.disposed) return;
       const offsetPx = calcVc(PREVIEW_SLIDER_CONFIG.descOffsetVc);
       const startY = (dir === 'next' ? 1 : -1) * offsetPx;
       if (window.gsap && metaBody) {
@@ -521,11 +538,12 @@ export function createProjectPreview(currentPageData, {
           }
 
           if (progress < 1) {
-            requestAnimationFrame(animateSweep);
+            lifetime.frame(animateSweep);
           } else {
             if (incomingSlot.layer) incomingSlot.layer.style.clipPath = 'none';
 
             const completeSweep = () => {
+              if (lifetime.disposed) return;
               if (activeSlot.video) {
                 if (loadedVideoSlug && Number.isFinite(preview.video.currentTime)) {
                   videoPositions.set(loadedVideoSlug, preview.video.currentTime);
@@ -542,6 +560,7 @@ export function createProjectPreview(currentPageData, {
               preview.shotSrc = (activeIsA ? slotA : slotB).src;
               preview.shotImg = (activeIsA ? slotA : slotB).img;
               loadedVideoSlug = project.slug;
+              incomingVideoSlug = null;
               if (incomingSlot.video) {
                 incomingSlot.video.style.transition = '';
               }
@@ -564,10 +583,10 @@ export function createProjectPreview(currentPageData, {
           }
         };
 
-        requestAnimationFrame(animateSweep);
+        lifetime.frame(animateSweep);
       }
 
-      window.setTimeout(() => {
+      lifetime.timeout(() => {
         updateTextDetails(project);
       }, 40);
     });
@@ -600,7 +619,7 @@ export function createProjectPreview(currentPageData, {
 
   // Миниатюры меняют активный проект; на мобилке также плавно прокручивают к слайдеру.
   thumbnails.forEach((thumbnail) => {
-    thumbnail.addEventListener('click', (e) => {
+    lifetime.listen(thumbnail, 'click', (e) => {
       if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing || stripDraggable.timeSinceDrag() < 0.1)) {
         e.preventDefault();
         return;
@@ -630,8 +649,8 @@ export function createProjectPreview(currentPageData, {
     const nextIdx = (idx + 1) % currentPageData.projects.length;
     if (setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' })) confirmClick(btnNext);
   };
-  btnPrev?.addEventListener('click', onPrevClick);
-  btnNext?.addEventListener('click', onNextClick);
+  lifetime.listen(btnPrev, 'click', onPrevClick);
+  lifetime.listen(btnNext, 'click', onNextClick);
 
   const onKeydown = (/** @type {KeyboardEvent} */ e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -650,7 +669,7 @@ export function createProjectPreview(currentPageData, {
       setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
     }
   };
-  window.addEventListener('keydown', onKeydown);
+  lifetime.listen(window, 'keydown', onKeydown);
 
   let swipeStartX = 0;
   let swipeStartY = 0;
@@ -683,7 +702,7 @@ export function createProjectPreview(currentPageData, {
   }
 
   if (mediaBox) {
-    mediaBox.addEventListener('pointerdown', (e) => {
+    lifetime.listen(mediaBox, 'pointerdown', (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       handleSwipeStart(e.clientX, e.clientY);
       try {
@@ -691,27 +710,27 @@ export function createProjectPreview(currentPageData, {
       } catch (_) { }
     });
 
-    mediaBox.addEventListener('pointerup', (e) => {
+    lifetime.listen(mediaBox, 'pointerup', (e) => {
       try {
         mediaBox.releasePointerCapture(e.pointerId);
       } catch (_) { }
       handleSwipeEnd(e.clientX, e.clientY);
     });
 
-    mediaBox.addEventListener('pointercancel', (e) => {
+    lifetime.listen(mediaBox, 'pointercancel', (e) => {
       try {
         mediaBox.releasePointerCapture(e.pointerId);
       } catch (_) { }
       isSwiping = false;
     });
 
-    mediaBox.addEventListener('dragstart', (e) => e.preventDefault());
+    lifetime.listen(mediaBox, 'dragstart', (e) => e.preventDefault());
   }
 
   let resizeTimer;
   const onWindowResize = () => {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(() => {
+    lifetime.clearTimeout(resizeTimer);
+    resizeTimer = lifetime.timeout(() => {
       calculateMaxHeight();
       if (stripDraggable) {
         stripDraggable.applyBounds(getTrackBounds());
@@ -721,30 +740,31 @@ export function createProjectPreview(currentPageData, {
       if (activeThumb) smoothScrollThumbnails(activeThumb);
     }, 60);
   };
-  window.addEventListener('resize', onWindowResize);
+  lifetime.listen(window, 'resize', onWindowResize);
 
   // Возвращаем функцию очистки наружу, чтобы следующий PJAX-экран не оставил
   // обработчики и сетевые загрузки у удалённых DOM-элементов.
   const destroy = () => {
-    window.clearTimeout(resizeTimer);
+    if (lifetime.disposed) return;
+    lifetime.destroy();
+    revealRequest += 1;
+    lifetime.clearTimeout(resizeTimer);
     observer?.disconnect();
     preloadObserver?.disconnect();
-    document.removeEventListener('visibilitychange', onVisibilityChange);
-    preview.video?.removeEventListener('loadeddata', onVideoReady);
-    preview.video?.removeEventListener('canplay', onVideoReady);
-    preview.video?.removeEventListener('error', onVideoError);
-    slotA.video?.removeEventListener('loadeddata', onVideoReady);
-    slotA.video?.removeEventListener('canplay', onVideoReady);
-    slotA.video?.removeEventListener('error', onVideoError);
-    slotB.video?.removeEventListener('loadeddata', onVideoReady);
-    slotB.video?.removeEventListener('canplay', onVideoReady);
-    slotB.video?.removeEventListener('error', onVideoError);
     pauseVideo();
-    window.removeEventListener('resize', onWindowResize);
-    window.removeEventListener('keydown', onKeydown);
-    strip?.removeEventListener('wheel', onStripWheel);
-    btnPrev?.removeEventListener('click', onPrevClick);
-    btnNext?.removeEventListener('click', onNextClick);
+    // Во время перехода выбран уже входящий проект, но preview.video ещё
+    // указывает на исходящий ролик. Сохраняем оба до удаления источников.
+    const incomingVideo = (activeIsA ? slotB : slotA).video;
+    if (incomingVideoSlug && incomingVideoPrepared && incomingVideo?.readyState >= 1 && Number.isFinite(incomingVideo.currentTime)) {
+      videoPositions.set(incomingVideoSlug, incomingVideo.currentTime);
+    }
+    for (const slot of [slotA, slotB]) {
+      if (!slot.video) continue;
+      slot.video.pause();
+      slot.video.replaceChildren();
+      slot.video.removeAttribute('src');
+      slot.video.load();
+    }
     details.destroy();
     if (stripDraggable) {
       stripDraggable.kill();
@@ -766,8 +786,8 @@ export function createProjectPreview(currentPageData, {
       }
       if (setActive(projectElement.dataset.slug, { scroll: true })) confirmClick(projectElement);
     };
-    projectElement.addEventListener('click', handleSelect);
-    projectElement.addEventListener('keydown', handleSelect);
+    lifetime.listen(projectElement, 'click', handleSelect);
+    lifetime.listen(projectElement, 'keydown', handleSelect);
   }
   rows.forEach(wireRow);
   cards.forEach(wireRow);
@@ -775,10 +795,11 @@ export function createProjectPreview(currentPageData, {
   calculateMaxHeight();
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
+      if (lifetime.disposed) return;
       calculateMaxHeight();
     });
   }
-  requestAnimationFrame(() => {
+  lifetime.frame(() => {
     calculateMaxHeight();
   });
 

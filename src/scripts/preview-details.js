@@ -2,8 +2,14 @@ import { pxToVc } from './viewport-scale.js';
 
 // Описание проекта и измерение его высоты используют DOM текущего языка.
 export function createPreviewDetails(currentPageData, preview, infoBox) {
+  let disposed = false;
+  const scrambleIntervals = new Map();
+  /** @type {HTMLElement | null} */
+  let measurer = null;
+
   function scrambleText(element, finalText, durationMs = 200) {
-    if (!element) return;
+    if (disposed || !element) return;
+    window.clearInterval(scrambleIntervals.get(element));
     const chars = '01#_$%*/~<>[]';
     const original = finalText;
     const start = performance.now();
@@ -11,6 +17,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
       const progress = (performance.now() - start) / durationMs;
       if (progress >= 1) {
         window.clearInterval(interval);
+        scrambleIntervals.delete(element);
         element.textContent = original;
         return;
       }
@@ -24,19 +31,21 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
       }
       element.textContent = current;
     }, 25);
+    scrambleIntervals.set(element, interval);
   }
 
   let measuredMaxHeight = 0;
 
   function calculateMaxHeight() {
-    if (!infoBox) return;
+    if (disposed || !infoBox) return;
     const currentWidth = infoBox.getBoundingClientRect().width;
     if (currentWidth <= 0) return;
 
-    let clone = /** @type {HTMLElement | null} */ (document.getElementById('preview-measurer-clone'));
+    let clone = measurer;
     if (!clone) {
       clone = document.createElement('div');
       clone.id = 'preview-measurer-clone';
+      measurer = clone;
       clone.style.cssText = 'position: absolute; left: -9999px; top: 0; visibility: hidden; pointer-events: none;';
       // Замер должен наследовать тот же vc-шрифт и line-height, что и слайд.
       infoBox.insertAdjacentElement('afterend', clone);
@@ -106,6 +115,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
   }
 
   function updateTextDetails(project) {
+    if (disposed) return;
     if (preview.slug) preview.slug.textContent = project.slug;
     if (preview.site) preview.site.textContent = project.site;
     if (preview.open) {
@@ -199,7 +209,11 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
     calculateMaxHeight,
     updateTextDetails,
     destroy() {
-      document.getElementById('preview-measurer-clone')?.remove();
+      disposed = true;
+      scrambleIntervals.forEach(interval => window.clearInterval(interval));
+      scrambleIntervals.clear();
+      measurer?.remove();
+      measurer = null;
     },
   };
 }

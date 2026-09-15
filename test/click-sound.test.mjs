@@ -1,3 +1,4 @@
+import { createPageLifetime } from '../src/scripts/page-lifetime.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
@@ -346,6 +347,7 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
   thumb.dispatchEvent = (event) => listeners.get(event.type)?.({ target: thumb });
   let dragAge = 1;
   const scope = {
+    lifetime: createPageLifetime(),
     thumbnails: [thumb], currentSlug: 'first', isAnimating: false,
     stripDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => dragAge },
     window: { innerWidth: 390 },
@@ -411,7 +413,7 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
 
 test('actual filter handler confirms only accepted selections, including keyboard', async () => {
   const source = await readFile(new URL('../src/scripts/works-filters.js', import.meta.url), 'utf8');
-  const start = source.indexOf('  chips.forEach((chip) => {\n    chip.addEventListener');
+  const start = source.indexOf('  chips.forEach((chip) => {\n    lifetime.listen(chip,');
   const end = source.indexOf('  // Пересчитываем только собственную ленту фильтров.', start);
   assert.ok(start > 0 && end > start);
   const h = soundHarness();
@@ -420,6 +422,7 @@ test('actual filter handler confirms only accepted selections, including keyboar
   let handler;
   chip.addEventListener = (_, fn) => { handler = fn; };
   const scope = {
+    lifetime: createPageLifetime(),
     chips: [chip], activeFilter: 'all',
     filtersDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => 1 },
     confirmClick: h.confirmClick,
@@ -456,6 +459,7 @@ test('actual preview navigation and row handlers sound only when setActive accep
   const row = control({ 'data-slug': 'second' }, ['works-row']);
   let accepted = false;
   const scope = {
+    lifetime: createPageLifetime(),
     btnPrev: prev, btnNext: next, rows: [row], cards: [], currentSlug: 'first',
     currentPageData: { projects: [{slug:'first'}, {slug:'second'}] },
     setActive: () => accepted, confirmClick: h.confirmClick,

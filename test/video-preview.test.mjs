@@ -53,7 +53,7 @@ test('first visible preview waits for a decoded frame before starting playback',
   const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
 
   assert.match(source, /if \(preview\.video\?\.readyState < 2\) return;/);
-  assert.match(source, /addEventListener\('canplay', onVideoReady\)/);
+  assert.match(source, /lifetime\.listen\(preview\.video, 'canplay', onVideoReady\)/);
   assert.doesNotMatch(source, /preview\.video\?\.play\(\)\.catch\(\(\) => \{\}\)/);
 });
 
