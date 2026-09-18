@@ -322,13 +322,38 @@ export function createProjectPreview(currentPageData, {
     }
     if (activeSlot.layer) activeSlot.layer.style.zIndex = '1';
 
+    if (incomingSlot.picture) {
+      incomingSlot.picture.style.opacity = '0';
+    }
     if (incomingSlot.src) {
       incomingSlot.src.setAttribute('type', project.shotModType);
       incomingSlot.src.setAttribute('srcset', project.shotMod);
     }
     if (incomingSlot.img) {
-      incomingSlot.img.src = project.shot;
-      incomingSlot.img.alt = project.slug;
+      const img = incomingSlot.img;
+      const targetSlug = project.slug;
+      
+      const onLoad = () => {
+        img.removeEventListener('load', onLoad);
+        img.removeEventListener('error', onLoad);
+        if (img.alt === targetSlug && incomingSlot.picture) {
+          incomingSlot.picture.style.opacity = '1';
+        }
+      };
+      
+      img.addEventListener('load', onLoad);
+      img.addEventListener('error', onLoad);
+      
+      img.src = project.shot;
+      img.alt = project.slug;
+      
+      lifetime.frame(() => {
+        if (img.complete && img.naturalWidth > 0 && img.alt === targetSlug && incomingSlot.picture) {
+          incomingSlot.picture.style.opacity = '1';
+          img.removeEventListener('load', onLoad);
+          img.removeEventListener('error', onLoad);
+        }
+      });
     }
 
     incomingVideoSlug = null;
