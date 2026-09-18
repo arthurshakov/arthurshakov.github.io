@@ -356,14 +356,21 @@ export function createProjectPreview(currentPageData, {
           resolved = true;
           lifetime.clearTimeout(preparationTimer);
           removeReadyListeners.forEach(remove => remove());
-          if (Number.isFinite(savedPos) && incomingSlot.video) {
+          
+          const isReady = incomingSlot.video && incomingSlot.video.readyState >= 1;
+          
+          if (Number.isFinite(savedPos) && isReady) {
             incomingSlot.video.currentTime = savedPos;
           }
           restoredVideoSlug = project.slug;
           incomingVideoPrepared = true;
           if (incomingSlot.video) {
             incomingSlot.video.style.transition = 'none';
-            incomingSlot.video.classList.add('is-visible');
+            if (isReady) {
+              incomingSlot.video.classList.add('is-visible');
+            } else {
+              incomingSlot.video.classList.remove('is-visible');
+            }
             incomingSlot.video.play().catch(() => { });
           }
           lifetime.frame(() => {
