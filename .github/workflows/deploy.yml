@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Triggers: when GitHub should run this workflow
+  push:
+    branches: ["main"] # Run automatically on pushes to the main branch
+  workflow_dispatch: # Allows manual execution from the Actions tab
+
+# Configure strict permissions for the workflow
+permissions:
+  contents: read     # Allow reading (checking out) the repository code
+  pages: write       # Allow uploading (writing) files to GitHub Pages
+  id-token: write    # Required for secure authentication during deployment
+
+# Manage concurrency to prevent multiple deployments running at the same time
+concurrency:
+  group: "pages"     # Group all runs into a single queue named "pages"
+  cancel-in-progress: false # Wait for the current run to finish instead of cancelling it
+
+jobs:
+  # First job: Prepare and build the project
+  build:
+    runs-on: ubuntu-latest # Allocate a fresh Ubuntu Linux virtual machine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4 # Step 1: Download the repository code to the runner
+        
+      - name: Setup Node
+        uses: actions/setup-node@v4 # Step 2: Install Node.js
+        with:
+          node-version: "22"        # Use Node.js version 22
+          cache: 'npm'              # Cache npm dependencies to speed up future builds
+          
+      - name: Install dependencies
+        run: npm ci                 # Step 3: Install all third-party libraries (node_modules)
+        
+      - name: Build project
+        run: npm run build          # Step 4: Build the site (output will be in the dist/ folder)
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v5 # Step 5: Configure GitHub Pages environment
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3 # Step 6: Package the built site into an artifact
+        with:
+          path: './dist'            # Specify the dist folder to be uploaded
+          
+  # Second job: Deploy the built site to the internet
+  deploy:
+    environment:
+      name: github-pages            # The environment name for deployment
+      url: ${{ steps.deployment.outputs.page_url }} # Dynamically set the URL of the published site
+    runs-on: ubuntu-latest          # Allocate a fresh runner for deployment
+    needs: build                    # IMPORTANT: This job will ONLY start if the 'build' job succeeds
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # Final step: Unpack the artifact and deploy to GitHub Pages servers
