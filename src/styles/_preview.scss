@@ -63,7 +63,6 @@
   height: auto;
   aspect-ratio: 1000 / 565; // кадр без адресной строки браузера (~16:9)
   object-fit: cover;
-  border: 1px solid var(--line-strong);
   display: block;
 }
 
@@ -73,8 +72,10 @@
 
 .preview-video {
   position: absolute;
-  inset: 0;
-  height: 100%;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  object-fit: cover;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
