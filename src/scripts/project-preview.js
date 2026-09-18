@@ -646,17 +646,27 @@ export function createProjectPreview(currentPageData, {
     });
   });
 
+  function navigateProject(direction, triggerElement = null) {
+    if (lifetime.disposed) return;
+    const projects = currentPageData.projects;
+    const idx = projects.findIndex((p) => p.slug === currentSlug);
+    
+    const targetIdx = direction === 'next' 
+      ? (idx + 1) % projects.length 
+      : (idx - 1 + projects.length) % projects.length;
+
+    if (setActive(projects[targetIdx].slug, { direction })) {
+      if (triggerElement) confirmClick(triggerElement);
+    }
+  }
+
   const onPrevClick = (/** @type {Event} */ e) => {
     e.preventDefault();
-    const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
-    const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
-    if (setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' })) confirmClick(btnPrev);
+    navigateProject('prev', btnPrev);
   };
   const onNextClick = (/** @type {Event} */ e) => {
     e.preventDefault();
-    const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
-    const nextIdx = (idx + 1) % currentPageData.projects.length;
-    if (setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' })) confirmClick(btnNext);
+    navigateProject('next', btnNext);
   };
   lifetime.listen(btnPrev, 'click', onPrevClick);
   lifetime.listen(btnNext, 'click', onNextClick);
@@ -669,13 +679,9 @@ export function createProjectPreview(currentPageData, {
     if (!isRelevant) return;
 
     if (e.key === 'ArrowLeft') {
-      const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
-      const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
-      setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+      navigateProject('prev');
     } else if (e.key === 'ArrowRight') {
-      const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
-      const nextIdx = (idx + 1) % currentPageData.projects.length;
-      setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+      navigateProject('next');
     }
   };
   lifetime.listen(window, 'keydown', onKeydown);
@@ -699,13 +705,10 @@ export function createProjectPreview(currentPageData, {
     const threshold = PREVIEW_SLIDER_CONFIG.swipeThresholdPx;
 
     if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) >= threshold) {
-      const idx = currentPageData.projects.findIndex((p) => p.slug === currentSlug);
       if (diffX < 0) {
-        const nextIdx = (idx + 1) % currentPageData.projects.length;
-        setActive(currentPageData.projects[nextIdx].slug, { direction: 'next' });
+        navigateProject('next');
       } else {
-        const prevIdx = (idx - 1 + currentPageData.projects.length) % currentPageData.projects.length;
-        setActive(currentPageData.projects[prevIdx].slug, { direction: 'prev' });
+        navigateProject('prev');
       }
     }
   }
