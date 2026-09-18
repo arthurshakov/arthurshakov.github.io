@@ -2,11 +2,29 @@ const STORAGE_KEY = 'portfolio:music';
 
 const clamp = (value) => Math.max(0, Math.min(1, value));
 
+/**
+ * @typedef {Object} PlaylistPlayerOptions
+ * @property {any[]} tracks
+ * @property {((src: any) => HTMLAudioElement)} [audioFactory]
+ * @property {Storage | null} [storage]
+ * @property {number} [crossfadeMs]
+ * @property {number} [fadeInMs]
+ * @property {number} [fadeOutMs]
+ * @property {(() => number)} [now]
+ * @property {((handler: any, timeout?: number) => any)} [setTimer]
+ * @property {((id: any) => void)} [clearTimer]
+ * @property {((audio: HTMLAudioElement) => void)} [prepareAudio]
+ * @property {(() => Promise<void>)} [resumeAudioGraph]
+ */
+
+/**
+ * @param {PlaylistPlayerOptions} [options]
+ */
 export function createPlaylistPlayer({
   tracks,
   audioFactory = (src) => new Audio(src),
   storage = window.localStorage,
-  crossfadeMs = 1500,
+  crossfadeMs = 1000,
   fadeInMs = 300,
   fadeOutMs = 100,
   now = () => Date.now(),
@@ -14,14 +32,19 @@ export function createPlaylistPlayer({
   clearTimer = window.clearInterval,
   prepareAudio = () => {},
   resumeAudioGraph = async () => {},
-} = {}) {
+} = /** @type {PlaylistPlayerOptions} */ ({})) {
   if (!Array.isArray(tracks) || tracks.length === 0) {
     throw new TypeError('createPlaylistPlayer requires at least one track');
   }
 
+  /** @type {HTMLAudioElement | null} */
   let currentAudio = null;
+  /** @type {HTMLAudioElement | null} */
+  let fadingAudio = null;
   let currentIndex = 0;
+  /** @type {any} */
   let fadeTimer = null;
+  let transitionToken = 0;
   let playing = false;
   let destroyed = false;
   const listeners = new Set();
@@ -51,6 +74,13 @@ export function createPlaylistPlayer({
     if (!fadeTimer) return;
     clearTimer(fadeTimer);
     fadeTimer = null;
+  };
+
+  const stopFadingAudio = () => {
+    if (!fadingAudio) return;
+    const audio = fadingAudio;
+    fadingAudio = null;
+    stopAudio(audio);
   };
 
   const runFade = ({ duration, onFrame, onComplete = () => {} }) => {
@@ -114,8 +144,11 @@ export function createPlaylistPlayer({
   const attachEndedListener = (audio) => {
     removeEndedListener(audio);
     const listener = () => {
-      transition(audio).catch(() => {
+      if (audio !== currentAudio || !playing) return;
+      select((currentIndex + 1) % tracks.length).catch(() => {
         if (audio === currentAudio) {
+          clearFade();
+          stopFadingAudio();
           playing = false;
           persist('off');
           notify();
@@ -129,8 +162,11 @@ export function createPlaylistPlayer({
   const attachErrorListener = (audio) => {
     removeErrorListener(audio);
     const listener = () => {
-      if (audio !== currentAudio || !playing) return;
+      if (audio !== currentAudio && audio !== fadingAudio) return;
+      if (!playing) return;
+      transitionToken += 1;
       clearFade();
+      stopFadingAudio();
       playing = false;
       pauseAudio(audio);
       persist('off');
@@ -140,10 +176,11 @@ export function createPlaylistPlayer({
     audio.addEventListener('error', listener);
   };
 
-  const transition = async (outgoing) => {
-    if (!playing || destroyed || outgoing !== currentAudio) return;
+  const transitionTo = async (nextIndex) => {
+    if (!playing || destroyed) return;
 
-    const nextIndex = (currentIndex + 1) % tracks.length;
+    const token = ++transitionToken;
+    const outgoing = currentAudio;
     const incoming = createAudio(nextIndex);
     incoming.volume = 0;
 
@@ -151,17 +188,34 @@ export function createPlaylistPlayer({
       await incoming.play();
     } catch (error) {
       stopAudio(incoming);
-      playing = false;
-      persist('off');
-      notify();
+      if (token === transitionToken) {
+        clearFade();
+        stopFadingAudio();
+        playing = false;
+        persist('off');
+        notify();
+      }
       throw error;
     }
 
+    if (token !== transitionToken || !playing || destroyed) {
+      stopAudio(incoming);
+      return;
+    }
+
+    stopFadingAudio();
+    clearFade();
+
     attachEndedListener(incoming);
     currentAudio = incoming;
-    currentIndex = nextIndex;
-    notify();
+    fadingAudio = outgoing;
 
+    if (!outgoing) {
+      incoming.volume = 1;
+      return;
+    }
+
+    removeEndedListener(outgoing);
     const outgoingVolume = outgoing.volume;
     runFade({
       duration: crossfadeMs,
@@ -169,7 +223,11 @@ export function createPlaylistPlayer({
         incoming.volume = progress;
         outgoing.volume = outgoingVolume * (1 - progress);
       },
-      onComplete: () => stopAudio(outgoing),
+      onComplete: () => {
+        if (fadingAudio === outgoing) {
+          stopFadingAudio();
+        }
+      },
     });
   };
 
@@ -177,36 +235,48 @@ export function createPlaylistPlayer({
     if (destroyed) throw new Error('Playlist player has been destroyed');
     if (playing) return;
 
+    const token = ++transitionToken;
     clearFade();
-    currentAudio ??= createAudio(currentIndex);
-    if (currentAudio.paused) currentAudio.volume = 0;
+    stopFadingAudio();
+    const audio = currentAudio ?? createAudio(currentIndex);
+    currentAudio = audio;
+    if (audio.paused) audio.volume = 0;
 
     try {
       await resumeAudioGraph();
-      await currentAudio.play();
+      await audio.play();
     } catch (error) {
-      playing = false;
-      if (persistPreference) persist('off');
-      notify();
+      if (token === transitionToken) {
+        playing = false;
+        if (persistPreference) persist('off');
+        notify();
+      }
       throw error;
     }
 
-    attachEndedListener(currentAudio);
+    if (token !== transitionToken || destroyed) {
+      stopAudio(audio);
+      return;
+    }
+
+    attachEndedListener(audio);
     playing = true;
     if (persistPreference) persist('on');
     notify();
 
-    const startingVolume = currentAudio.volume;
+    const startingVolume = audio.volume;
     runFade({
       duration: fadeInMs,
       onFrame: (progress) => {
-        currentAudio.volume = startingVolume + (1 - startingVolume) * progress;
+        audio.volume = startingVolume + (1 - startingVolume) * progress;
       },
     });
   };
 
   const stop = () => {
+    transitionToken += 1;
     clearFade();
+    stopFadingAudio();
     playing = false;
     persist('off');
     notify();
@@ -225,7 +295,9 @@ export function createPlaylistPlayer({
 
   const suspend = () => {
     if (!playing) return false;
+    transitionToken += 1;
     clearFade();
+    stopFadingAudio();
     playing = false;
     pauseAudio(currentAudio);
     notify();
@@ -237,11 +309,44 @@ export function createPlaylistPlayer({
     await start({ persistPreference: false });
   };
 
+  const select = async (index, { play = true } = {}) => {
+    const nextIndex = ((index % tracks.length) + tracks.length) % tracks.length;
+    if (!play && nextIndex === currentIndex) return;
+    if (playing && nextIndex === currentIndex && currentAudio) return;
+
+    if (!playing) {
+      if (nextIndex !== currentIndex) {
+        transitionToken += 1;
+        clearFade();
+        stopFadingAudio();
+        stopAudio(currentAudio);
+        currentAudio = null;
+        currentIndex = nextIndex;
+        notify();
+      }
+      if (play) {
+        await start();
+      }
+      return;
+    }
+
+    currentIndex = nextIndex;
+    notify();
+    await transitionTo(nextIndex);
+  };
+
   return {
     start,
     stop,
     suspend,
     resume,
+    select,
+    next(options) {
+      return select(currentIndex + 1, options);
+    },
+    previous(options) {
+      return select(currentIndex - 1, options);
+    },
     async toggle() {
       if (playing) {
         stop();
@@ -259,7 +364,9 @@ export function createPlaylistPlayer({
     destroy() {
       if (destroyed) return;
       destroyed = true;
+      transitionToken += 1;
       clearFade();
+      stopFadingAudio();
       stopAudio(currentAudio);
       listeners.clear();
     },

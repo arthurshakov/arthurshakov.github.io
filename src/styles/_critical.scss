@@ -1,5 +1,6 @@
 @use 'functions' as *;
 @use 'tokens';
+@use 'statusbar-frame';
 
 // Инлайнится в <head> строкой (см. build.mjs / template.mjs), поэтому
 // самодостаточен: не полагается на внешний styles.css. Держит первый
@@ -15,11 +16,7 @@ body {
 }
 
 // --- фоновая сетка: статичный слой во вьюпорте, не двигается при скролле ---
-// (вынесено из .page, чтобы 1px-линии не «дрожали» при инерционном скролле)
-// Только вертикальные линии-колонки: горизонтали при статичном слое «плыли»
-// относительно границ секций/строк таблицы и давали муар на скролле.
-// Узлы (radial-gradient, не SVG-тайл) — чтобы линия и точка остались чёткими
-// на любом зуме: оба градиента считаются напрямую в размер тайла, без растра.
+// Содержит canvas-анимацию узлов сетки (.bg-grid-canvas).
 .bg-grid {
   position: fixed;
   inset: 0;
@@ -28,14 +25,40 @@ body {
   max-width: $breakpoint-desktop-wide;
   margin-inline: auto;
   pointer-events: none;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(circle 1px at 0 50%, var(--grid-node) 100%, transparent 100%),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size:
-    vc(var(--grid)) vc(calc(var(--grid) * 3)),
-    vc(var(--grid)) 100%;
-  background-position: 0 0;
+
+  @include desktop {
+    left: vc(-1);
+    top: vc(-12);
+  }
+
+  @include mobile {
+    left: vc(8);
+  }
+}
+
+.body__rail {
+  @include mobile {
+    display: none;
+  }
+
+  @include desktop {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: vc(64);
+    border-right: 1px solid var(--line);
+    pointer-events: none;
+  }
+}
+
+.bg-grid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
 }
 
 // Пока идёт прелоадер и пока контент выезжает из маски, страница не
@@ -79,6 +102,25 @@ html:not(.fonts-loaded) .page {
   visibility: hidden;
 }
 
+// Закрепление и подложка хэдера берутся из statusbar-frame.
+// Для состояния прелоадера хэдер остаётся relative.
+html.preloader-pending .statusbar {
+  position: relative;
+  z-index: 11;
+}
+
+@media (max-width: 959.98px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
 // Минимальное состояние эквалайзера до загрузки основного CSS. Без него
 // браузер сначала показывает полноразмерные inline-спаны, а потом резко
 // сжимает их при подключении styles.css.
@@ -100,11 +142,25 @@ html:not(.fonts-loaded) .page {
   width: vc(2);
 }
 
-.audio-control__bar:nth-child(1) { left: 0; }
-.audio-control__bar:nth-child(2) { left: #{vc(4)}; }
-.audio-control__bar:nth-child(3) { left: #{vc(8)}; }
-.audio-control__bar:nth-child(4) { left: #{vc(12)}; }
-.audio-control__bar:nth-child(5) { left: #{vc(16)}; }
+.audio-control__bar:nth-child(1) {
+  left: 0;
+}
+
+.audio-control__bar:nth-child(2) {
+  left: #{vc(4)};
+}
+
+.audio-control__bar:nth-child(3) {
+  left: #{vc(8)};
+}
+
+.audio-control__bar:nth-child(4) {
+  left: #{vc(12)};
+}
+
+.audio-control__bar:nth-child(5) {
+  left: #{vc(16)};
+}
 
 // В таблице работ ссылки open видны только у активной строки. Фиксируем это
 // до styles.css, чтобы браузерные ссылки не успевали мелькнуть при первом

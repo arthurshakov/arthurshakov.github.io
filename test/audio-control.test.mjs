@@ -22,6 +22,45 @@ function createButton() {
     };
   });
 
+  const trackCurrent = { textContent: '' };
+  const trackTotal = { textContent: '' };
+  const trackName = { textContent: '' };
+  const previousListeners = new Map();
+  const nextListeners = new Map();
+  const previousButton = {
+    addEventListener(type, listener) {
+      previousListeners.set(type, listener);
+    },
+    removeEventListener(type, listener) {
+      if (previousListeners.get(type) === listener) previousListeners.delete(type);
+    },
+    async click() {
+      await previousListeners.get('click')?.();
+    },
+  };
+  const nextButton = {
+    addEventListener(type, listener) {
+      nextListeners.set(type, listener);
+    },
+    removeEventListener(type, listener) {
+      if (nextListeners.get(type) === listener) nextListeners.delete(type);
+    },
+    async click() {
+      await nextListeners.get('click')?.();
+    },
+  };
+  const control = {
+    dataset: {},
+    querySelector(selector) {
+      if (selector === '[data-audio-track-current]') return trackCurrent;
+      if (selector === '[data-audio-track-total]') return trackTotal;
+      if (selector === '[data-audio-track-name]') return trackName;
+      if (selector === '[data-audio-previous]') return previousButton;
+      if (selector === '[data-audio-next]') return nextButton;
+      return null;
+    },
+  };
+
   return {
     dataset: {
       audioLabelOn: 'sound on',
@@ -30,6 +69,10 @@ function createButton() {
       audioStop: 'turn off background music',
     },
     label: { textContent: '' },
+    parentElement: control,
+    control,
+    previousButton,
+    nextButton,
     addEventListener(type, listener) {
       listeners.set(type, listener);
     },
@@ -57,6 +100,8 @@ function createPlayer() {
 
   return {
     toggleCalls: 0,
+    nextCalls: 0,
+    previousCalls: 0,
     subscribe(next) {
       listener = next;
       next({ playing: false, trackIndex: 0 });
@@ -66,6 +111,12 @@ function createPlayer() {
     },
     async toggle() {
       this.toggleCalls += 1;
+    },
+    async next() {
+      this.nextCalls += 1;
+    },
+    async previous() {
+      this.previousCalls += 1;
     },
     emit(state) {
       listener?.(state);
@@ -80,7 +131,26 @@ test('renders an off audio button in both locales', () => {
     assert.match(html, /<button[^>]*data-audio-toggle[^>]*aria-pressed="false"/);
     assert.match(html, /data-audio-label/);
     assert.match(html, /data-audio-bars/);
+    assert.match(html, /data-audio-previous/);
+    assert.match(html, /data-audio-next/);
+    assert.match(html, /data-audio-track/);
   }
+});
+
+test('shares the ordered playlist with the browser bootstrap data', () => {
+  const html = renderPage('en');
+  const bootData = JSON.parse(html.match(/window\.__PORTFOLIO__=(.+);<\/script>/)[1]);
+
+  assert.deepEqual(
+    bootData.audioTracks.map(({ file }) => file),
+    [
+      'filtered-aperture.mp3',
+      'into-the-light.mp3',
+      'radiant-pulse.mp3',
+      'mountain-breath.mp3',
+      'eastern-silk.mp3',
+    ]
+  );
 });
 
 test('binds an equalizer button to the player state and action', async () => {
@@ -99,6 +169,7 @@ test('binds an equalizer button to the player state and action', async () => {
   assert.equal(button.getAttribute('aria-pressed'), 'true');
   assert.equal(button.getAttribute('aria-label'), 'turn off background music');
   assert.equal(button.label.textContent, 'sound on');
+  assert.equal(button.control.dataset.audioState, 'on');
 
   unbind();
 });
@@ -124,6 +195,21 @@ test('writes live analyser levels into equalizer bar properties while playing', 
   assert.equal(button.bars[0].style.getPropertyValue('--audio-level'), '0');
   assert.equal(button.bars[3].style.getPropertyValue('--audio-level'), '0.75');
   assert.equal(button.bars[4].style.getPropertyValue('--audio-level'), '1');
+
+  unbind();
+});
+
+test('binds skip buttons to player next and previous', async () => {
+  const button = createButton();
+  const player = createPlayer();
+
+  const unbind = bindAudioControls([button], player, ['Track 1', 'Track 2']);
+
+  await button.nextButton.click();
+  assert.equal(player.nextCalls, 1);
+
+  await button.previousButton.click();
+  assert.equal(player.previousCalls, 1);
 
   unbind();
 });

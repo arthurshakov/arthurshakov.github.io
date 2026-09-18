@@ -1,5 +1,14 @@
 const BAR_COUNT = 5;
 
+/**
+ * @typedef {Object} AudioGraph
+ * @property {AudioContext} [context]
+ * @property {AnalyserNode} analyser
+ * @property {AudioDestinationNode} destination
+ * @property {((audio: any) => any)} createMediaElementSource
+ * @property {(() => Promise<void>)} [resume]
+ */
+
 export function createAudioVisualizer({
   graphFactory = () => {
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -17,6 +26,7 @@ export function createAudioVisualizer({
   },
   smoothing = 0.72,
 } = {}) {
+  /** @type {AudioGraph | null} */
   let graph = null;
   let destinationConnected = false;
   let levels = Array(BAR_COUNT).fill(0);

@@ -19,13 +19,23 @@
   }
 
   @include desktop {
-    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: vc(64);
     border-right: 1px solid var(--line);
+    pointer-events: none;
   }
 }
 
 .body__main {
+  &:focus {
+    outline: none;
+  }
+
   @include desktop {
+    grid-column: 2;
     min-width: 0;
     padding: 0 vc(64) 0 vc(40);
   }
@@ -33,7 +43,10 @@
 
 // --- вертикальный ритм секций ---
 .section {
+  scroll-margin-top: vc(60);
+
   @include mobile {
+    scroll-margin-top: vc(80);
     padding: vc(8) 0 vc(36);
   }
 
@@ -54,7 +67,7 @@
 
 .section--contact {
   @include mobile {
-    padding-bottom: vc(48);
+    padding-bottom: vc(96);
   }
 
   @include desktop {

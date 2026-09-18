@@ -3,6 +3,7 @@ import { access } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
+import { projects } from '../src/data/projects.mjs';
 import { renderPage } from '../src/template.mjs';
 import { normalizePath, parsePage, applyPage, createPjaxRouter } from '../src/scripts/pjax.js';
 
@@ -39,7 +40,7 @@ test('parsePage extracts metadata, main content, and boot data from rendered pag
     assert.ok(parsed.audioLabels.stop);
     assert.ok(parsed.bootData);
     assert.equal(parsed.bootData.lang, lang);
-    assert.equal(parsed.bootData.projects.length, 12);
+    assert.equal(parsed.bootData.projects.length, projects.length);
   }
 });
 
@@ -227,4 +228,16 @@ test('transitions isolate audio-tuner in its own top-level view-transition group
   assert.match(css, /\.audio-control--tuner\{[^}]*view-transition-name:\s*audio-tuner/);
   assert.match(css, /::view-transition-group\(audio-tuner\)\{[^}]*z-index:\s*10/);
   assert.match(css, /::view-transition-old\(audio-tuner\)\{[^}]*display:\s*none/);
+});
+
+test('transitions isolate statusbar in its own top-level view-transition group above main-content', async () => {
+  const root = path.resolve(import.meta.dirname, '..');
+  const cssPath = path.join(root, 'dist/styles.css');
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(cssPath, 'utf8');
+
+  assert.match(css, /\.statusbar\.desktop-only\{[^}]*view-transition-name:\s*statusbar/);
+  assert.match(css, /\.statusbar\.mobile-only\{[^}]*view-transition-name:\s*statusbar/);
+  assert.match(css, /::view-transition-group\(statusbar\)\{[^}]*z-index:\s*20/);
+  assert.match(css, /::view-transition-old\(statusbar\)\{[^}]*display:\s*none/);
 });

@@ -8,9 +8,8 @@
 .filters.desktop-only {
   @include desktop {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: vc(8);
-    flex-wrap: wrap;
     margin-bottom: vc(20);
   }
 }
@@ -18,26 +17,55 @@
 .filters__label {
   @include desktop {
     color: var(--text-3);
+    flex: none;
+    padding-top: calc(vc(4) + 1px);
     margin-right: vc(4);
   }
 }
 
-.filters__sort {
-  @include desktop {
-    margin-left: auto;
-    color: var(--text-3);
-  }
+.filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vc(8);
+  min-width: 0;
 }
 
 .filters.mobile-only {
   @include mobile {
-    display: flex;
-    gap: vc(8);
+    position: relative;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
     padding-bottom: vc(8);
     margin-bottom: vc(14);
+    margin-left: vc(-20);
+    margin-right: vc(-20);
+    width: calc(100% + vc(40));
+
+    &.filters--draggable {
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      touch-action: pan-y;
+
+      &.is-dragging {
+        cursor: grabbing;
+      }
+    }
+  }
+}
+
+.filters-track {
+  @include mobile {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: vc(8);
+    width: max-content;
+    align-items: center;
+    padding-left: vc(20);
+    padding-right: vc(20);
+    will-change: transform;
   }
 }
 
@@ -62,6 +90,8 @@
   color: var(--bg);
   font-weight: 700;
   border-color: var(--accent);
+  cursor: default;
+  pointer-events: none;
 }
 
 // ============ таблица (desktop) ============
@@ -85,8 +115,9 @@
 
 .works-column--year {
   @include desktop {
-    width: vc(52);
+    width: vc(80);
     flex: none;
+    white-space: nowrap;
   }
 }
 
@@ -155,6 +186,20 @@
   }
 }
 
+.works-row__btn {
+  @include desktop {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 .works-row__client {
   @include desktop {
     color: var(--text-2);
@@ -200,10 +245,18 @@
 .works-card {
   @include mobile {
     padding: vc(14) 0;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+    }
   }
 }
 
-.works-card.is-active {
+.works-card.is-active,
+.works-card:hover,
+.works-card:focus-visible {
   @include mobile {
     background: var(--row-hover);
     border-left: 1px solid var(--accent);
@@ -224,6 +277,7 @@
   @include mobile {
     color: var(--text-3);
     font-size: vc(12);
+    white-space: nowrap;
   }
 }
 

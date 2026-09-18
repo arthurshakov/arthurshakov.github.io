@@ -29,6 +29,17 @@ img {
   -webkit-user-drag: none;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 button {
   font: inherit;
   color: inherit;
@@ -104,6 +115,36 @@ a:hover {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: vc(12);
+  left: vc(16);
+  z-index: 10000;
+  display: inline-block;
+  padding: vc(6) vc(12);
+  background: var(--bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-family: var(--mono);
+  font-size: vc(12);
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateY(calc(-100% - vc(24)));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+
+  &:focus,
+  &:focus-visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    text-decoration: none;
+  }
 }
 
 // --- desktop / mobile варианты блоков ---

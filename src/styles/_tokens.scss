@@ -7,7 +7,7 @@
   --w-base: 390;          // ширина мобильного макета
   --w-cur: 100vw;         // текущая ширина вьюпорта
   --wm: calc(var(--w-cur) / var(--w-base));
-  --grid: 52;             // шаг фоновой сетки (mobile)
+  --grid: 40;             // шаг фоновой сетки (mobile)
 
   // --- шрифт ---
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -25,7 +25,7 @@
   --text-body: #A6B2A2;
   --text-2: #93A08F;
   --text-3: #7E8B7B;
-  --text-dim: #6E7A6B;
+  --text-dim: #748271;
   --accent: #A8E05B;
   --accent-hover: #C4EC8A;
 
@@ -36,8 +36,13 @@
 
 :root {
   @include desktop {
-    --w-base: 1440;       // ширина десктопного макета
+    // Компактный десктоп: единый масштаб текста, колонок и отступов.
+    --w-base: 1040;
     --grid: 64;
+  }
+
+  @media (min-width: $breakpoint-desktop-full) {
+    --w-base: 1440;
   }
 
   // ≥1920 — контент не растягиваем: замораживаем текущую ширину на 1920.

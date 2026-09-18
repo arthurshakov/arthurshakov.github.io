@@ -1,9 +1,6 @@
 @use 'functions' as *;
 
-.statusbar {
-  border-bottom: 1px solid var(--line);
-  background: var(--bg-panel);
-}
+@use 'statusbar-frame';
 
 // --- desktop: одна строка ---
 .statusbar.desktop-only {
@@ -97,19 +94,38 @@ html.preloader-pending .statusbar {
   z-index: 11;
 }
 
+.statusbar-language {
+  display: inline-flex;
+  align-items: center;
+}
+
 .statusbar-language__label {
   color: var(--text-3);
 }
 
 .pill {
+  position: relative;
   display: inline-block;
   padding: vc(3) vc(7);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: vc(-8) vc(-6);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 .pill--on {
   background: var(--accent);
   color: var(--bg);
   font-weight: 700;
+  cursor: default;
+  pointer-events: none;
 }
 
 .pill--on:hover {

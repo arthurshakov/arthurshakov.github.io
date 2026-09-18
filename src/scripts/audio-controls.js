@@ -1,7 +1,7 @@
-export function bindAudioControls(controls, player) {
+export function bindAudioControls(controls, player, trackNames = []) {
   const buttons = [...controls];
 
-  const render = ({ playing }) => {
+  const render = ({ playing, trackIndex }) => {
     buttons.forEach((button) => {
       const label = playing ? button.dataset.audioLabelOn : button.dataset.audioLabelOff;
       const action = playing ? button.dataset.audioStop : button.dataset.audioStart;
@@ -11,6 +11,15 @@ export function bindAudioControls(controls, player) {
       button.setAttribute('aria-label', action);
       const labelElement = button.querySelector('[data-audio-label]');
       if (labelElement) labelElement.textContent = label;
+
+      const control = button.parentElement;
+      control?.dataset && (control.dataset.audioState = playing ? 'on' : 'off');
+      const currentElement = control?.querySelector?.('[data-audio-track-current]');
+      const totalElement = control?.querySelector?.('[data-audio-track-total]');
+      const nameElement = control?.querySelector?.('[data-audio-track-name]');
+      if (currentElement) currentElement.textContent = String(trackIndex + 1).padStart(2, '0');
+      if (totalElement) totalElement.textContent = String(trackNames.length).padStart(2, '0');
+      if (nameElement) nameElement.textContent = trackNames[trackIndex] ?? '';
     });
   };
 
@@ -28,9 +37,28 @@ export function bindAudioControls(controls, player) {
 
   const unsubscribe = player.subscribe(render);
 
+  const skipHandlers = buttons.flatMap((button) => {
+    const control = button.parentElement;
+    const previous = control?.querySelector?.('[data-audio-previous]');
+    const next = control?.querySelector?.('[data-audio-next]');
+    const handlers = [];
+    if (previous) {
+      const handler = () => player.previous().catch(() => {});
+      previous.addEventListener('click', handler);
+      handlers.push([previous, handler]);
+    }
+    if (next) {
+      const handler = () => player.next().catch(() => {});
+      next.addEventListener('click', handler);
+      handlers.push([next, handler]);
+    }
+    return handlers;
+  });
+
   return () => {
     unsubscribe();
     handlers.forEach(([button, handler]) => button.removeEventListener?.('click', handler));
+    skipHandlers.forEach(([button, handler]) => button.removeEventListener?.('click', handler));
   };
 }
 
@@ -45,6 +73,7 @@ export function bindAudioVisualizer(
   } = {}
 ) {
   const buttons = [...controls];
+  /** @type {number | null} */
   let frame = null;
   let playing = false;
 

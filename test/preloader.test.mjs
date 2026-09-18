@@ -62,7 +62,7 @@ test('holds off the hard fallback once the preloader animation actually starts',
   const html = renderPage('en');
 
   assert.match(html, /window\.__holdPreloaderFallback = \(\) => \{[\s\S]*?timeout = window\.setTimeout\(hardFinish, 4000\)/);
-  assert.match(appJs, /holdFallback\(\);\s*const tl = window\.gsap\.timeline\(/);
+  assert.match(appJs, /holdFallback\(\);\s*const timeline = window\.gsap\.timeline\(/);
 });
 
 test('critical CSS covers background, grid and fonts, and hides real content until fonts are loaded', async () => {
@@ -153,14 +153,14 @@ test('clears the command line and ready in step with the content reveal', async 
   const appJs = await readSrc('scripts/app.js');
 
   // Обе анимации ставятся на одну и ту же метку таймлайна.
-  assert.match(appJs, /const revealAt = tl\.duration\(\);\s*fadeOutPrompt\(tl, revealAt\);\s*revealContent\(tl, revealAt\);/);
+  assert.match(appJs, /const revealAt = timeline\.duration\(\);\s*fadeOutPrompt\(timeline, revealAt\);\s*revealContent\(timeline, revealAt\);/);
   // Уходят строка команды, курсор и ready — курсор обязательно вместе с
   // текстом, иначе он прыгнет влево на «чистое» место после $.
-  assert.match(appJs, /const els = \[\.\.\.preloaderCommands, \.\.\.preloaderCarets, \.\.\.preloaderResults\];/);
+  assert.match(appJs, /const promptElements = \[\.\.\.preloaderCommands, \.\.\.preloaderCarets, \.\.\.preloaderResults\];/);
   // Длительность вынесена в PROMPT_FADE: 0 — мгновенно, больше — затухание.
   assert.match(appJs, /opacity: 0,\s*duration: PROMPT_FADE/);
   // Текст чистится только когда затухание закончилось.
-  assert.match(appJs, /onComplete: \(\) => \{\s*clearPrompt\(\);\s*window\.gsap\.set\(els, \{ clearProps: 'opacity' \}\);/);
+  assert.match(appJs, /onComplete: \(\) => \{\s*clearPrompt\(\);\s*window\.gsap\.set\(promptElements, \{ clearProps: 'opacity' \}\);/);
 });
 
 test('unlocks scrolling only after the content is fully revealed', async () => {
@@ -173,7 +173,7 @@ test('unlocks scrolling only after the content is fully revealed', async () => {
   // Шаг снятия оверлея больше ничего не делает — скролл там не возвращается.
   assert.match(
     appJs,
-    /tl\.call\(\(\) => \{\s*preloader\.hidden = true;\s*\}, null, `\+=\$\{READY_HOLD\}`\);/
+    /timeline\.call\(\(\) => \{\s*preloader\.hidden = true;\s*\}, null, `\+=\$\{READY_HOLD\}`\);/
   );
 });
 
