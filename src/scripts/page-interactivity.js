@@ -8,7 +8,7 @@ export function createPageInteractivity({
   createPreview = createProjectPreview,
 } = {}) {
   /** @type {string | null} */
-  let currentSlug = null;
+  let currentSlug = typeof window !== 'undefined' && window.location.hash ? window.location.hash.slice(1) : null;
   let activeFilter = 'all';
   const videoPositions = new Map();
   /** @type {{ destroy(): void } | null} */
@@ -26,7 +26,14 @@ export function createPageInteractivity({
     });
     preview = createPreview(pageData, {
       lenis, currentSlug, videoPositions,
-      onSelect: (slug) => { currentSlug = slug; },
+      onSelect: (slug) => {
+        currentSlug = slug;
+        if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+          if (window.location.hash !== `#${slug}`) {
+            window.history.replaceState(null, '', `#${slug}`);
+          }
+        }
+      },
     });
   };
 }
