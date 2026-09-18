@@ -12,7 +12,7 @@ import { createPreviewDetails } from './preview-details.js';
 export function createProjectPreview(currentPageData, {
   lenis = null,
   currentSlug = null,
-  onSelect = (slug) => {},
+  onSelect = (slug) => { },
   videoPositions = new Map(),
   reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)'),
 } = {}) {
