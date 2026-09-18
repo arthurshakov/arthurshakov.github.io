@@ -91,3 +91,24 @@ test('project categories and descriptions use descriptive names throughout the r
   assert.match(source, /projectElement\.dataset\.categories/);
   assert.doesNotMatch(source, /dataset\.cats/);
 });
+
+test('preview video loads and synchronizes media when scrolling from project list', async () => {
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
+
+  // Must prepare video when scroll is requested even if preview is not currently in view
+  assert.match(source, /if\s*\(\s*incomingSlot\.video[\s\S]*?\(\s*previewVisible\s*\|\|\s*scroll\s*\)/);
+
+  // Must sync media when transition finishes
+  assert.match(source, /previewFrame\?\.classList\.remove\('is-animating'\);\s*syncPreviewMedia\(\);/);
+
+  // Must sync media when smooth scroll completes
+  assert.match(source, /lenis\.scrollTo[\s\S]*?onComplete:\s*\(\)\s*=>\s*\{\s*syncPreviewMedia\(\);?\s*\}/);
+
+  // Must check that preview video actually has child elements before treating it as loaded
+  assert.match(source, /loadedVideoSlug === project\.slug && preview\.video\.childElementCount > 0/);
+
+  // Must mark restoredVideoSlug during preparation to prevent rewinding after sweep animation
+  assert.match(source, /incomingSlot\.video\.currentTime = savedPos;\s*\}\s*restoredVideoSlug = project\.slug;/);
+});
+
+

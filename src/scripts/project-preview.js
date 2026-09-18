@@ -12,7 +12,7 @@ import { createPreviewDetails } from './preview-details.js';
 export function createProjectPreview(currentPageData, {
   lenis = null,
   currentSlug = null,
-  onSelect = (slug) => {},
+  onSelect = (slug) => { },
   videoPositions = new Map(),
   reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)'),
 } = {}) {
@@ -120,7 +120,7 @@ export function createProjectPreview(currentPageData, {
   function loadVideo(project) {
     // Источники добавляются лениво, только для выбранного проекта: иначе
     // браузер загрузил бы ролики всех карточек сразу.
-    if (!preview.video || !project.video || loadedVideoSlug === project.slug) return;
+    if (!preview.video || !project.video || (loadedVideoSlug === project.slug && preview.video.childElementCount > 0)) return;
     preview.video.replaceChildren();
     const webm = document.createElement('source');
     webm.src = project.video.webm;
@@ -336,6 +336,9 @@ export function createProjectPreview(currentPageData, {
     if (!project) return;
     if (animate && slug === currentSlug) {
       if (scroll) scrollToPreview();
+      if (scroll && !reduceMotion.matches && !document.hidden) {
+        syncPreviewMedia();
+      }
       return scroll;
     }
     if (isAnimating) return;
@@ -422,7 +425,7 @@ export function createProjectPreview(currentPageData, {
     incomingVideoSlug = null;
     incomingVideoPrepared = false;
     let prepPromise = Promise.resolve();
-    if (incomingSlot.video && project.video && project.video.webm && previewVisible && !reduceMotion.matches && !document.hidden) {
+    if (incomingSlot.video && project.video && project.video.webm && (previewVisible || scroll) && !reduceMotion.matches && !document.hidden) {
       incomingVideoSlug = project.slug;
       incomingSlot.video.replaceChildren();
       const webm = document.createElement('source');
@@ -447,6 +450,7 @@ export function createProjectPreview(currentPageData, {
           if (Number.isFinite(savedPos) && incomingSlot.video) {
             incomingSlot.video.currentTime = savedPos;
           }
+          restoredVideoSlug = project.slug;
           incomingVideoPrepared = true;
           if (incomingSlot.video) {
             incomingSlot.video.style.transition = 'none';
@@ -560,13 +564,14 @@ export function createProjectPreview(currentPageData, {
               preview.picture = (activeIsA ? slotA : slotB).picture;
               preview.shotSrc = (activeIsA ? slotA : slotB).src;
               preview.shotImg = (activeIsA ? slotA : slotB).img;
-              loadedVideoSlug = project.slug;
+              loadedVideoSlug = incomingVideoSlug;
               incomingVideoSlug = null;
               if (incomingSlot.video) {
                 incomingSlot.video.style.transition = '';
               }
               isAnimating = false;
               previewFrame?.classList.remove('is-animating');
+              syncPreviewMedia();
             };
 
             if (window.gsap) {
@@ -608,6 +613,9 @@ export function createProjectPreview(currentPageData, {
       lenis.scrollTo(target, {
         offset,
         duration: reduceMotion.matches ? 0 : 0.8,
+        onComplete: () => {
+          syncPreviewMedia();
+        },
       });
       return;
     }
