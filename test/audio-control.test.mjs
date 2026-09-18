@@ -144,10 +144,10 @@ test('shares the ordered playlist with the browser bootstrap data', () => {
   assert.deepEqual(
     bootData.audioTracks.map(({ file }) => file),
     [
-      'filtered-aperture.mp3',
       'into-the-light.mp3',
       'radiant-pulse.mp3',
       'mountain-breath.mp3',
+      'filtered-aperture.mp3',
       'eastern-silk.mp3',
     ]
   );
