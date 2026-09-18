@@ -82,6 +82,5 @@ test('mobile filters markup has a draggable strip and track structure', async ()
 
   assert.match(source, /const filtersStrip = .*query\('\[data-filters-strip\]'\)/);
   assert.match(source, /const filtersTrack = .*query\('\[data-filters-track\]'\)/);
-  assert.match(source, /filtersDraggable = DraggableClass\.create\(filtersTrack/);
-  assert.match(source, /scrollFilterIntoView/);
+  assert.match(source, /createDraggableStrip\(filtersStrip,\s*filtersTrack/);
 });

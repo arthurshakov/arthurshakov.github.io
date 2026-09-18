@@ -1,5 +1,22 @@
 import { pxToVc } from './viewport-scale.js';
 
+function getAwardsHtml(awards, t) {
+  if (!awards || awards.length === 0) return '';
+  return awards.map((a) => {
+    const lastSpace = a.text.lastIndexOf(' ');
+    const prefix = lastSpace > -1 ? `${a.text.slice(0, lastSpace)} ` : '';
+    const suffix = a.text.slice(lastSpace + 1);
+    let content;
+    if (a.url) {
+      const ariaLabel = t?.newTab ? ` aria-label="${a.text} (${t.newTab})"` : '';
+      content = `<a class="preview-awards__link" href="${a.url}" target="_blank" rel="noopener noreferrer"${ariaLabel}>${prefix}<span class="preview-awards__suffix">${suffix}<svg class="icon icon-size-11" aria-hidden="true" focusable="false"><use href="#i-ext"/></svg></span></a>`;
+    } else {
+      content = `<span>${a.text}</span>`;
+    }
+    return `<div class="preview-awards__item"><svg class="icon icon-size-12 icon--accent" aria-hidden="true" focusable="false"><use href="#i-star"/></svg>${content}</div>`;
+  }).join('');
+}
+
 // Описание проекта и измерение его высоты используют DOM текущего языка.
 export function createPreviewDetails(currentPageData, preview, infoBox) {
   let disposed = false;
@@ -58,24 +75,8 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
     let maxH = 0;
 
     currentPageData.projects.forEach((p) => {
-      let awardsHtml = '';
       const awards = p.awards || (p.awwwards ? [p.awwwards] : []);
-      if (awards.length > 0) {
-        awardsHtml = awards.map((a) => {
-          const lastSpace = a.text.lastIndexOf(' ');
-          const prefix = lastSpace > -1 ? `${a.text.slice(0, lastSpace)} ` : '';
-          const suffix = a.text.slice(lastSpace + 1);
-          return (
-            '<div class="preview-awards__item">' +
-            '<svg class="icon icon-size-12 icon--accent"><use href="#i-star"/></svg>' +
-            (a.url
-              ? '<a class="preview-awards__link">' + prefix + '<span class="preview-awards__suffix">' + suffix + '<svg class="icon icon-size-11"><use href="#i-ext"/></svg></span></a>'
-              : '<span>' + a.text + '</span>'
-            ) +
-            '</div>'
-          );
-        }).join('');
-      }
+      const awardsHtml = getAwardsHtml(awards, currentPageData.t);
 
       const noteHtml = p.note
         ? '<div class="preview-note"><span class="preview-note__slash">// </span><span class="preview-note__text">' + p.note + '</span></div>'
@@ -154,52 +155,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
       const awards = project.awards || (project.awwwards ? [project.awwwards] : []);
       preview.awards.hidden = awards.length === 0;
       if (preview.awardsText) {
-        preview.awardsText.replaceChildren();
-        awards.forEach((award) => {
-          const item = document.createElement('div');
-          item.className = 'preview-awards__item';
-
-          const starIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          starIcon.setAttribute('class', 'icon icon-size-12 icon--accent');
-          starIcon.setAttribute('aria-hidden', 'true');
-          starIcon.setAttribute('focusable', 'false');
-          const starIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-          starIconUse.setAttribute('href', '#i-star');
-          starIcon.appendChild(starIconUse);
-          item.appendChild(starIcon);
-
-          if (award.url) {
-            const awardLink = document.createElement('a');
-            awardLink.className = 'preview-awards__link';
-            awardLink.href = award.url;
-            awardLink.target = '_blank';
-            awardLink.rel = 'noopener noreferrer';
-            if (currentPageData.t?.newTab) {
-              awardLink.setAttribute('aria-label', `${award.text} (${currentPageData.t.newTab})`);
-            }
-            const lastSpace = award.text.lastIndexOf(' ');
-            if (lastSpace > -1) awardLink.append(`${award.text.slice(0, lastSpace)} `);
-            const awardSuffix = document.createElement('span');
-            awardSuffix.className = 'preview-awards__suffix';
-            awardSuffix.textContent = award.text.slice(lastSpace + 1);
-            const awardIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            awardIcon.setAttribute('class', 'icon icon-size-11');
-            awardIcon.setAttribute('aria-hidden', 'true');
-            awardIcon.setAttribute('focusable', 'false');
-            const awardIconUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            awardIconUse.setAttribute('href', '#i-ext');
-            awardIcon.appendChild(awardIconUse);
-            awardSuffix.appendChild(awardIcon);
-            awardLink.appendChild(awardSuffix);
-            item.appendChild(awardLink);
-          } else {
-            const textSpan = document.createElement('span');
-            textSpan.textContent = award.text;
-            item.appendChild(textSpan);
-          }
-
-          preview.awardsText.appendChild(item);
-        });
+        preview.awardsText.innerHTML = getAwardsHtml(awards, currentPageData.t);
       }
     }
   }

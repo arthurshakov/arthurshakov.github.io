@@ -2,10 +2,10 @@ import { createPageLifetime } from './page-lifetime.js';
 import { query, queryAll } from './dom.js';
 import { confirmClick } from './click-sound.js';
 import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
+import { createDraggableStrip } from './draggable-strip.js';
 
 export function createWorksFilters(currentPageData, { activeFilter = 'all', onChange = (filter) => {} } = {}) {
   const lifetime = createPageLifetime();
-  const DraggableClass = /** @type {any} */ (window).Draggable;
   const rows = queryAll('[data-rows] .works-row');
   const cards = queryAll('[data-cards] .works-card');
   const chips = queryAll('.chip');
@@ -36,68 +36,11 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
     if (last) last.classList.add(lastClass);
   }
 
-  function getFiltersBounds() {
-    if (!filtersStrip || !filtersTrack) return { minX: 0, maxX: 0 };
-    const stripW = filtersStrip.clientWidth;
-    const trackW = Math.max(filtersTrack.scrollWidth, filtersTrack.offsetWidth || 0);
-    const minX = Math.min(0, stripW - trackW);
-    return { minX, maxX: 0 };
-  }
-
-  function scrollFilterIntoView(chip) {
-    if (!filtersStrip || !filtersTrack || !chip) return;
-    if (filtersDraggable && (filtersDraggable.isDragging || filtersDraggable.isThrowing)) return;
-
-    const stripWidth = filtersStrip.clientWidth;
-    const chipLeft = chip.offsetLeft;
-    const chipWidth = chip.clientWidth;
-    const targetX = (stripWidth / 2) - (chipLeft + chipWidth / 2);
-    const bounds = getFiltersBounds();
-    const clampedTargetX = Math.max(bounds.minX, Math.min(bounds.maxX, targetX));
-
-    if (window.gsap) {
-      window.gsap.to(filtersTrack, {
-        x: clampedTargetX,
-        duration: PREVIEW_SLIDER_CONFIG.stripScrollDurationS || 0.35,
-        ease: PREVIEW_SLIDER_CONFIG.stripScrollEase || 'power2.out',
-        overwrite: 'auto',
-        onUpdate() {
-          if (filtersDraggable) filtersDraggable.update();
-        },
-      });
-    } else {
-      filtersTrack.style.transform = 'translate3d(' + clampedTargetX + 'px, 0, 0)';
-    }
-  }
-
-  /** @type {any} */
-  let filtersDraggable = null;
-  if (DraggableClass && filtersTrack && filtersStrip) {
-    filtersStrip.classList.add('filters--draggable');
-    const initialBounds = getFiltersBounds();
-    filtersDraggable = DraggableClass.create(filtersTrack, {
-      type: 'x',
-      inertia: true,
-      bounds: initialBounds,
-      edgeResistance: PREVIEW_SLIDER_CONFIG.filtersEdgeResistance ?? PREVIEW_SLIDER_CONFIG.stripEdgeResistance,
-      throwResistance: PREVIEW_SLIDER_CONFIG.filtersThrowResistance ?? PREVIEW_SLIDER_CONFIG.stripThrowResistance,
-      cursor: 'grab',
-      activeCursor: 'grabbing',
-      dragClickables: true,
-      onPressInit() {
-        this.applyBounds(getFiltersBounds());
-      },
-      onDragStart() {
-        filtersStrip.classList.add('is-dragging');
-      },
-      onDragEnd() {
-        filtersStrip.classList.remove('is-dragging');
-      },
-      onThrowComplete() {
-        filtersStrip.classList.remove('is-dragging');
-      },
-    })[0];
-  }
+  const stripManager = createDraggableStrip(filtersStrip, filtersTrack, {
+    draggableClass: 'filters--draggable',
+    edgeResistance: PREVIEW_SLIDER_CONFIG.filtersEdgeResistance,
+    throwResistance: PREVIEW_SLIDER_CONFIG.filtersThrowResistance,
+  });
 
   function applyFilter(filter) {
     // Синхронно обновляем состояние кнопок, список на десктопе и карточки на mobile.
@@ -124,10 +67,7 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
 
   chips.forEach((chip) => {
     lifetime.listen(chip, 'click', () => {
-      if (
-        filtersDraggable &&
-        (filtersDraggable.isDragging || filtersDraggable.isThrowing || filtersDraggable.timeSinceDrag() < 0.1)
-      ) {
+      if (stripManager.isInteracting()) {
         return;
       }
       if (chip.dataset.filter === activeFilter) {
@@ -136,7 +76,7 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
       applyFilter(chip.dataset.filter);
       confirmClick(chip);
       if (chip.closest('.mobile-only')) {
-        scrollFilterIntoView(chip);
+        stripManager.smoothScrollTo(chip);
       }
     });
   });
@@ -146,8 +86,7 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
   const onResize = () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
-      filtersDraggable?.applyBounds(getFiltersBounds());
-      filtersDraggable?.update();
+      stripManager.update();
     }, 60);
   };
   lifetime.listen(window, 'resize', onResize);
@@ -156,8 +95,7 @@ export function createWorksFilters(currentPageData, { activeFilter = 'all', onCh
     destroy() {
       lifetime.destroy();
       window.clearTimeout(resizeTimer);
-      filtersDraggable?.kill();
-      window.gsap?.killTweensOf(filtersTrack);
+      stripManager.destroy();
     },
   };
 }

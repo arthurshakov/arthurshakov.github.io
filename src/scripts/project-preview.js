@@ -4,6 +4,7 @@ import { confirmClick } from './click-sound.js';
 import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
 import { calcVc } from './viewport-scale.js';
 import { createPreviewDetails } from './preview-details.js';
+import { createDraggableStrip } from './draggable-strip.js';
 
 /**
  * @param {any} currentPageData
@@ -228,103 +229,11 @@ export function createProjectPreview(currentPageData, {
   const details = createPreviewDetails(currentPageData, preview, infoBox);
   const { scrambleText, calculateMaxHeight, updateTextDetails } = details;
 
-  function getTrackBounds() {
-    if (!strip || !track) return { minX: 0, maxX: 0 };
-    const stripW = strip.clientWidth;
-    const trackW = Math.max(track.scrollWidth, track.offsetWidth || 0);
-    const minX = Math.min(0, stripW - trackW);
-    return { minX, maxX: 0 };
-  }
-
-  function smoothScrollThumbnails(activeThumb) {
-    if (!strip || !track || !activeThumb) return;
-    wheelTargetX = null;
-    if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing)) return;
-
-    const stripWidth = strip.clientWidth;
-    const thumbLeft = activeThumb.offsetLeft;
-    const thumbWidth = activeThumb.clientWidth;
-    const targetX = (stripWidth / 2) - (thumbLeft + thumbWidth / 2);
-    const bounds = getTrackBounds();
-    const clampedTargetX = Math.max(bounds.minX, Math.min(bounds.maxX, targetX));
-
-    if (window.gsap) {
-      window.gsap.to(track, {
-        x: clampedTargetX,
-        duration: PREVIEW_SLIDER_CONFIG.stripScrollDurationS,
-        ease: PREVIEW_SLIDER_CONFIG.stripScrollEase,
-        overwrite: 'auto',
-        onUpdate() {
-          if (stripDraggable) stripDraggable.update();
-        },
-      });
-    } else {
-      track.style.transform = 'translate3d(' + clampedTargetX + 'px, 0, 0)';
-    }
-  }
-
-  /** @type {any} */
-  let stripDraggable = null;
-  if (DraggableClass && track) {
-    const initialBounds = getTrackBounds();
-    stripDraggable = DraggableClass.create(track, {
-      type: 'x',
-      inertia: true,
-      bounds: initialBounds,
-      edgeResistance: PREVIEW_SLIDER_CONFIG.stripEdgeResistance,
-      throwResistance: PREVIEW_SLIDER_CONFIG.stripThrowResistance,
-      cursor: 'grab',
-      activeCursor: 'grabbing',
-      dragClickables: true,
-      onPressInit() {
-        wheelTargetX = null;
-        this.applyBounds(getTrackBounds());
-      },
-      onDragStart() {
-        strip?.classList.add('is-dragging');
-      },
-      onDragEnd() {
-        strip?.classList.remove('is-dragging');
-      },
-      onThrowComplete() {
-        strip?.classList.remove('is-dragging');
-      },
-    })[0];
-  }
-
-  let wheelTargetX = /** @type {number | null} */ (null);
-
-  const onStripWheel = (/** @type {WheelEvent} */ e) => {
-    if (stripDraggable && stripDraggable.isDragging) return;
-    // Реагируем только на горизонтальный скролл (трекпад горизонтально, колесо наклона или Shift + колесо).
-    // Вертикальный скролл не перехватываем, чтобы страница скроллилась нормально.
-    if (Math.abs(e.deltaX) < 1 || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-    e.preventDefault();
-
-    const speed = PREVIEW_SLIDER_CONFIG.stripWheelSpeed ?? 2.0;
-    const delta = e.deltaX * speed;
-
-    if (window.gsap && track) {
-      const bounds = getTrackBounds();
-      const currentX = /** @type {number} */ (window.gsap.getProperty(track, 'x')) || 0;
-      const startX = wheelTargetX !== null ? wheelTargetX : currentX;
-      wheelTargetX = Math.max(bounds.minX, Math.min(bounds.maxX, startX - delta));
-
-      window.gsap.to(track, {
-        x: wheelTargetX,
-        duration: PREVIEW_SLIDER_CONFIG.stripWheelDurationS ?? 0.32,
-        ease: 'power2.out',
-        overwrite: 'auto',
-        onUpdate() {
-          if (stripDraggable) stripDraggable.update();
-        },
-        onComplete() {
-          wheelTargetX = null;
-        },
-      });
-    }
-  };
-  lifetime.listen(strip, 'wheel', onStripWheel, { passive: false });
+  const stripManager = createDraggableStrip(strip, track, {
+    enableWheel: true,
+    edgeResistance: PREVIEW_SLIDER_CONFIG.stripEdgeResistance,
+    throwResistance: PREVIEW_SLIDER_CONFIG.stripThrowResistance,
+  });
 
   /**
    * @param {string} slug
@@ -376,8 +285,8 @@ export function createProjectPreview(currentPageData, {
         .replace('{total}', String(currentPageData.projects.length));
     }
 
-    if (!stripDraggable || (!stripDraggable.isDragging && !stripDraggable.isThrowing)) {
-      smoothScrollThumbnails(thumbnails[targetIndex]);
+    if (!stripManager.isInteracting()) {
+      stripManager.smoothScrollTo(thumbnails[targetIndex]);
     }
 
     if (!animate || reduceMotion.matches) {
@@ -629,7 +538,7 @@ export function createProjectPreview(currentPageData, {
   // Миниатюры меняют активный проект; на мобилке также плавно прокручивают к слайдеру.
   thumbnails.forEach((thumbnail) => {
     lifetime.listen(thumbnail, 'click', (e) => {
-      if (stripDraggable && (stripDraggable.isDragging || stripDraggable.isThrowing || stripDraggable.timeSinceDrag() < 0.1)) {
+      if (stripManager.isInteracting()) {
         e.preventDefault();
         return;
       }
@@ -744,12 +653,9 @@ export function createProjectPreview(currentPageData, {
     lifetime.clearTimeout(resizeTimer);
     resizeTimer = lifetime.timeout(() => {
       calculateMaxHeight();
-      if (stripDraggable) {
-        stripDraggable.applyBounds(getTrackBounds());
-        stripDraggable.update();
-      }
+      stripManager.update();
       const activeThumb = thumbnails.find((t) => t.dataset.slug === currentSlug);
-      if (activeThumb) smoothScrollThumbnails(activeThumb);
+      if (activeThumb) stripManager.smoothScrollTo(activeThumb);
     }, 60);
   };
   lifetime.listen(window, 'resize', onWindowResize);
@@ -778,12 +684,9 @@ export function createProjectPreview(currentPageData, {
       slot.video.load();
     }
     details.destroy();
-    if (stripDraggable) {
-      stripDraggable.kill();
-      stripDraggable = null;
-    }
+    stripManager.destroy();
     if (window.gsap) {
-      window.gsap.killTweensOf([maskLine, maskTrail, track, metaBody]);
+      window.gsap.killTweensOf([maskLine, maskTrail, metaBody]);
     }
     previewFrame?.classList.remove('is-animating');
   };

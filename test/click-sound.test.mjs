@@ -349,7 +349,11 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
   const scope = {
     lifetime: createPageLifetime(),
     thumbnails: [thumb], currentSlug: 'first', isAnimating: false,
-    stripDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => dragAge },
+    stripManager: {
+      isDragging: false,
+      isThrowing: false,
+      isInteracting() { return this.isDragging || this.isThrowing || dragAge < 0.1; }
+    },
     window: { innerWidth: 390 },
     confirmClick: (target) => listeners.get('ui:action')({ target }),
     setActive(slug) {
@@ -371,12 +375,12 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
   };
 
   press(); // Start a drag on an inactive thumbnail.
-  scope.stripDraggable.isDragging = true;
+  scope.stripManager.isDragging = true;
   click();
-  scope.stripDraggable.isDragging = false;
-  scope.stripDraggable.isThrowing = true;
+  scope.stripManager.isDragging = false;
+  scope.stripManager.isThrowing = true;
   click();
-  scope.stripDraggable.isThrowing = false;
+  scope.stripManager.isThrowing = false;
   dragAge = 0.05;
   click();
   assert.equal(scope.currentSlug, 'first');
@@ -424,19 +428,23 @@ test('actual filter handler confirms only accepted selections, including keyboar
   const scope = {
     lifetime: createPageLifetime(),
     chips: [chip], activeFilter: 'all',
-    filtersDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => 1 },
+    stripManager: {
+      isDragging: false,
+      isThrowing: false,
+      isInteracting() { return this.isDragging || this.isThrowing; }
+    },
     confirmClick: h.confirmClick,
     applyFilter: (filter) => { scope.activeFilter = filter; chip.classList.add('chip--on'); },
     scrollFilterIntoView() {},
   };
   vm.runInNewContext(source.slice(start, end), scope);
-  scope.filtersDraggable.isDragging = true;
+  scope.stripManager.isDragging = true;
   handler(); h.click(chip);
-  scope.filtersDraggable.isDragging = false;
-  scope.filtersDraggable.isThrowing = true;
+  scope.stripManager.isDragging = false;
+  scope.stripManager.isThrowing = true;
   handler(); h.click(chip);
   assert.equal(h.count(), 0);
-  scope.filtersDraggable.isThrowing = false;
+  scope.stripManager.isThrowing = false;
   handler(); h.click(chip, 0);
   assert.equal(scope.activeFilter, 'games');
   assert.equal(h.count(), 1);
@@ -462,6 +470,10 @@ test('actual preview navigation and row handlers sound only when setActive accep
     lifetime: createPageLifetime(),
     btnPrev: prev, btnNext: next, rows: [row], cards: [], currentSlug: 'first',
     currentPageData: { projects: [{slug:'first'}, {slug:'second'}] },
+    navigateProject: (direction, trigger) => {
+      if (accepted && trigger) h.confirmClick(trigger);
+      return accepted;
+    },
     setActive: () => accepted, confirmClick: h.confirmClick,
   };
   let start = source.indexOf('  const onPrevClick');

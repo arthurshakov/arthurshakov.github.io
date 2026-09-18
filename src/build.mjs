@@ -76,6 +76,7 @@ async function copyStatic() {
   await copyFile(p('src/scripts/project-preview.js'), p('dist/project-preview.js'));
   await copyFile(p('src/scripts/page-interactivity.js'), p('dist/page-interactivity.js'));
   await copyFile(p('src/scripts/pjax.js'), p('dist/pjax.js'));
+  await copyFile(p('src/scripts/draggable-strip.js'), p('dist/draggable-strip.js'));
   await copyFile(p('src/scripts/audio-player.js'), p('dist/audio-player.js'));
   await copyFile(p('src/scripts/audio-controls.js'), p('dist/audio-controls.js'));
   await copyFile(p('src/scripts/audio-visualizer.js'), p('dist/audio-visualizer.js'));
