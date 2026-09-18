@@ -515,6 +515,7 @@ export function createProjectPreview(currentPageData, {
         const startTime = performance.now();
 
         const animateSweep = (now) => {
+          if (lifetime.disposed) return;
           const elapsed = now - startTime;
           const progress = Math.min(elapsed / sweepDuration, 1);
           const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
@@ -545,8 +546,8 @@ export function createProjectPreview(currentPageData, {
             const completeSweep = () => {
               if (lifetime.disposed) return;
               if (activeSlot.video) {
-                if (loadedVideoSlug && Number.isFinite(preview.video.currentTime)) {
-                  videoPositions.set(loadedVideoSlug, preview.video.currentTime);
+                if (loadedVideoSlug && Number.isFinite(activeSlot.video.currentTime)) {
+                  videoPositions.set(loadedVideoSlug, activeSlot.video.currentTime);
                 }
                 activeSlot.video.pause();
                 activeSlot.video.classList.remove('is-visible');
@@ -746,12 +747,12 @@ export function createProjectPreview(currentPageData, {
   // обработчики и сетевые загрузки у удалённых DOM-элементов.
   const destroy = () => {
     if (lifetime.disposed) return;
-    lifetime.destroy();
     revealRequest += 1;
     lifetime.clearTimeout(resizeTimer);
+    pauseVideo();
+    lifetime.destroy();
     observer?.disconnect();
     preloadObserver?.disconnect();
-    pauseVideo();
     // Во время перехода выбран уже входящий проект, но preview.video ещё
     // указывает на исходящий ролик. Сохраняем оба до удаления источников.
     const incomingVideo = (activeIsA ? slotB : slotA).video;
