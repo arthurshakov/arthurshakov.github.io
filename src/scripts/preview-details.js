@@ -51,7 +51,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
     scrambleIntervals.set(element, interval);
   }
 
-  let measuredMaxHeight = 0;
+
 
   function calculateMaxHeight() {
     if (disposed || !infoBox) return;
@@ -75,7 +75,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
     let maxH = 0;
 
     currentPageData.projects.forEach((p) => {
-      const awards = p.awards || (p.awwwards ? [p.awwwards] : []);
+      const awards = p.awards || [];
       const awardsHtml = getAwardsHtml(awards, currentPageData.t);
 
       const noteHtml = p.note
@@ -101,7 +101,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
     });
 
     if (maxH > 0) {
-      measuredMaxHeight = maxH;
+
       const maxHVc = Math.ceil(pxToVc(maxH));
       const heightVal = `calc(${maxHVc} * var(--wm))`;
       if (window.innerWidth >= 960) {
@@ -152,7 +152,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
       }
     }
     if (preview.awards) {
-      const awards = project.awards || (project.awwwards ? [project.awwwards] : []);
+      const awards = project.awards || [];
       preview.awards.hidden = awards.length === 0;
       if (preview.awardsText) {
         preview.awardsText.innerHTML = getAwardsHtml(awards, currentPageData.t);

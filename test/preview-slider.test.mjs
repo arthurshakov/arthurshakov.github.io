@@ -164,8 +164,8 @@ test('app.js calculates and assigns slider min-height in vc units instead of fix
   assert.match(appJs, /infoBox\.style\.minHeight\s*=\s*heightVal/);
 
   // Must NOT assign raw pixels to infoBox.style.minHeight or CSS variables
-  assert.doesNotMatch(appJs, /infoBox\.style\.minHeight\s*=\s*measuredMaxHeight\s*\+\s*['"]px['"]/);
-  assert.doesNotMatch(appJs, /--preview-info-height['"]\s*,\s*measuredMaxHeight\s*\+\s*['"]px['"]/);
+  assert.doesNotMatch(appJs, /infoBox\.style\.minHeight\s*=\s*maxH\s*\+\s*['"]px['"]/);
+  assert.doesNotMatch(appJs, /--preview-info-height['"]\s*,\s*maxH\s*\+\s*['"]px['"]/);
 });
 
 

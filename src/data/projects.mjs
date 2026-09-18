@@ -21,7 +21,6 @@ export const projects = [
       en: 'campaign ended · live site offline · link points to\u00A0staging environment',
     },
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/tass-power-x-time.webm',
       mp4: '/assets/video/tass-power-x-time.mp4',
@@ -46,7 +45,6 @@ export const projects = [
     site: 'best-cashier.food.ru',
     categories: ['games', 'education'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/best-cashier.webm',
       mp4: '/assets/video/best-cashier.mp4',
@@ -111,7 +109,6 @@ export const projects = [
     site: 'tass.ru/specialprojects/vmeste-ai',
     categories: ['video'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/vmeste-ai.webm',
       mp4: '/assets/video/vmeste-ai.mp4',
@@ -136,7 +133,6 @@ export const projects = [
     site: 'career.nornickel.ru',
     categories: ['corporate'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/career-nornickel.webm',
       mp4: '/assets/video/career-nornickel.mp4',
@@ -161,7 +157,6 @@ export const projects = [
     site: 'krylatskaya33.rbc.ru',
     categories: ['promo', 'real-estate'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/krylatskaya33.webm',
       mp4: '/assets/video/krylatskaya33.mp4',
@@ -186,7 +181,6 @@ export const projects = [
     site: 'klassnie-sbory.food.ru',
     categories: ['promo', 'games'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/klassnie-sbory.webm',
       mp4: '/assets/video/klassnie-sbory.mp4',
@@ -211,7 +205,6 @@ export const projects = [
     site: 'astradrive.net',
     categories: ['brand', 'catalogue'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/astra-drive.webm',
       mp4: '/assets/video/astra-drive.mp4',
@@ -281,7 +274,6 @@ export const projects = [
       en: 'link points to\u00A0staging environment',
     },
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/rbc-tank.webm',
       mp4: '/assets/video/rbc-tank.mp4',
@@ -306,7 +298,6 @@ export const projects = [
     site: 'slsoft.ru',
     categories: ['corporate', 'brand', 'catalogue'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/sl-soft.webm',
       mp4: '/assets/video/sl-soft.mp4',
@@ -335,7 +326,6 @@ export const projects = [
       en: 'link points to\u00A0staging environment',
     },
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/katty-pro.webm',
       mp4: '/assets/video/katty-pro.mp4',
@@ -360,7 +350,6 @@ export const projects = [
     site: 'etalongroup.com',
     categories: ['corporate'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/etalon-group.webm',
       mp4: '/assets/video/etalon-group.mp4',
@@ -389,7 +378,6 @@ export const projects = [
       en: 'link points to\u00A0staging environment',
     },
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/tass-rzhd-bam.webm',
       mp4: '/assets/video/tass-rzhd-bam.mp4',
@@ -414,7 +402,6 @@ export const projects = [
     site: 'dreamriva.rbc.ru',
     categories: ['promo', 'real-estate'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/dreamriva.webm',
       mp4: '/assets/video/dreamriva.mp4',
@@ -443,7 +430,6 @@ export const projects = [
       en: 'link points to\u00A0staging environment',
     },
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/rbc-moskvich.webm',
       mp4: '/assets/video/rbc-moskvich.mp4',
@@ -468,7 +454,6 @@ export const projects = [
     site: 'hals-summer.rbc.ru',
     categories: ['promo'],
     star: false,
-    awwwards: null,
     video: {
       webm: '/assets/video/hals-summer.webm',
       mp4: '/assets/video/hals-summer.mp4',

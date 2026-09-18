@@ -244,9 +244,7 @@ function preview(lang, shots = {}) {
   const noteText = firstNote ? esc(firstNote) : '';
   const firstAwards = first.awards
     ? first.awards.map((a) => ({ text: a[lang], url: a.url || null }))
-    : first.awwwards
-      ? [{ text: first.awwwards[lang], url: first.awwwards.url || null }]
-      : [];
+    : [];
   const awardsHidden = firstAwards.length ? '' : ' hidden';
   const renderAwardItem = (award) => {
     const lastSpace = award.text.lastIndexOf(' ');
@@ -400,9 +398,7 @@ function bootData(lang, shots = {}) {
   const list = projects.map((p) => {
     const awards = p.awards
       ? p.awards.map((a) => ({ text: a[lang], url: a.url || null }))
-      : p.awwwards
-        ? [{ text: p.awwwards[lang], url: p.awwwards.url || null }]
-        : [];
+      : [];
     return {
       slug: p.slug,
       year: p.year,
@@ -415,7 +411,6 @@ function bootData(lang, shots = {}) {
       tags: p.tags || [],
       description: p.description[lang],
       awards,
-      awwwards: awards[0] || null,
       shot: shot(p.slug),
       shotMod: shotMod(p.slug, shots[p.slug]),
       shotModType: shotType(shots[p.slug]),

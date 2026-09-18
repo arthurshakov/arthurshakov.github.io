@@ -25,7 +25,7 @@ export interface Project {
   star?: boolean;
   note?: LocalizedString | null;
   awards?: ProjectAward[] | null;
-  awwwards?: (LocalizedString & { url?: string | null }) | null;
+
   video?: ProjectVideo | null;
   tags: string[];
   description: LocalizedString;
@@ -50,7 +50,7 @@ export interface LocalizedBootProject {
   tags: string[];
   description: string;
   awards: Array<{ text: string; url: string | null }>;
-  awwwards: { text: string; url: string | null } | null;
+
   shot: string;
   shotMod: string | null;
   shotModType: string | null;

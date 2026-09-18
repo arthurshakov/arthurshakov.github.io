@@ -18,7 +18,7 @@ test('includes the award URL in the preview boot data', () => {
   const bootData = JSON.parse(html.match(/window\.__PORTFOLIO__=(.+);<\/script>/)[1]);
 
   assert.equal(
-    bootData.projects.find(({ slug }) => slug === 'glass-decor').awwwards.url,
+    bootData.projects.find(({ slug }) => slug === 'glass-decor').awards[0].url,
     'https://www.awwwards.com/sites/glass-decor'
   );
 });
