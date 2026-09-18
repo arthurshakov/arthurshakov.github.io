@@ -66,6 +66,15 @@ async function buildPages(shots, criticalCss) {
 
 async function copyStatic() {
   await copyFile(p('src/scripts/app.js'), p('dist/app.js'));
+  await copyFile(p('src/scripts/dom.js'), p('dist/dom.js'));
+  await copyFile(p('src/scripts/preloader.js'), p('dist/preloader.js'));
+  await copyFile(p('src/scripts/audio-session.js'), p('dist/audio-session.js'));
+  await copyFile(p('src/scripts/scroll-effects.js'), p('dist/scroll-effects.js'));
+  await copyFile(p('src/scripts/works-filters.js'), p('dist/works-filters.js'));
+  await copyFile(p('src/scripts/page-lifetime.js'), p('dist/page-lifetime.js'));
+  await copyFile(p('src/scripts/preview-details.js'), p('dist/preview-details.js'));
+  await copyFile(p('src/scripts/project-preview.js'), p('dist/project-preview.js'));
+  await copyFile(p('src/scripts/page-interactivity.js'), p('dist/page-interactivity.js'));
   await copyFile(p('src/scripts/pjax.js'), p('dist/pjax.js'));
   await copyFile(p('src/scripts/audio-player.js'), p('dist/audio-player.js'));
   await copyFile(p('src/scripts/audio-controls.js'), p('dist/audio-controls.js'));
@@ -73,6 +82,7 @@ async function copyStatic() {
   await copyFile(p('src/scripts/click-sound.js'), p('dist/click-sound.js'));
   await copyFile(p('src/scripts/grid-animation.js'), p('dist/grid-animation.js'));
   await copyFile(p('src/scripts/preview-slider.js'), p('dist/preview-slider.js'));
+  await copyFile(p('src/scripts/viewport-scale.js'), p('dist/viewport-scale.js'));
   await copyFile(p('src/vendor/lenis.min.js'), p('dist/lenis.min.js'));
   await copyFile(p('src/vendor/gsap.min.js'), p('dist/gsap.min.js'));
   await copyFile(p('src/vendor/Draggable.min.js'), p('dist/Draggable.min.js'));

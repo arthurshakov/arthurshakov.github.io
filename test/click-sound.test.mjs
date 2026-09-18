@@ -1,3 +1,4 @@
+import { createPageLifetime } from '../src/scripts/page-lifetime.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
@@ -324,9 +325,9 @@ test('all music controls sound on click even when starting from muted state', ()
 
 // Exercise the actual app thumbnail handler together with the sound bindings.
 test('thumbnail selection sounds only for accepted mouse and keyboard clicks', async () => {
-  const app = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
-  const start = app.indexOf('    thumbnails.forEach((thumbnail) => {', app.indexOf('// Миниатюры меняют'));
-  const end = app.indexOf('    const onPrevClick', start);
+  const app = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
+  const start = app.indexOf('  thumbnails.forEach((thumbnail) => {', app.indexOf('// Миниатюры меняют'));
+  const end = app.indexOf('  const onPrevClick', start);
   assert.ok(start >= 0 && end > start);
   const listeners = new Map();
   const context = createMockAudioContext();
@@ -346,6 +347,7 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
   thumb.dispatchEvent = (event) => listeners.get(event.type)?.({ target: thumb });
   let dragAge = 1;
   const scope = {
+    lifetime: createPageLifetime(),
     thumbnails: [thumb], currentSlug: 'first', isAnimating: false,
     stripDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => dragAge },
     window: { innerWidth: 390 },
@@ -410,9 +412,9 @@ test('thumbnail selection sounds only for accepted mouse and keyboard clicks', a
 });
 
 test('actual filter handler confirms only accepted selections, including keyboard', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
-  const start = source.indexOf('    chips.forEach((chip) => {\n      chip.addEventListener');
-  const end = source.indexOf('    // ---------------------------------------------------------------- preview', start);
+  const source = await readFile(new URL('../src/scripts/works-filters.js', import.meta.url), 'utf8');
+  const start = source.indexOf('  chips.forEach((chip) => {\n    lifetime.listen(chip,');
+  const end = source.indexOf('  // Пересчитываем только собственную ленту фильтров.', start);
   assert.ok(start > 0 && end > start);
   const h = soundHarness();
   const chip = element('button', { attributes: { 'data-filter': 'games' } });
@@ -420,6 +422,7 @@ test('actual filter handler confirms only accepted selections, including keyboar
   let handler;
   chip.addEventListener = (_, fn) => { handler = fn; };
   const scope = {
+    lifetime: createPageLifetime(),
     chips: [chip], activeFilter: 'all',
     filtersDraggable: { isDragging: false, isThrowing: false, timeSinceDrag: () => 1 },
     confirmClick: h.confirmClick,
@@ -442,7 +445,7 @@ test('actual filter handler confirms only accepted selections, including keyboar
 });
 
 test('actual preview navigation and row handlers sound only when setActive accepts', async () => {
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/project-preview.js', import.meta.url), 'utf8');
   const h = soundHarness();
   const handlers = new Map();
   const control = (attrs, classes = []) => {
@@ -456,15 +459,16 @@ test('actual preview navigation and row handlers sound only when setActive accep
   const row = control({ 'data-slug': 'second' }, ['works-row']);
   let accepted = false;
   const scope = {
+    lifetime: createPageLifetime(),
     btnPrev: prev, btnNext: next, rows: [row], cards: [], currentSlug: 'first',
     currentPageData: { projects: [{slug:'first'}, {slug:'second'}] },
     setActive: () => accepted, confirmClick: h.confirmClick,
   };
-  let start = source.indexOf('    const onPrevClick');
-  let end = source.indexOf('    const onKeydown', start);
+  let start = source.indexOf('  const onPrevClick');
+  let end = source.indexOf('  const onKeydown', start);
   vm.runInNewContext(source.slice(start, end), scope);
-  start = source.indexOf('    function wireRow');
-  end = source.indexOf('    calculateMaxHeight();', start);
+  start = source.indexOf('  function wireRow');
+  end = source.indexOf('  calculateMaxHeight();', start);
   vm.runInNewContext(source.slice(start, end), scope);
   for (const target of [prev, next, row]) {
     handlers.get(target)({ target, preventDefault() {} }); h.click(target, 0);

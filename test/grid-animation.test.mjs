@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { renderPage } from '../src/template.mjs';
-import { GRID_ANIMATION_CONFIG, initGridAnimation, calcVc } from '../src/scripts/grid-animation.js';
+import { GRID_ANIMATION_CONFIG, initGridAnimation } from '../src/scripts/grid-animation.js';
+import { calcVc } from '../src/scripts/viewport-scale.js';
 
 const root = path.join(import.meta.dirname, '..');
 
@@ -71,6 +72,11 @@ test('critical CSS defines .bg-grid as fixed viewport container', () => {
 });
 
 test('calcVc strictly corresponds to vc(value) in styles', () => {
+  // Compact desktop uses the 1040px base, including both breakpoint edges.
+  for (const width of [960, 1040, 1439]) {
+    assert.equal(calcVc(64, width), 64 * (width / 1040));
+  }
+
   // Desktop at base width 1440: vc(64) === 64
   assert.equal(calcVc(64, 1440), 64);
 
@@ -96,6 +102,34 @@ test('initGridAnimation handles null canvas gracefully', () => {
   assert.equal(typeof instance.feedVelocity, 'function');
   assert.doesNotThrow(() => instance.destroy());
   assert.doesNotThrow(() => instance.feedVelocity(10));
+});
+
+test('grid draws compact-desktop nodes using the 1040px layout base', (t) => {
+  const dots = [];
+  const context = { clearRect() {}, fillRect: (...rect) => dots.push(rect) };
+  const container = { getBoundingClientRect: () => ({ width: 1040 }) };
+  const canvas = { style: {}, getContext: () => context };
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
+  let animation;
+  t.after(() => {
+    animation?.destroy();
+    if (originalWindow) Object.defineProperty(globalThis, 'window', originalWindow);
+    else delete globalThis.window;
+  });
+  globalThis.window = {
+    innerWidth: 1040,
+    innerHeight: 800,
+    devicePixelRatio: 1,
+    scrollY: 0,
+    matchMedia: () => ({ matches: false }),
+    addEventListener() {},
+    removeEventListener() {},
+  };
+
+  animation = initGridAnimation(canvas, container);
+  // The first desktop column is at vc(64), with a centered vc(1.5) dot.
+  assert.equal(dots[0][0] + dots[0][2] / 2, 64);
+  assert.equal(dots[0][2], 1.5);
 });
 
 test('initGridAnimation accepts custom scrollSensitivity in customConfig', () => {

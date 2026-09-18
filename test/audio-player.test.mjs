@@ -135,6 +135,63 @@ test('does not create or play audio before an explicit start', () => {
   assert.equal(audios.length, 0);
 });
 
+test('storage restrictions do not prevent player initialization or playback', async (t) => {
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
+  t.after(() => {
+    if (originalWindow) Object.defineProperty(globalThis, 'window', originalWindow);
+    else delete globalThis.window;
+  });
+  let storageReads = 0;
+  globalThis.window = {
+    get localStorage() {
+      storageReads += 1;
+      throw new DOMException('Storage access denied', 'SecurityError');
+    },
+  };
+
+  const injectedStorage = createMemoryStorage();
+  for (const [name, options] of [
+    ['blocked browser storage', {}],
+    ['explicitly disabled storage', { storage: null }],
+    ['injected storage', { storage: injectedStorage }],
+  ]) {
+    await t.test(name, async (t) => {
+      const audio = createFakeAudio();
+      const timers = createTimers();
+      const readsBefore = storageReads;
+      const player = createPlaylistPlayer({
+        tracks: ['/first.mp3'],
+        audioFactory: () => audio,
+        setTimer: timers.setTimer,
+        clearTimer: timers.clearTimer,
+        fadeInMs: 0,
+        fadeOutMs: 0,
+        ...options,
+      });
+      t.after(() => player.destroy());
+
+      assert.equal(storageReads - readsBefore, 'storage' in options ? 0 : 1);
+      assert.deepEqual(player.getState(), { playing: false, trackIndex: 0 });
+      assert.equal(audio.playCalls, 0);
+      assert.equal(player.hasStoredEnabledPreference(), false);
+
+      await player.start();
+      assert.equal(player.getState().playing, true);
+      assert.equal(audio.paused, false);
+      if (options.storage === injectedStorage) {
+        assert.equal(injectedStorage.getItem('portfolio:music'), 'on');
+      }
+
+      player.stop();
+      assert.equal(player.getState().playing, false);
+      assert.equal(audio.paused, true);
+      if (options.storage === injectedStorage) {
+        assert.equal(injectedStorage.getItem('portfolio:music'), 'off');
+      }
+    });
+  }
+});
+
 test('moves to the next track with a crossfade while playing', async () => {
   const { player, audios, timers, advance } = makePlayer({
     crossfadeMs: 100,

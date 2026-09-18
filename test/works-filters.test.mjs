@@ -75,7 +75,7 @@ test('rendered HTML includes all filter chips with correct data-filter attribute
 
 test('mobile filters markup has a draggable strip and track structure', async () => {
   const html = renderPage('ru');
-  const source = await readFile(new URL('../src/scripts/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/scripts/works-filters.js', import.meta.url), 'utf8');
 
   assert.match(html, /<div class="filters mobile-only" data-filters-strip>/);
   assert.match(html, /<div class="filters-track" data-filters-track>/);

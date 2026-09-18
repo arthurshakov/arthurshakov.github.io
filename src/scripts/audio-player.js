@@ -2,6 +2,15 @@ const STORAGE_KEY = 'portfolio:music';
 
 const clamp = (value) => Math.max(0, Math.min(1, value));
 
+function getDefaultStorage() {
+  try {
+    return window.localStorage;
+  } catch {
+    // The localStorage getter itself can throw when browser storage is blocked.
+    return null;
+  }
+}
+
 /**
  * @typedef {Object} PlaylistPlayerOptions
  * @property {any[]} tracks
@@ -23,7 +32,7 @@ const clamp = (value) => Math.max(0, Math.min(1, value));
 export function createPlaylistPlayer({
   tracks,
   audioFactory = (src) => new Audio(src),
-  storage = window.localStorage,
+  storage = getDefaultStorage(),
   crossfadeMs = 1000,
   fadeInMs = 300,
   fadeOutMs = 100,
