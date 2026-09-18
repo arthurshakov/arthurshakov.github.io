@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4 # Step 2: Install Node.js
         with:
-          node-version: "22"        # Use Node.js version 22
+          node-version: "24"        # Use Node.js version 24
           cache: 'npm'              # Cache npm dependencies to speed up future builds
           
       - name: Install dependencies
