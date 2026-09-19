@@ -103,9 +103,9 @@ export const strings = {
     languages: 'RU\u00A0native · EN\u00A0C1',
 
     bio: {
-      ru: 'Собираю спецпроекты с\u00A02017\u00A0года: концепция, семантичная БЭМ‑вёрстка, сложные анимации (GSAP, THREE.js), Vue/Nuxt, React/Next, интеграция с\u00A0бэкендом, выкат в\u00A0прод. Работаю spec‑first: подробное\u00A0ТЗ, затем реализация в\u00A0паре с\u00A0AI (Codex, Claude\u00A0Code, Antigravity). Начинал в\u00A0Whitemark\u00A0— награды Awwwards и\u00A0CSS Design Awards; сейчас\u00A0— в\u00A0агентстве «Девять\u00A0Линий».',
+      ru: 'Собираю спецпроекты, концепция, сложные анимации (GSAP, THREE.js), Vue/Nuxt, React/Next, семантичная БЭМ‑вёрстка, интеграция с\u00A0бэкендом, выкат в\u00A0прод. Работаю spec‑first: подробное\u00A0ТЗ, затем реализация в\u00A0паре с\u00A0AI (Codex, Claude\u00A0Code, Antigravity). Начинал в\u00A0Whitemark\u00A0— награды Awwwards и\u00A0CSS Design Awards; сейчас\u00A0— в\u00A0агентстве «Девять\u00A0Линий».',
 
-      en: 'Building campaign projects since\u00A02017: concept, semantic BEM\u00A0markup, heavy animation (GSAP, THREE.js), Vue/Nuxt, React/Next, backend integration, shipping to\u00A0production. Work spec‑first: a\u00A0detailed spec, then implementation paired with AI\u00A0agents (Codex, Claude\u00A0Code, Antigravity). Started at\u00A0Whitemark\u00A0— Awwwards &\u00A0CSS Design Awards; now at\u00A0Nine\u00A0Lines agency.',
+      en: 'Building campaign projects, concept, heavy animation (GSAP, THREE.js), Vue/Nuxt, React/Next, semantic BEM\u00A0markup, backend integration, shipping to\u00A0production. Work spec‑first: a\u00A0detailed spec, then implementation paired with AI\u00A0agents (Codex, Claude\u00A0Code, Antigravity). Started at\u00A0Whitemark\u00A0— Awwwards &\u00A0CSS Design Awards; now at\u00A0Nine\u00A0Lines agency.',
     },
 
     stack: 'JavaScript / TypeScript · Vue / Nuxt · React / Next · GSAP · THREE.js · video.js · SCSS · Pug · Vite / Webpack / Gulp · PHP · Bitrix CMS · WordPress · Figma',
