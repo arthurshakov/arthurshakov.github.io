@@ -294,6 +294,14 @@ function preview(lang, shots = {}) {
                 first.slug
               )}" width="319" height="180" decoding="async" draggable="false">
             </picture>
+            <div class="preview-spinner preview-spinner--cli" data-preview-spinner data-preview-spinner-a aria-hidden="true">
+              <div class="preview-spinner__cmd">$ open_stream --slug <span data-preview-spinner-slug-a>${esc(first.slug)}</span></div>
+              <div class="preview-spinner__status">
+                <span class="preview-spinner__glyph" data-preview-spinner-glyph-a>⠋</span>
+                <span data-preview-spinner-text-a>BUFFERING_STREAM</span>
+              </div>
+              <div class="preview-spinner__bar" data-preview-spinner-bar-a>[░░░░░░░░░░░░░░] 0%</div>
+            </div>
             <video class="preview-screenshot preview-video" data-preview-video data-preview-video-a width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
           </div>
 
@@ -306,6 +314,14 @@ function preview(lang, shots = {}) {
                 first.slug
               )}" width="319" height="180" decoding="async" draggable="false">
             </picture>
+            <div class="preview-spinner preview-spinner--cli" data-preview-spinner-b aria-hidden="true">
+              <div class="preview-spinner__cmd">$ open_stream --slug <span data-preview-spinner-slug-b>${esc(first.slug)}</span></div>
+              <div class="preview-spinner__status">
+                <span class="preview-spinner__glyph" data-preview-spinner-glyph-b>⠋</span>
+                <span data-preview-spinner-text-b>BUFFERING_STREAM</span>
+              </div>
+              <div class="preview-spinner__bar" data-preview-spinner-bar-b>[░░░░░░░░░░░░░░] 0%</div>
+            </div>
             <video class="preview-screenshot preview-video" data-preview-video-b width="319" height="180" muted loop playsinline preload="none" aria-hidden="true"></video>
           </div>
 

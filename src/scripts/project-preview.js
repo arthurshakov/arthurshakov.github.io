@@ -68,6 +68,11 @@ export function createProjectPreview(currentPageData, {
     src: /** @type {HTMLSourceElement | null} */ (query('[data-preview-shot-source-a]')),
     img: /** @type {HTMLImageElement | null} */ (query('[data-preview-shot-image-a]')),
     video: /** @type {any} */ (query('[data-preview-video-a]')),
+    spinner: /** @type {HTMLElement | null} */ (query('[data-preview-spinner-a]')),
+    spinnerSlug: query('[data-preview-spinner-slug-a]'),
+    spinnerGlyph: query('[data-preview-spinner-glyph-a]'),
+    spinnerText: query('[data-preview-spinner-text-a]'),
+    spinnerBar: query('[data-preview-spinner-bar-a]'),
   };
   const slotB = {
     layer: layerB,
@@ -75,6 +80,11 @@ export function createProjectPreview(currentPageData, {
     src: /** @type {HTMLSourceElement | null} */ (query('[data-preview-shot-source-b]')),
     img: /** @type {HTMLImageElement | null} */ (query('[data-preview-shot-image-b]')),
     video: /** @type {any} */ (query('[data-preview-video-b]')),
+    spinner: /** @type {HTMLElement | null} */ (query('[data-preview-spinner-b]')),
+    spinnerSlug: query('[data-preview-spinner-slug-b]'),
+    spinnerGlyph: query('[data-preview-spinner-glyph-b]'),
+    spinnerText: query('[data-preview-spinner-text-b]'),
+    spinnerBar: query('[data-preview-spinner-bar-b]'),
   };
 
   let activeIsA = true;
@@ -83,6 +93,107 @@ export function createProjectPreview(currentPageData, {
   preview.picture = slotA.picture;
   preview.shotSrc = slotA.src;
   preview.shotImg = slotA.img;
+
+  const SPINNER_GLYPHS = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  function formatProgressBar(pct) {
+    const totalBlocks = 14;
+    const filled = Math.min(totalBlocks, Math.floor((pct / 100) * totalBlocks));
+    const empty = Math.max(0, totalBlocks - filled);
+    return '[' + '▓'.repeat(filled) + '░'.repeat(empty) + '] ' + pct + '%';
+  }
+
+  /** @type {{ accelerate: () => void, cancel: () => void, isCompleted: () => boolean } | null} */
+  let activeSlotProgress = null;
+  /** @type {{ accelerate: () => void, cancel: () => void, isCompleted: () => boolean } | null} */
+  let incomingSlotProgress = null;
+  const fullyLoadedVideos = new Set();
+
+  function stopSpinner(slot) {
+    if (!slot) return;
+    if (slot === slotA && activeIsA && activeSlotProgress) {
+      activeSlotProgress.cancel();
+      activeSlotProgress = null;
+    } else if (slot === slotB && !activeIsA && activeSlotProgress) {
+      activeSlotProgress.cancel();
+      activeSlotProgress = null;
+    }
+    if (slot.spinner) {
+      slot.spinner.classList.remove('is-visible');
+    }
+  }
+
+  /**
+   * @param {any} slot
+   * @param {string} slug
+   * @param {(() => void) | undefined} [onComplete]
+   */
+  function startSpinner(slot, slug, onComplete) {
+    if (!slot || !slot.spinner || reduceMotion.matches) return null;
+
+    if (slot.spinnerSlug) slot.spinnerSlug.textContent = slug;
+    if (slot.spinnerText) slot.spinnerText.textContent = 'BUFFERING_STREAM';
+    if (slot.spinnerBar) slot.spinnerBar.textContent = formatProgressBar(0);
+    slot.spinner.classList.add('is-visible');
+
+    let percent = 0;
+    let isFastForward = false;
+    let active = true;
+    /** @type {number | undefined} */
+    let timer = undefined;
+    let glyphIdx = 0;
+    /** @type {number | undefined} */
+    let glyphTimer = undefined;
+    const updateGlyph = () => {
+      if (!active || lifetime.disposed) return;
+      glyphIdx = (glyphIdx + 1) % SPINNER_GLYPHS.length;
+      if (slot.spinnerGlyph) slot.spinnerGlyph.textContent = SPINNER_GLYPHS[glyphIdx];
+      glyphTimer = lifetime.timeout(updateGlyph, 80);
+    };
+    glyphTimer = lifetime.timeout(updateGlyph, 80);
+
+    const step = () => {
+      if (!active || lifetime.disposed) return;
+
+      if (isFastForward) {
+        const remaining = 100 - percent;
+        const jump = Math.max(3, Math.ceil(remaining * 0.38));
+        percent = Math.min(100, percent + jump);
+        if (slot.spinnerBar) slot.spinnerBar.textContent = formatProgressBar(percent);
+
+        if (percent >= 100) {
+          active = false;
+          lifetime.clearTimeout(glyphTimer);
+          if (slot.spinnerText) slot.spinnerText.textContent = 'STREAM_READY';
+          if (onComplete) onComplete();
+          return;
+        }
+        timer = lifetime.timeout(step, 22);
+      } else {
+        if (percent < 85) {
+          const factor = (88 - percent) / 88;
+          const inc = Math.max(1, Math.round(factor * 5));
+          percent += inc;
+          if (slot.spinnerBar) slot.spinnerBar.textContent = formatProgressBar(percent);
+        }
+        const delay = 35 + Math.random() * 20;
+        timer = lifetime.timeout(step, delay);
+      }
+    };
+
+    step();
+
+    return {
+      accelerate: () => {
+        isFastForward = true;
+      },
+      cancel: () => {
+        active = false;
+        lifetime.clearTimeout(timer);
+        lifetime.clearTimeout(glyphTimer);
+      },
+      isCompleted: () => percent >= 100,
+    };
+  }
 
   // Эти значения описывают жизненный цикл видео, а не данные проекта:
   // видно ли превью, какой ролик загружен и какую позицию уже восстановили.
@@ -115,7 +226,16 @@ export function createProjectPreview(currentPageData, {
       revealRequest += 1;
       preview.video.classList.remove('is-visible');
     }
-    if (preview.picture) preview.picture.hidden = false;
+    activeSlotProgress?.cancel();
+    activeSlotProgress = null;
+    incomingSlotProgress?.cancel();
+    incomingSlotProgress = null;
+    stopSpinner(slotA);
+    stopSpinner(slotB);
+    if (preview.picture) {
+      preview.picture.hidden = false;
+      preview.picture.style.opacity = '1';
+    }
   }
 
   function loadVideo(project) {
@@ -141,9 +261,42 @@ export function createProjectPreview(currentPageData, {
     // requestAnimationFrame отделяет смену класса от загрузки кадра, поэтому
     // CSS-переход opacity успевает анимироваться.
     const request = ++revealRequest;
-    lifetime.frame(() => {
-      if (request === revealRequest) preview.video?.classList.add('is-visible');
-    });
+    const currentSlot = activeIsA ? slotA : slotB;
+
+    const showVideoFrame = () => {
+      lifetime.frame(() => {
+        if (request === revealRequest) {
+          if (loadedVideoSlug) fullyLoadedVideos.add(loadedVideoSlug);
+          preview.video?.classList.add('is-visible');
+          lifetime.timeout(() => {
+            currentSlot.spinner?.classList.remove('is-visible');
+          }, 120);
+        }
+      });
+    };
+
+    if (activeSlotProgress && !activeSlotProgress.isCompleted()) {
+      const accelerateToFinish = () => {
+        activeSlotProgress?.accelerate();
+      };
+      if ('requestVideoFrameCallback' in preview.video) {
+        let fired = false;
+        preview.video.requestVideoFrameCallback(() => {
+          if (fired) return;
+          fired = true;
+          accelerateToFinish();
+        });
+        lifetime.timeout(() => {
+          if (fired) return;
+          fired = true;
+          accelerateToFinish();
+        }, 120);
+      } else {
+        lifetime.timeout(accelerateToFinish, 60);
+      }
+    } else {
+      showVideoFrame();
+    }
   }
 
   function restoreVideoPosition() {
@@ -167,6 +320,34 @@ export function createProjectPreview(currentPageData, {
     }
     loadVideo(project);
     restoreVideoPosition();
+
+    const currentSlot = activeIsA ? slotA : slotB;
+    if (currentSlot.picture) {
+      currentSlot.picture.style.opacity = '0';
+    }
+
+    const isAlreadyLoaded = fullyLoadedVideos.has(project.slug);
+    const isVideoVisible = Boolean(preview.video?.classList?.contains?.('is-visible'));
+
+    if (isAlreadyLoaded) {
+      stopSpinner(currentSlot);
+      if (!isVideoVisible && preview.video?.readyState >= 2) {
+        preview.video.classList.add('is-visible');
+      }
+    } else if (!isVideoVisible && !activeSlotProgress) {
+      activeSlotProgress = startSpinner(currentSlot, project.slug, () => {
+        fullyLoadedVideos.add(project.slug);
+        lifetime.timeout(() => {
+          lifetime.frame(() => {
+            preview.video?.classList.add('is-visible');
+            lifetime.timeout(() => {
+              currentSlot.spinner?.classList.remove('is-visible');
+            }, 120);
+          });
+        }, 80);
+      });
+    }
+
     // Не запускаем воспроизведение до первого декодированного кадра. При
     // первом входе в блок load() и observer приходят в разном порядке;
     // событие canplay ниже вызовет эту функцию повторно, когда кадр готов.
@@ -322,8 +503,10 @@ export function createProjectPreview(currentPageData, {
     }
     if (activeSlot.layer) activeSlot.layer.style.zIndex = '1';
 
+    const isAlreadyLoaded = fullyLoadedVideos.has(project.slug);
+
     if (incomingSlot.picture) {
-      incomingSlot.picture.style.opacity = '0';
+      incomingSlot.picture.style.opacity = isAlreadyLoaded ? '1' : '0';
     }
     if (incomingSlot.src) {
       incomingSlot.src.setAttribute('type', project.shotModType);
@@ -336,7 +519,7 @@ export function createProjectPreview(currentPageData, {
       const onLoad = () => {
         img.removeEventListener('load', onLoad);
         img.removeEventListener('error', onLoad);
-        if (img.alt === targetSlug && incomingSlot.picture) {
+        if (img.alt === targetSlug && incomingSlot.picture && (isAlreadyLoaded || reduceMotion.matches || !project.video)) {
           incomingSlot.picture.style.opacity = '1';
         }
       };
@@ -348,7 +531,7 @@ export function createProjectPreview(currentPageData, {
       img.alt = project.slug;
       
       lifetime.frame(() => {
-        if (img.complete && img.naturalWidth > 0 && img.alt === targetSlug && incomingSlot.picture) {
+        if (img.complete && img.naturalWidth > 0 && img.alt === targetSlug && incomingSlot.picture && (isAlreadyLoaded || reduceMotion.matches || !project.video)) {
           incomingSlot.picture.style.opacity = '1';
           img.removeEventListener('load', onLoad);
           img.removeEventListener('error', onLoad);
@@ -358,6 +541,9 @@ export function createProjectPreview(currentPageData, {
 
     incomingVideoSlug = null;
     incomingVideoPrepared = false;
+    incomingSlotProgress?.cancel();
+    incomingSlotProgress = null;
+
     let prepPromise = Promise.resolve();
     if (incomingSlot.video && project.video && project.video.webm && (previewVisible || scroll) && !reduceMotion.matches && !document.hidden) {
       incomingVideoSlug = project.slug;
@@ -372,6 +558,26 @@ export function createProjectPreview(currentPageData, {
       incomingSlot.video.removeAttribute('poster');
       incomingSlot.video.load();
       const savedPos = videoPositions.get(project.slug);
+
+      const isAlreadyLoaded = fullyLoadedVideos.has(project.slug);
+      if (!isAlreadyLoaded) {
+        incomingSlotProgress = startSpinner(incomingSlot, project.slug, () => {
+          fullyLoadedVideos.add(project.slug);
+          lifetime.timeout(() => {
+            lifetime.frame(() => {
+              if (incomingSlot.video) {
+                incomingSlot.video.classList.add('is-visible');
+                lifetime.timeout(() => {
+                  incomingSlot.spinner?.classList.remove('is-visible');
+                }, 120);
+              }
+            });
+          }, 80);
+        });
+      } else {
+        stopSpinner(incomingSlot);
+      }
+
       prepPromise = new Promise((resolve) => {
         let resolved = false;
         const removeReadyListeners = [];
@@ -389,20 +595,100 @@ export function createProjectPreview(currentPageData, {
           }
           restoredVideoSlug = project.slug;
           incomingVideoPrepared = true;
-          if (incomingSlot.video) {
-            incomingSlot.video.style.transition = 'none';
-            if (isReady) {
-              incomingSlot.video.classList.add('is-visible');
-            } else {
-              incomingSlot.video.classList.remove('is-visible');
+
+          const accelerateWhenReady = () => {
+            if (incomingSlotProgress) {
+              if ('requestVideoFrameCallback' in incomingSlot.video) {
+                let fired = false;
+                incomingSlot.video.requestVideoFrameCallback(() => {
+                  if (fired) return;
+                  fired = true;
+                  incomingSlotProgress?.accelerate();
+                });
+                lifetime.timeout(() => {
+                  if (fired) return;
+                  fired = true;
+                  incomingSlotProgress?.accelerate();
+                }, 120);
+              } else {
+                lifetime.timeout(() => incomingSlotProgress?.accelerate(), 60);
+              }
             }
-            incomingSlot.video.play().catch(() => { });
-          }
-          lifetime.frame(() => {
+          };
+
+          if (isAlreadyLoaded) {
+            const onFrameReady = () => {
+              if (incomingSlot.video) {
+                incomingSlot.video.classList.add('is-visible');
+              }
+              stopSpinner(incomingSlot);
+              lifetime.frame(() => {
+                lifetime.frame(() => {
+                  resolve();
+                });
+              });
+            };
+
+            const startPlayback = () => {
+              if (!incomingSlot.video) {
+                resolve();
+                return;
+              }
+              incomingSlot.video.style.transition = 'none';
+              incomingSlot.video.play().then(() => {
+                if ('requestVideoFrameCallback' in incomingSlot.video) {
+                  let fired = false;
+                  incomingSlot.video.requestVideoFrameCallback(() => {
+                    if (fired) return;
+                    fired = true;
+                    onFrameReady();
+                  });
+                  lifetime.timeout(() => {
+                    if (fired) return;
+                    fired = true;
+                    onFrameReady();
+                  }, 80);
+                } else {
+                  onFrameReady();
+                }
+              }).catch(() => {
+                onFrameReady();
+              });
+            };
+
+            if (incomingSlot.video?.seeking) {
+              const onSeeked = () => {
+                incomingSlot.video?.removeEventListener?.('seeked', onSeeked);
+                startPlayback();
+              };
+              incomingSlot.video.addEventListener?.('seeked', onSeeked, { once: true });
+              lifetime.timeout(onSeeked, 80);
+            } else {
+              startPlayback();
+            }
+          } else {
+            if (incomingSlot.video) {
+              incomingSlot.video.style.transition = 'none';
+              if (incomingSlot.video.readyState >= 2) {
+                incomingSlot.video.play().then(accelerateWhenReady).catch(() => {
+                  incomingSlotProgress?.accelerate();
+                });
+              } else {
+                const onCanPlay = () => {
+                  incomingSlot.video.removeEventListener('canplay', onCanPlay);
+                  incomingSlot.video.play().then(accelerateWhenReady).catch(() => {
+                    incomingSlotProgress?.accelerate();
+                  });
+                };
+                incomingSlot.video.addEventListener('canplay', onCanPlay, { once: true });
+              }
+            }
             lifetime.frame(() => {
-              resolve();
+              lifetime.frame(() => {
+                resolve();
+              });
             });
-          });
+          }
         };
         if (incomingSlot.video?.readyState >= 2) {
           finish();
@@ -418,6 +704,7 @@ export function createProjectPreview(currentPageData, {
       incomingSlot.video.classList.remove('is-visible');
       incomingSlot.video.replaceChildren();
       incomingSlot.video.removeAttribute('poster');
+      stopSpinner(incomingSlot);
     }
 
     prepPromise.then(() => {
@@ -499,6 +786,7 @@ export function createProjectPreview(currentPageData, {
                 activeSlot.video.replaceChildren();
                 activeSlot.video.removeAttribute('poster');
               }
+              stopSpinner(activeSlot);
               if (activeSlot.layer) activeSlot.layer.style.clipPath = 'inset(0 0 0 100%)';
               activeIsA = !activeIsA;
               preview.video = (activeIsA ? slotA : slotB).video;
@@ -507,6 +795,9 @@ export function createProjectPreview(currentPageData, {
               preview.shotImg = (activeIsA ? slotA : slotB).img;
               loadedVideoSlug = incomingVideoSlug;
               incomingVideoSlug = null;
+              activeSlotProgress?.cancel();
+              activeSlotProgress = incomingSlotProgress;
+              incomingSlotProgress = null;
               if (incomingSlot.video) {
                 incomingSlot.video.style.transition = '';
               }
