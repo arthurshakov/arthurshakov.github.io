@@ -44,8 +44,8 @@ export const GRID_ANIMATION_CONFIG = {
   mobileVertStepBase: 40,
 
   // Чувствительность к скорости скролла (множитель импульса) на десктопе и мобилке
-  scrollSensitivity: 0.5,
-  mobileScrollSensitivity: 0.4,
+  scrollSensitivity: 0.6,
+  mobileScrollSensitivity: 0.5,
 
   // Базовая яркость/прозрачность точек в состоянии покоя (0.0 .. 1.0)
   particleBaseAlpha: 0.30,
