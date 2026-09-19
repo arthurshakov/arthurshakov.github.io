@@ -18,7 +18,7 @@ test('build copies the selected playlist files into dist assets', async () => {
   for (const file of [
     'eastern-silk.mp3',
     'filtered-aperture.mp3',
-    'into-the-light.mp3',
+    'i-am-light.mp3',
     'radiant-pulse.mp3',
     'mountain-breath.mp3',
   ]) {
