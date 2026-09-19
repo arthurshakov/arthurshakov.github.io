@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest # Allocate a fresh Ubuntu Linux virtual machine
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # Step 1: Download the repository code to the runner
+        uses: actions/checkout@v7 # Step 1: Download the repository code to the runner
         
       - name: Setup Node
-        uses: actions/setup-node@v4 # Step 2: Install Node.js
+        uses: actions/setup-node@v6 # Step 2: Install Node.js
         with:
           node-version: "24"        # Use Node.js version 24
           cache: 'npm'              # Cache npm dependencies to speed up future builds
@@ -38,10 +38,10 @@ jobs:
         run: npm run build          # Step 4: Build the site (output will be in the dist/ folder)
         
       - name: Setup Pages
-        uses: actions/configure-pages@v5 # Step 5: Configure GitHub Pages environment
+        uses: actions/configure-pages@v6 # Step 5: Configure GitHub Pages environment
         
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3 # Step 6: Package the built site into an artifact
+        uses: actions/upload-pages-artifact@v5 # Step 6: Package the built site into an artifact
         with:
           path: './dist'            # Specify the dist folder to be uploaded
           
@@ -55,4 +55,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # Final step: Unpack the artifact and deploy to GitHub Pages servers
+        uses: actions/deploy-pages@v5 # Final step: Unpack the artifact and deploy to GitHub Pages servers
