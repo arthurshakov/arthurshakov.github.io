@@ -20,9 +20,9 @@ test('grid animation configuration exports user-approved constants', () => {
   assert.equal(GRID_ANIMATION_CONFIG.dotBaseWidth, 1.5);
   assert.equal(GRID_ANIMATION_CONFIG.dotBaseHeight, 1.5);
   assert.equal(GRID_ANIMATION_CONFIG.dotEnergyDelta, 0.5);
-  assert.equal(GRID_ANIMATION_CONFIG.mobileDotBaseWidth, 1);
-  assert.equal(GRID_ANIMATION_CONFIG.mobileDotBaseHeight, 1);
-  assert.equal(GRID_ANIMATION_CONFIG.mobileDotEnergyDelta, 0.33);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileDotBaseWidth, 1.25);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileDotBaseHeight, 1.25);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileDotEnergyDelta, 0.42);
   assert.equal(GRID_ANIMATION_CONFIG.lineWidthBase, 1);
   assert.equal(GRID_ANIMATION_CONFIG.vertStepBase, 64);
   assert.equal(GRID_ANIMATION_CONFIG.horizStepBase, 64);
@@ -30,7 +30,7 @@ test('grid animation configuration exports user-approved constants', () => {
   assert.equal(GRID_ANIMATION_CONFIG.mobileHorizStepBase, 40);
   assert.equal(GRID_ANIMATION_CONFIG.mobileVertStepBase, 40);
   assert.equal(GRID_ANIMATION_CONFIG.scrollSensitivity, 0.6);
-  assert.equal(GRID_ANIMATION_CONFIG.mobileScrollSensitivity, 0.5);
+  assert.equal(GRID_ANIMATION_CONFIG.mobileScrollSensitivity, 0.6);
   assert.equal(GRID_ANIMATION_CONFIG.particleBaseAlpha, 0.30);
   assert.equal(GRID_ANIMATION_CONFIG.particleMaxAlpha, 0.75);
   assert.equal(GRID_ANIMATION_CONFIG.damping, 0.93);
@@ -45,10 +45,10 @@ test('calcVc scales dot size and trail length proportionally across breakpoints'
   assert.equal(calcVc(GRID_ANIMATION_CONFIG.dotBaseWidth, 1920), 1.5 * (1920 / 1440));
   assert.equal(calcVc(GRID_ANIMATION_CONFIG.maxTrailLength, 1920), 30 * (1920 / 1440));
 
-  // Mobile 390px: mobile dot base = 1, mobile energy delta = 0.33
-  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotBaseWidth, 390), 1);
-  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotBaseHeight, 390), 1);
-  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotEnergyDelta, 390), 0.33);
+  // Mobile 390px: mobile dot base = 1.25, mobile energy delta = 0.42
+  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotBaseWidth, 390), 1.25);
+  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotBaseHeight, 390), 1.25);
+  assert.equal(calcVc(GRID_ANIMATION_CONFIG.mobileDotEnergyDelta, 390), 0.42);
   assert.equal(calcVc(GRID_ANIMATION_CONFIG.maxTrailLength, 390), 30);
 });
 
