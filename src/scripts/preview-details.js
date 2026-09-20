@@ -1,4 +1,4 @@
-import { pxToVc } from './viewport-scale.js';
+import { pxToVc, isMobileViewport } from './viewport-scale.js';
 
 function getAwardsHtml(awards, t) {
   if (!awards || awards.length === 0) return '';
@@ -104,7 +104,7 @@ export function createPreviewDetails(currentPageData, preview, infoBox) {
 
       const maxHVc = Math.ceil(pxToVc(maxH));
       const heightVal = `calc(${maxHVc} * var(--wm))`;
-      if (window.innerWidth >= 960) {
+      if (!isMobileViewport()) {
         document.documentElement.style.setProperty('--preview-info-height-vc', String(maxHVc));
         document.documentElement.style.setProperty('--preview-info-height', heightVal);
       } else {

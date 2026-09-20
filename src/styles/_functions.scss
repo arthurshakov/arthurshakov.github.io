@@ -5,13 +5,13 @@ $breakpoint-desktop-full: 1440px;
 $breakpoint-desktop-wide: 1920px;
 
 @mixin mobile {
-  @media (max-width: $breakpoint-mobile-max) {
+  @media (max-width: $breakpoint-mobile-max) and (max-aspect-ratio: 16/13) {
     @content;
   }
 }
 
 @mixin desktop {
-  @media (min-width: $breakpoint-desktop) {
+  @media (min-width: $breakpoint-desktop), (min-aspect-ratio: 16/13) {
     @content;
   }
 }

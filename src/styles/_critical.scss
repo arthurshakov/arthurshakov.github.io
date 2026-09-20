@@ -109,14 +109,14 @@ html.preloader-pending .statusbar {
   z-index: 11;
 }
 
-@media (max-width: 959.98px) {
-  .desktop-only {
+.desktop-only {
+  @include mobile {
     display: none;
   }
 }
 
-@media (min-width: 960px) {
-  .mobile-only {
+.mobile-only {
+  @include desktop {
     display: none;
   }
 }

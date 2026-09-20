@@ -1,5 +1,4 @@
-import { calcVc } from './viewport-scale.js';
-
+import { calcVc, isMobileViewport } from './viewport-scale.js';
 /**
  * Настройки анимации фоновой сетки (Lattice Sparks & Relays)
  * Значения вынесены в константы для удобного редактирования.
@@ -136,7 +135,8 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
     targetCanvas.style.height = height + 'px';
 
     const viewW = typeof window !== 'undefined' ? window.innerWidth : 1440;
-    const isMobile = viewW < 960;
+    const viewH = typeof window !== 'undefined' ? window.innerHeight : 900;
+    const isMobile = isMobileViewport(viewW, viewH);
     const baseHoriz = isMobile
       ? (config.mobileHorizStepBase ?? config.mobileStepBase ?? 40)
       : (config.horizStepBase ?? 64);
@@ -146,8 +146,8 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
       : config.vertStepBase;
 
     // Шаг сетки строго в единицах vc(...)
-    stepX = calcVc(baseHoriz, viewW);
-    stepY = calcVc(baseVert, viewW);
+    stepX = calcVc(baseHoriz, viewW, viewH);
+    stepY = calcVc(baseVert, viewW, viewH);
     startCol = isMobile ? 0 : 1;
 
     // Чувствительность к скроллу
@@ -166,12 +166,12 @@ export function initGridAnimation(canvas, gridContainer, customConfig = {}) {
       ? (config.mobileDotEnergyDelta ?? 0.33)
       : config.dotEnergyDelta;
 
-    scaledMaxTrail = calcVc(config.maxTrailLength, viewW) * dpr;
-    scaledMinTrail = calcVc(2, viewW) * dpr;
-    scaledDotW = calcVc(baseDotW, viewW) * dpr;
-    scaledDotH = calcVc(baseDotH, viewW) * dpr;
-    scaledDotEnergyDelta = calcVc(baseEnergyDelta, viewW) * dpr;
-    scaledLineWidth = Math.max(1, calcVc(config.lineWidthBase, viewW)) * dpr;
+    scaledMaxTrail = calcVc(config.maxTrailLength, viewW, viewH) * dpr;
+    scaledMinTrail = calcVc(2, viewW, viewH) * dpr;
+    scaledDotW = calcVc(baseDotW, viewW, viewH) * dpr;
+    scaledDotH = calcVc(baseDotH, viewW, viewH) * dpr;
+    scaledDotEnergyDelta = calcVc(baseEnergyDelta, viewW, viewH) * dpr;
+    scaledLineWidth = Math.max(1, calcVc(config.lineWidthBase, viewW, viewH)) * dpr;
 
     buildNodes(width, height);
     drawFrame(0);

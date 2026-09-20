@@ -2,7 +2,7 @@ import { createPageLifetime } from './page-lifetime.js';
 import { query, queryAll } from './dom.js';
 import { confirmClick } from './click-sound.js';
 import { PREVIEW_SLIDER_CONFIG } from './preview-slider.js';
-import { calcVc } from './viewport-scale.js';
+import { calcVc, isMobileViewport } from './viewport-scale.js';
 import { createPreviewDetails } from './preview-details.js';
 import { createDraggableStrip } from './draggable-strip.js';
 
@@ -833,10 +833,10 @@ export function createProjectPreview(currentPageData, {
     return true;
   }
 
-  function scrollToPreview(target = (window.innerWidth < 960 ? (previewFrame || document.getElementById('preview')) : (document.getElementById('preview') || previewFrame))) {
+  function scrollToPreview(target = (isMobileViewport() ? (previewFrame || document.getElementById('preview')) : (document.getElementById('preview') || previewFrame))) {
     if (!target) return;
-    const isMobile = window.innerWidth < 960;
-    const statusbar = /** @type {HTMLElement | null} */ (document.querySelector(isMobile ? '.statusbar.mobile-only' : '.statusbar'));
+    const isMobile = isMobileViewport();
+    const statusbar = /** @type {HTMLElement | null} */ (document.querySelector(isMobile ? '.statusbar.mobile-only' : '.statusbar.desktop-only'));
     const headerHeight = statusbar ? statusbar.getBoundingClientRect().height : 0;
     const extraOffset = isMobile ? 8 : 16;
     const offset = -(headerHeight + extraOffset);
@@ -869,7 +869,7 @@ export function createProjectPreview(currentPageData, {
         e.preventDefault();
         return;
       }
-      const shouldScroll = window.innerWidth < 960;
+      const shouldScroll = typeof isMobileViewport === 'function' ? isMobileViewport() : (window.innerWidth < 960);
       const previousSlug = currentSlug;
       setActive(thumbnail.dataset.slug, { scroll: shouldScroll });
       if (currentSlug !== previousSlug && currentSlug === thumbnail.dataset.slug) {
