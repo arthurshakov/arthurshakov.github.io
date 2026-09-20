@@ -27,10 +27,16 @@
   justify-content: center;
 }
 
-.audio-control__toggle:hover,
-.audio-control__skip:hover {
-  background: var(--bg-elev);
-  color: var(--accent-hover);
+@media (hover: hover) {
+  .audio-control__toggle:hover,
+  .audio-control__skip:hover {
+    background: var(--bg-elev);
+    color: var(--text-bright);
+  }
+
+  .audio-control__toggle[data-audio-state='on']:hover {
+    color: var(--accent-hover);
+  }
 }
 
 .audio-control__toggle[data-audio-state='on'] {

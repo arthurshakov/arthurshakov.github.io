@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import path from 'node:path';
+import { readFile } from 'node:fs/promises';
+
 import { bindAudioControls, bindAudioVisualizer } from '../src/scripts/audio-controls.js';
 import { renderPage } from '../src/template.mjs';
 
@@ -212,4 +215,12 @@ test('binds skip buttons to player next and previous', async () => {
   assert.equal(player.previousCalls, 1);
 
   unbind();
+});
+
+test('audio control hover styles are scoped to hover: hover and do not force accent color when off', async () => {
+  const root = path.resolve(import.meta.dirname, '..');
+  const css = await readFile(path.join(root, 'dist/styles.css'), 'utf8');
+
+  assert.match(css, /@media\(hover:\s*hover\)/);
+  assert.match(css, /\.audio-control__toggle\[data-audio-state=on\]\{color:var\(--accent\)\}/);
 });
