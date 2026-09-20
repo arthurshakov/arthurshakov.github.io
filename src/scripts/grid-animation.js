@@ -26,9 +26,9 @@ export const GRID_ANIMATION_CONFIG = {
   dotEnergyDelta: 0.5,
 
   // Базовые размеры точки в единицах vc на мобилке (<960px) (vc(1)xvc(1))
-  mobileDotBaseWidth: 1,
-  mobileDotBaseHeight: 1,
-  mobileDotEnergyDelta: 0.33,
+  mobileDotBaseWidth: 1.25,
+  mobileDotBaseHeight: 1.25,
+  mobileDotEnergyDelta: 0.42,
 
   // Базовая толщина линий шлейфов и связок в единицах vc (vc(1))
   lineWidthBase: 1,
@@ -44,7 +44,7 @@ export const GRID_ANIMATION_CONFIG = {
 
   // Чувствительность к скорости скролла (множитель импульса) на десктопе и мобилке
   scrollSensitivity: 0.6,
-  mobileScrollSensitivity: 0.5,
+  mobileScrollSensitivity: 0.6,
 
   // Базовая яркость/прозрачность точек в состоянии покоя (0.0 .. 1.0)
   particleBaseAlpha: 0.30,
